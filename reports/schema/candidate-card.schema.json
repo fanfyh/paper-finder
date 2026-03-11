@@ -1,0 +1,424 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://codex-research-assist.local/reports/schema/candidate-card.schema.json",
+  "title": "Alert Candidate Card",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "candidate",
+    "source",
+    "paper",
+    "triage",
+    "review"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.2.0"
+    },
+    "candidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidate_id",
+        "generated_at",
+        "json_path"
+      ],
+      "properties": {
+        "candidate_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "generated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "batch_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "markdown_path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "json_path": {
+          "type": "string"
+        }
+      }
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "kind",
+        "provider",
+        "collected_at",
+        "retrieval_profile_id",
+        "retrieval_profile_path",
+        "query_label",
+        "query_text",
+        "source_item_id",
+        "source_uri",
+        "raw_text_digest",
+        "subject",
+        "sender",
+        "received_at",
+        "message_id",
+        "thread_id",
+        "label_names"
+      ],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": [
+            "arxiv_query",
+            "gmail",
+            "email",
+            "feed",
+            "manual"
+          ]
+        },
+        "provider": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "collected_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "retrieval_profile_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "retrieval_profile_path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "query_label": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "query_text": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_item_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "source_uri": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "raw_text_digest": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "subject": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "sender": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "received_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "message_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "thread_id": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "label_names": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "paper": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "authors",
+        "venue",
+        "year",
+        "primary_category",
+        "categories",
+        "published_at",
+        "updated_at",
+        "comments",
+        "journal_ref",
+        "identifiers",
+        "source_links",
+        "abstract",
+        "abstract_source",
+        "pdf_url"
+      ],
+      "properties": {
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "authors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "venue": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "year": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "primary_category": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "categories": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "published_at": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "updated_at": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "comments": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "journal_ref": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "identifiers": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "doi",
+            "arxiv_id",
+            "url"
+          ],
+          "properties": {
+            "doi": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "arxiv_id": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "url": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          }
+        },
+        "source_links": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "abstract": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "abstract_source": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "pdf_url": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "triage": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "extraction_confidence",
+        "abstract_status",
+        "duplicate_hint",
+        "next_action",
+        "limitations",
+        "notes",
+        "matched_interest_ids",
+        "matched_interest_labels"
+      ],
+      "properties": {
+        "extraction_confidence": {
+          "type": "string",
+          "enum": [
+            "high",
+            "medium",
+            "low"
+          ]
+        },
+        "abstract_status": {
+          "type": "string",
+          "enum": [
+            "found",
+            "missing",
+            "uncertain"
+          ]
+        },
+        "duplicate_hint": {
+          "type": "string",
+          "enum": [
+            "none",
+            "possible",
+            "likely"
+          ]
+        },
+        "next_action": {
+          "type": "string",
+          "enum": [
+            "send_to_reviewer",
+            "manual_check"
+          ]
+        },
+        "limitations": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "notes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "matched_interest_ids": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "matched_interest_labels": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "review_status",
+        "reviewer_summary",
+        "zotero_comparison",
+        "recommendation"
+      ],
+      "properties": {
+        "review_status": {
+          "type": "string",
+          "enum": [
+            "pending",
+            "in_review",
+            "screened"
+          ]
+        },
+        "reviewer_summary": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "zotero_comparison": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "recommendation": {
+          "type": "string",
+          "enum": [
+            "archive",
+            "watchlist",
+            "ignore",
+            "unset"
+          ]
+        }
+      }
+    }
+  }
+}

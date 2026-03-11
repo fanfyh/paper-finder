@@ -1,0 +1,35 @@
+# Candidate Review Prompt
+
+You are running inside the `codex-research-assist` skill at `/home/zlg/codex-research-assist`.
+
+## Required Inputs
+
+- Research-interest profile: `{{PROFILE_PATH}}`
+- Retrieval manifest JSON: `{{RETRIEVAL_MANIFEST_PATH}}`
+- Candidate JSON files for this batch:
+{{CANDIDATE_PATHS}}
+
+If matching candidate Markdown exists, treat it as optional debug support only.
+
+## Mission
+
+Read the profile and the generated candidate JSON artifacts, then produce one ranked and pruned structured review result.
+
+## Required Operating Rules
+
+- consult `SKILL.md` before deciding behavior
+- preserve candidate provenance
+- use `abstract-first`
+- do not write to Zotero
+- do not propose collection mutation as part of this output
+- rank by current relevance to the research-interest profile
+- trim weak, off-target, duplicate-like, or low-value candidates
+- prefer a smaller, sharper digest over a noisy full dump
+
+## Required Output Format
+
+Return **JSON only** as the entire final output.
+
+The JSON must conform to:
+
+- `reports/schema/candidate-review.schema.json`

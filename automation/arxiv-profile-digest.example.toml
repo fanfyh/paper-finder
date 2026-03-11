@@ -1,0 +1,13 @@
+profile_path = "profiles/research-interest.json"
+output_root = "reports/generated"
+
+[artifacts]
+write_candidate_markdown = false
+
+[controller]
+mode = "internal-staged"
+
+[controller.profile_refresh]
+enabled = true
+max_age_days = 7
+refresh_if_missing = true

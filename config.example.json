@@ -1,0 +1,9 @@
+{
+  "profile_path": "~/.openclaw/skills/research-assist/profiles/research-interest.json",
+  "output_root": "~/.openclaw/skills/research-assist/reports",
+  "retrieval_defaults": {
+    "max_results_per_interest": 20,
+    "since_days": 7,
+    "max_age_days": 7
+  }
+}

@@ -1,0 +1,372 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://codex-research-assist.local/reports/schema/research-digest.schema.json",
+  "title": "Research Digest Report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "run",
+    "summary",
+    "top_papers",
+    "archive_recommendations",
+    "watchlist",
+    "token_notes",
+    "open_questions",
+    "trash_review_candidates"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "run": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "workflow",
+        "run_id",
+        "generated_at",
+        "topic",
+        "time_window",
+        "native_search_enabled",
+        "zotero_write_mode",
+        "markdown_report_path"
+      ],
+      "properties": {
+        "workflow": {
+          "type": "string"
+        },
+        "run_id": {
+          "type": "string"
+        },
+        "generated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "topic": {
+          "type": "string"
+        },
+        "time_window": {
+          "type": "string"
+        },
+        "priority_lens": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "native_search_enabled": {
+          "type": "boolean"
+        },
+        "zotero_write_mode": {
+          "type": "string",
+          "enum": [
+            "none",
+            "recommend-only",
+            "non-destructive"
+          ]
+        },
+        "markdown_report_path": {
+          "type": "string"
+        },
+        "json_report_path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "executive_summary",
+        "items_considered",
+        "top_paper_count"
+      ],
+      "properties": {
+        "executive_summary": {
+          "type": "string"
+        },
+        "items_considered": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "top_paper_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "archive_recommendation_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "trash_review_count": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "top_papers": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/paper"
+      }
+    },
+    "archive_recommendations": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/archiveRecommendation"
+      }
+    },
+    "watchlist": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/watchItem"
+      }
+    },
+    "token_notes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "abstract_only_count",
+        "full_text_count",
+        "avoidance_notes"
+      ],
+      "properties": {
+        "abstract_only_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "full_text_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "avoidance_notes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "open_questions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "trash_review_candidates": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/trashCandidate"
+      }
+    }
+  },
+  "$defs": {
+    "paper": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "authors",
+        "venue",
+        "year",
+        "why_it_matters",
+        "relevance",
+        "recommended_collection",
+        "recommended_tags",
+        "abstract_only",
+        "full_text_required"
+      ],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "authors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "venue": {
+          "type": "string"
+        },
+        "year": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "identifiers": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "doi": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "arxiv_id": {
+              "type": [
+                "string",
+                "null"
+              ]
+            },
+            "url": {
+              "type": [
+                "string",
+                "null"
+              ],
+              "format": "uri"
+            }
+          }
+        },
+        "why_it_matters": {
+          "type": "string"
+        },
+        "relevance": {
+          "type": "string"
+        },
+        "recommended_collection": {
+          "type": "string"
+        },
+        "recommended_tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "abstract_only": {
+          "type": "boolean"
+        },
+        "full_text_required": {
+          "type": "boolean"
+        },
+        "notes": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "archiveRecommendation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "target_collection",
+        "recommended_tags",
+        "rationale"
+      ],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "target_collection": {
+          "type": "string"
+        },
+        "recommended_tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "rationale": {
+          "type": "string"
+        },
+        "write_action": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "recommend-only",
+            "added-to-collection",
+            "updated-tags",
+            "moved-to-trash-review",
+            null
+          ]
+        }
+      }
+    },
+    "watchItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "reason"
+      ],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "next_action": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "trashCandidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "title",
+        "reason_category",
+        "evidence_summary",
+        "suggested_human_action",
+        "delete_review_flag"
+      ],
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "reason_category": {
+          "type": "string",
+          "enum": [
+            "duplicate",
+            "low-relevance",
+            "broken-metadata",
+            "superseded-record",
+            "other"
+          ]
+        },
+        "evidence_summary": {
+          "type": "string"
+        },
+        "suggested_human_action": {
+          "type": "string",
+          "enum": [
+            "keep",
+            "reclassify",
+            "merge-manually",
+            "delete-manually"
+          ]
+        },
+        "delete_review_flag": {
+          "type": "boolean"
+        },
+        "confidence": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "High",
+            "Medium",
+            "Low",
+            null
+          ]
+        }
+      }
+    }
+  }
+}

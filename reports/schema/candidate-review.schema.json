@@ -1,0 +1,211 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://codex-research-assist.local/reports/schema/candidate-review.schema.json",
+  "title": "Candidate Review Output",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "run",
+    "summary",
+    "top_candidates",
+    "watchlist",
+    "dropped_candidates",
+    "profile_adjustment_notes",
+    "token_notes",
+    "open_questions"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "run": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "component",
+        "run_id",
+        "generated_at",
+        "profile_path",
+        "retrieval_manifest_path"
+      ],
+      "properties": {
+        "component": {
+          "type": "string",
+          "const": "candidate-review"
+        },
+        "run_id": {
+          "type": "string"
+        },
+        "generated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "profile_path": {
+          "type": "string"
+        },
+        "retrieval_manifest_path": {
+          "type": "string"
+        },
+        "json_report_path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "executive_summary",
+        "items_considered",
+        "top_candidate_count",
+        "watchlist_count",
+        "dropped_count"
+      ],
+      "properties": {
+        "executive_summary": {
+          "type": "string"
+        },
+        "items_considered": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "top_candidate_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "watchlist_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "dropped_count": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "top_candidates": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/reviewItem"
+      }
+    },
+    "watchlist": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/reviewItem"
+      }
+    },
+    "dropped_candidates": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/droppedItem"
+      }
+    },
+    "profile_adjustment_notes": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "token_notes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "abstract_only_count",
+        "full_text_count",
+        "avoidance_notes"
+      ],
+      "properties": {
+        "abstract_only_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "full_text_count": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "avoidance_notes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "open_questions": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "$defs": {
+    "reviewItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidate_id",
+        "title",
+        "recommendation",
+        "why_it_matters_now",
+        "relevance_to_profile",
+        "key_evidence"
+      ],
+      "properties": {
+        "candidate_id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "recommendation": {
+          "type": "string",
+          "enum": [
+            "read_first",
+            "watch"
+          ]
+        },
+        "why_it_matters_now": {
+          "type": "string"
+        },
+        "relevance_to_profile": {
+          "type": "string"
+        },
+        "key_evidence": {
+          "type": "string"
+        },
+        "notes": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "droppedItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "candidate_id",
+        "title",
+        "drop_reason"
+      ],
+      "properties": {
+        "candidate_id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "drop_reason": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

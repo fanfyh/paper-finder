@@ -1,0 +1,155 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://codex-research-assist.local/reports/schema/controller-run.schema.json",
+  "title": "Controller Run Summary",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "run",
+    "stages",
+    "artifacts",
+    "issues",
+    "resume"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "run": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "component",
+        "run_id",
+        "generated_at",
+        "pipeline_config",
+        "profile_path"
+      ],
+      "properties": {
+        "component": {
+          "type": "string",
+          "const": "workflow-controller"
+        },
+        "run_id": {
+          "type": "string"
+        },
+        "generated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "pipeline_config": {
+          "type": "string"
+        },
+        "profile_path": {
+          "type": "string"
+        },
+        "candidate_markdown_mode": {
+          "type": "string"
+        }
+      }
+    },
+    "stages": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "stage",
+          "status",
+          "reason"
+        ],
+        "properties": {
+          "stage": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "completed",
+              "skipped",
+              "failed"
+            ]
+          },
+          "reason": {
+            "type": "string"
+          },
+          "output_path": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "notes": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "artifacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "profile_path",
+        "profile_report_path",
+        "retrieval_manifest_path",
+        "review_report_path"
+      ],
+      "properties": {
+        "profile_path": {
+          "type": "string"
+        },
+        "profile_report_path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "retrieval_manifest_path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "review_report_path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "resume": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "resume_hint",
+        "next_recommended_action"
+      ],
+      "properties": {
+        "resume_hint": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "next_recommended_action": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    }
+  }
+}

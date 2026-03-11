@@ -1,0 +1,51 @@
+# Profile Refresh Prompt
+
+You are running inside the `codex-research-assist` skill at `/home/zlg/codex-research-assist`.
+
+## Mission
+
+Read the current Zotero library and produce one compact machine-readable research-interest profile for the current arXiv retrieval pipeline.
+
+## Required References
+
+- Existing example shape: `profiles/research-interest.example.json`
+- Target path for the live profile: `{{TARGET_PROFILE_PATH}}`
+- Skill contract: `SKILL.md`
+- Workflow reference: `references/workflow.md`
+- Contract reference: `references/contracts.md`
+
+## Required Operating Rules
+
+- use Zotero as the primary evidence source
+- maintain a compact, retrieval-friendly profile
+- prefer 3-10 precise interest slices over a large noisy list
+- keep each interest slice arXiv-query-friendly
+- preserve short method labels instead of broad topic dumping
+- do not write to Zotero
+- do not output Markdown prose
+- do not include comments in JSON
+
+## Required JSON Fields
+
+Return **JSON only** with these top-level keys:
+
+- `schema_version`
+- `profile_id`
+- `profile_name`
+- `updated_at`
+- `maintainer`
+- `zotero_basis`
+- `retrieval_defaults`
+- `interests`
+
+Each `interest` must contain:
+
+- `interest_id`
+- `label`
+- `enabled`
+- `categories`
+- `method_keywords`
+- `query_aliases`
+- `exclude_keywords`
+- `logic`
+- `notes`
