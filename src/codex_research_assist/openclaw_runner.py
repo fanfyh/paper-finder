@@ -25,6 +25,8 @@ from .arxiv_profile_pipeline.query import build_search_query
 from .controller.profile_refresh_policy import evaluate_profile_refresh_policy
 from .ranker import rank_candidates
 from .telegram_fmt import format_digest_telegram, format_search_telegram
+from .html_fmt import format_digest_html, format_search_html
+from .telegram_sender import send_digest, send_message
 
 LOG = logging.getLogger("openclaw_runner")
 
@@ -184,7 +186,12 @@ def format_profile_refresh_markdown(policy_result: dict) -> str:
     lines.append(f"**Refresh Required:** {required}")
     lines.append(f"**Reason:** {reason}")
     lines.append("")
-    lines.append("The profile needs to be refreshed. Run the profile refresh workflow to update it." if required else "The profile is up to date.")
+    if required:
+        lines.append("The profile needs to be refreshed.")
+        lines.append("")
+        lines.append("Run `bash scripts/profile/refresh_profile.sh --config automation/arxiv-profile-digest.example.toml` to regenerate the live profile.")
+    else:
+        lines.append("The profile is up to date.")
     return "\n".join(lines)
 
 
@@ -239,9 +246,51 @@ def action_digest(config: dict, fmt: str = "markdown") -> str:
             candidates = rank_candidates(candidates, profile, history_ids)
             LOG.info("Ranked %d candidates", len(candidates))
 
+        date_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+
+        # Write HTML file for browser viewing
+        html_content = format_digest_html(candidates, date_str)
+        html_path = output_root / f"digest-{date_str}.html"
+        html_path.write_text(html_content, encoding="utf-8")
+        LOG.info("Wrote HTML digest to %s", html_path)
+
         if fmt == "telegram":
-            date_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
-            return format_digest_telegram(candidates, date_str)
+            # Generate compact Telegram summary
+            telegram_summary = format_digest_telegram(candidates, date_str)
+
+            # Write telegram.json metadata
+            telegram_json_path = output_root / f"digest-{date_str}.telegram.json"
+            telegram_json_data = {
+                "summary": telegram_summary,
+                "html_path": html_path.as_posix(),
+                "total_papers": len(candidates)
+            }
+            telegram_json_path.write_text(json.dumps(telegram_json_data, indent=2, ensure_ascii=False), encoding="utf-8")
+            LOG.info("Wrote Telegram metadata to %s", telegram_json_path)
+
+            # Try to send via Telegram
+            send_status = "skipped — TELEGRAM_BOT_TOKEN not set"
+            try:
+                send_digest(telegram_summary, html_path)
+                send_status = "sent ✓"
+            except Exception as exc:
+                LOG.warning("Failed to send to Telegram: %s", exc)
+                send_status = f"failed — {exc}"
+
+            # Compact stdout output
+            lines = [f"Found {len(candidates)} papers, top 5:"]
+            for i, candidate in enumerate(candidates[:5], 1):
+                paper = candidate.get("paper", {})
+                title = paper.get("title", "Untitled")
+                arxiv_id = paper.get("identifiers", {}).get("arxiv_id", "")
+                scores = candidate.get("_scores", {})
+                score = scores.get("total", 0.0)
+                lines.append(f"{i}. [{score:.2f}] {title[:60]}... ({arxiv_id})")
+            lines.append(f"Files: {html_path.name}, {telegram_json_path.name}")
+            lines.append(f"Telegram: {send_status}")
+            return "\n".join(lines)
+
+        # Default markdown output to stdout
         return format_digest_markdown(digest_json_path, candidates)
     finally:
         try:
@@ -256,9 +305,55 @@ def action_search(query: str, top: int = 5, fmt: str = "markdown") -> str:
     xml_text = fetch_arxiv_feed(search_query, start=0, max_results=top, sort_by="relevance", sort_order="descending")
     papers = parse_feed(xml_text)
     LOG.info("Found %d results", len(papers))
+
+    papers_subset = papers[:top]
+
     if fmt == "telegram":
-        return format_search_telegram(papers[:top], query)
-    return format_search_markdown(papers[:top], query)
+        # Generate compact Telegram summary
+        telegram_summary = format_search_telegram(papers_subset, query)
+
+        # Generate HTML for browser viewing
+        html_content = format_search_html(papers_subset, query)
+
+        # Write files to a search output directory
+        date_str = datetime.now(timezone.utc).strftime("%Y-%m-%d-%H%M%S")
+        search_output_dir = Path.home() / ".openclaw" / "skills" / "research-assist" / "reports" / "search"
+        search_output_dir.mkdir(parents=True, exist_ok=True)
+
+        html_path = search_output_dir / f"search-{date_str}.html"
+        html_path.write_text(html_content, encoding="utf-8")
+        LOG.info("Wrote HTML search results to %s", html_path)
+
+        telegram_json_path = search_output_dir / f"search-{date_str}.telegram.json"
+        telegram_json_data = {
+            "summary": telegram_summary,
+            "html_path": html_path.as_posix(),
+            "query": query,
+            "total_results": len(papers_subset)
+        }
+        telegram_json_path.write_text(json.dumps(telegram_json_data, indent=2, ensure_ascii=False), encoding="utf-8")
+        LOG.info("Wrote Telegram metadata to %s", telegram_json_path)
+
+        # Try to send via Telegram (summary + HTML attachment)
+        send_status = "skipped — TELEGRAM_BOT_TOKEN not set"
+        try:
+            send_digest(telegram_summary, html_path)
+            send_status = "sent ✓"
+        except Exception as exc:
+            LOG.warning("Failed to send to Telegram: %s", exc)
+            send_status = f"failed — {exc}"
+
+        # Compact stdout output
+        lines = [f"Found {len(papers_subset)} results for \"{query}\":"]
+        for i, paper in enumerate(papers_subset, 1):
+            title = paper.get("title", "Untitled")
+            arxiv_id = paper.get("arxiv_id", "")
+            lines.append(f"{i}. {title[:60]}... ({arxiv_id})")
+        lines.append(f"Files: {html_path.name}, {telegram_json_path.name}")
+        lines.append(f"Telegram: {send_status}")
+        return "\n".join(lines)
+
+    return format_search_markdown(papers_subset, query)
 
 
 def action_profile_refresh(config: dict) -> str:

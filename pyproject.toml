@@ -6,10 +6,34 @@ requires-python = ">=3.12"
 dependencies = [
   "feedparser>=6.0.11",
   "requests>=2.32.3",
+  "python-dotenv>=1.0.1",
+  "pyzotero>=1.5.0",
+  "fastmcp>=0.4.0",
+  "chromadb>=0.5.0",
+]
+
+[project.optional-dependencies]
+semantic-local = [
+  "sentence-transformers>=2.2.0",
+]
+semantic-fastembed = [
+  "fastembed>=0.7.0",
+]
+semantic-openai = [
+  "openai>=1.0.0",
+]
+semantic-gemini = [
+  "google-genai>=0.7.0",
+]
+semantic-fulltext = [
+  "markitdown[pdf]",
+  "beautifulsoup4>=4.12.0",
+  "pdfminer.six>=20231228",
 ]
 
 [project.scripts]
 research-assist = "codex_research_assist.openclaw_runner:main"
+research-assist-zotero-mcp = "codex_research_assist.zotero_mcp.server:main"
 
 [build-system]
 requires = ["hatchling"]

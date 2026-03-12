@@ -1,0 +1,27 @@
+{
+  "zotero": {
+    "library_type": "group",
+    "library_id": "6433210",
+    "enforce_library_type": "group",
+    "enforce_library_id": "6433210"
+  },
+  "semantic_search": {
+    "enabled": true,
+    "zotero_db_path": "/home/zlg/code/research-assist-zotero-wt/temp/semantic-test/zotero-data/zotero.sqlite",
+    "persist_directory": "/home/zlg/code/research-assist-zotero-wt/temp/semantic-test/chroma_db",
+    "collection_name": "research_assist_zotero_test",
+    "embedding_model": "fastembed",
+    "local_group_id": 6433210,
+    "local_library_id": 2,
+    "extract_fulltext": false,
+    "update_config": {
+      "auto_update": false,
+      "update_frequency": "manual",
+      "last_update": "2026-03-12T17:58:21.874429",
+      "update_days": 7
+    },
+    "extraction": {
+      "pdf_max_pages": 2
+    }
+  }
+}

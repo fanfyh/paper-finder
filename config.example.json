@@ -1,6 +1,38 @@
 {
   "profile_path": "~/.openclaw/skills/research-assist/profiles/research-interest.json",
   "output_root": "~/.openclaw/skills/research-assist/reports",
+  "zotero": {
+    "library_id": "6433210",
+    "api_key": "",
+    "library_type": "group",
+    "enforce_library_type": "group",
+    "enforce_library_id": "6433210",
+    "profile_collections": [],
+    "profile_tags": [],
+    "feedback_default_collections": [],
+    "feedback_default_tags": [
+      "research-assist"
+    ]
+  },
+  "semantic_search": {
+    "enabled": true,
+    "zotero_db_path": "C:/Users/pcsys/Zotero/zotero.sqlite",
+    "persist_directory": "~/.openclaw/skills/research-assist/.semantic-search",
+    "collection_name": "research_assist_zotero",
+    "embedding_model": "default",
+    "local_group_id": 6433210,
+    "local_library_id": 2,
+    "extract_fulltext": false,
+    "update_config": {
+      "auto_update": false,
+      "update_frequency": "manual",
+      "last_update": null,
+      "update_days": 7
+    },
+    "extraction": {
+      "pdf_max_pages": 10
+    }
+  },
   "retrieval_defaults": {
     "max_results_per_interest": 20,
     "since_days": 7,

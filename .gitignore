@@ -7,3 +7,11 @@ dist/
 reports/generated/
 *.local.toml
 .env
+temp/private/
+temp/private/**
+temp/models/
+temp/models/**
+temp/semantic-test/chroma_db/
+temp/semantic-test/chroma_db/**
+temp/semantic-test/zotero-data/
+temp/semantic-test/zotero-data/**

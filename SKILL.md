@@ -18,6 +18,9 @@ research-assist --action search --query "gaussian process" --top 5
 
 # Check profile refresh status
 research-assist --action profile-refresh --config path/to/config.json
+
+# Zotero MCP server (for profile evidence + feedback writeback)
+research-assist-zotero-mcp
 ```
 
 Or via Python module:
@@ -54,8 +57,10 @@ openclaw_runner.py (CLI entry, markdown to stdout)
     └── format_*_markdown()     → structured markdown output
 ```
 
-No LLM calls inside the skill. Retrieval, ranking, and formatting are pure data operations.
+No LLM calls inside the packaged Python pipeline. Retrieval, ranking, and formatting are pure data operations.
 Intelligence comes from the calling agent (OpenClaw / Claude Code / Codex CLI).
+
+Profile refresh is handled by a controller script (`scripts/profile/refresh_profile.sh`) which delegates the profile drafting to the calling agent, using live Zotero evidence via the bundled Zotero MCP.
 
 ## Workflow Stages
 
@@ -65,6 +70,8 @@ Intelligence comes from the calling agent (OpenClaw / Claude Code / Codex CLI).
 - maintain `profiles/research-interest.json`
 - preserve the compact contract: `method_keywords`, `query_aliases`, `exclude_keywords`
 - keep method labels short and retrieval-friendly
+- prefer `zotero_semantic_search` for discovery, then `zotero_search_items` for exact resolution
+- use `research-assist-zotero-mcp` for live Zotero reads (no direct API calls)
 
 ### 2. `retrieval`
 
@@ -82,11 +89,19 @@ Intelligence comes from the calling agent (OpenClaw / Claude Code / Codex CLI).
 - prefer a smaller sharper set over a noisy dump
 - stay `abstract-first`
 
+### Optional extension: `zotero_feedback`
+
+- collect explicit user feedback after review
+- encode feedback as `reports/schema/zotero-feedback.schema.json`
+- apply feedback through `research-assist-zotero-mcp` with `dry_run=true` first
+- use tag / collection tools only for non-destructive organization, not attachment file moves
+
 ## Hard Rules
 
 - do not expand concise method labels into long topic sentences
 - do not make full text the default review mode
 - do not delete Zotero items or collections automatically
+- prefer `dry_run=true` for any Zotero writeback
 - do not treat scheduler wiring as part of the skill
 
 ## Key Runtime Files

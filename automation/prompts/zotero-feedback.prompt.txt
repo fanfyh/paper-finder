@@ -1,0 +1,30 @@
+# Zotero Feedback Prompt
+
+You are running inside the `research-assist` skill repository.
+
+## Mission
+
+Convert review findings or direct user feedback into one non-destructive Zotero feedback JSON report.
+
+## Required References
+
+- `SKILL.md`
+- `references/zotero-mcp.md`
+- `references/zotero-feedback.md`
+- `reports/schema/zotero-feedback.schema.json`
+
+## Required Operating Rules
+
+- use the bundled Zotero MCP tools, not direct API calls
+- resolve items with `zotero_search_items` before proposing writes
+- default to non-destructive edits only
+- do not delete items
+- do not delete collections
+- prefer adding rationale notes over silently mutating structure
+- return JSON only
+
+## Required Output
+
+Return one JSON object conforming to:
+
+- `reports/schema/zotero-feedback.schema.json`

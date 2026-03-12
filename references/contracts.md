@@ -45,3 +45,11 @@ Meaning:
 - no automatic collection deletion
 - no speculative top-level taxonomy rewrites
 - prefer explicit rationale for any future write action
+
+## Zotero MCP Usage
+
+- use the bundled `research-assist-zotero-mcp` server for live Zotero reads
+- during `profile_update`, keep Zotero access read-only
+- during feedback sync, default to `dry_run=true`
+- only use non-destructive writes: add tags, add collection membership, append notes
+- encode persistent item state with `ra-status:*` tags rather than destructive cleanup

@@ -1,6 +1,6 @@
 # Candidate Review Prompt
 
-You are running inside the `codex-research-assist` skill at `/home/zlg/codex-research-assist`.
+You are running inside the `research-assist` skill repository.
 
 ## Required Inputs
 

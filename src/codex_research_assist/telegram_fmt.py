@@ -1,110 +1,113 @@
 """Telegram message formatting for research-assist digest.
 
-Formats candidates as Telegram-compatible Markdown messages.
+Formats candidates as Telegram HTML messages (parse_mode='HTML').
 Does NOT send — the caller (agent or script) handles delivery.
 """
 from __future__ import annotations
+import html
 
 
-def _escape_md(text: str) -> str:
-    """Escape Telegram MarkdownV1 special characters."""
-    for ch in ("_", "*", "`", "["):
-        text = text.replace(ch, f"\\{ch}")
-    return text
-
-
-def format_paper_card(idx: int, candidate: dict) -> str:
-    """Format a single candidate as a Telegram paper card."""
-    paper = candidate.get("paper", {})
-    triage = candidate.get("triage", {})
-    scores = candidate.get("_scores", {})
-
-    title = paper.get("title", "Untitled")
-    authors = paper.get("authors", [])
-    arxiv_id = paper.get("identifiers", {}).get("arxiv_id", "")
-    url = paper.get("identifiers", {}).get("url", "")
-    abstract = paper.get("abstract", "")
-    matched = triage.get("matched_interest_labels", [])
-
-    # Author line
-    if len(authors) > 2:
-        author_str = f"{authors[0]} et al."
-    elif len(authors) == 2:
-        author_str = f"{authors[0]} & {authors[1]}"
-    elif authors:
-        author_str = authors[0]
-    else:
-        author_str = ""
-
-    lines = []
-
-    # Title with link
-    if url:
-        lines.append(f"*{idx}.* [{_escape_md(title)}]({url})")
-    else:
-        lines.append(f"*{idx}. {_escape_md(title)}*")
-
-    # Author
-    if author_str:
-        lines.append(f"    {_escape_md(author_str)}")
-
-    # Tags
-    if matched:
-        tags = " ".join(f"#{t.replace(' ', '-')}" for t in matched[:3])
-        lines.append(f"    {tags}")
-
-    # Score
-    if scores:
-        lines.append(f"    📊 Score: {scores.get('total', 0):.2f}")
-
-    # Abstract snippet
-    if abstract:
-        snippet = abstract[:120] + "…" if len(abstract) > 120 else abstract
-        lines.append(f"    💡 {_escape_md(snippet)}")
-
-    return "\n".join(lines)
+def _escape_html(text: str) -> str:
+    """Escape HTML special characters for Telegram HTML parse_mode."""
+    return html.escape(text)
 
 
 def format_digest_telegram(candidates: list[dict], date_str: str) -> str:
-    """Format full digest as a Telegram push message."""
-    header = f"📬 *Research Digest | {date_str} | {len(candidates)} papers*"
-    separator = "━━━━━━━━━━━━━━━━━━━━"
+    """Format digest as a compact Top 5 Telegram HTML message.
+
+    Returns a single string in Telegram HTML format showing only the top 5 papers.
+    Full content with abstracts should be sent as a separate HTML attachment.
+    """
+    total = len(candidates)
+    header = f"📬 <b>Research Digest | {_escape_html(date_str)} | {total} papers</b>"
 
     if not candidates:
         return f"{header}\n\nNo new papers found."
 
-    cards = [format_paper_card(i, c) for i, c in enumerate(candidates, 1)]
+    lines = [header, ""]
 
-    parts = [header, separator, ""]
-    parts.extend(c + "\n" for c in cards)
-    parts.append(separator)
+    # Show only top 5
+    top_candidates = candidates[:5]
+    for i, candidate in enumerate(top_candidates, 1):
+        paper = candidate.get("paper", {})
+        scores = candidate.get("_scores", {})
 
-    return "\n".join(parts)
+        title = paper.get("title", "Untitled")
+        authors = paper.get("authors", [])
+        url = paper.get("identifiers", {}).get("url", "")
+
+        # Author line
+        if len(authors) > 2:
+            author_str = f"{authors[0]} et al."
+        elif len(authors) == 2:
+            author_str = f"{authors[0]} & {authors[1]}"
+        elif authors:
+            author_str = authors[0]
+        else:
+            author_str = ""
+
+        # Title with link
+        if url:
+            lines.append(f"{i}. <a href=\"{_escape_html(url)}\">{_escape_html(title)}</a>")
+        else:
+            lines.append(f"{i}. {_escape_html(title)}")
+
+        # Author and score on same line
+        info_parts = []
+        if author_str:
+            info_parts.append(_escape_html(author_str))
+        if scores:
+            info_parts.append(f"📊 {scores.get('total', 0):.2f}")
+
+        if info_parts:
+            lines.append(f"   {' · '.join(info_parts)}")
+
+        lines.append("")
+
+    # Footer if more than 5 papers
+    if total > 5:
+        lines.append("📎 Full digest with abstracts attached below")
+
+    return "\n".join(lines)
 
 
 def format_search_telegram(papers: list[dict], query: str) -> str:
-    """Format ad-hoc search results as a Telegram message."""
-    header = f"🔍 *Search: \"{_escape_md(query)}\" | {len(papers)} results*"
+    """Format ad-hoc search results as a compact Telegram HTML message."""
+    total = len(papers)
+    header = f"🔍 <b>Search: \"{_escape_html(query)}\" | {total} results</b>"
 
     if not papers:
         return f"{header}\n\nNo results found."
 
     lines = [header, ""]
-    for i, p in enumerate(papers, 1):
+
+    # Show up to 5 results
+    for i, p in enumerate(papers[:5], 1):
         title = p.get("title", "Untitled")
         url = p.get("html_url", "")
         authors = p.get("authors", [])
-        author_str = authors[0] + " et al." if len(authors) > 2 else ", ".join(authors) if authors else ""
-        summary = (p.get("summary") or "")[:100]
 
-        if url:
-            lines.append(f"*{i}.* [{_escape_md(title)}]({url})")
+        # Author line
+        if len(authors) > 2:
+            author_str = f"{authors[0]} et al."
+        elif authors:
+            author_str = ", ".join(authors)
         else:
-            lines.append(f"*{i}. {_escape_md(title)}*")
+            author_str = ""
+
+        # Title with link
+        if url:
+            lines.append(f"{i}. <a href=\"{_escape_html(url)}\">{_escape_html(title)}</a>")
+        else:
+            lines.append(f"{i}. {_escape_html(title)}")
+
+        # Author
         if author_str:
-            lines.append(f"    {_escape_md(author_str)}")
-        if summary:
-            lines.append(f"    💡 {_escape_md(summary)}")
+            lines.append(f"   {_escape_html(author_str)}")
+
         lines.append("")
+
+    if total > 5:
+        lines.append(f"<i>Showing top 5 of {total} results</i>")
 
     return "\n".join(lines)

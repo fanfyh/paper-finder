@@ -1,6 +1,6 @@
 # Generic Skill Task Prompt
 
-You are running inside the `codex-research-assist` skill.
+You are running inside the `research-assist` skill.
 
 Read `SKILL.md` and the relevant file under `references/` before producing output.
 
