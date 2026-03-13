@@ -92,6 +92,9 @@
             "archive",
             "watch",
             "read_first",
+            "skim",
+            "skip_for_now",
+            "watchlist",
             "ignore",
             "unset"
           ]

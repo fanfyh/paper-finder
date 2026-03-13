@@ -5,7 +5,7 @@ from datetime import UTC, datetime
 from typing import Any
 
 
-ALLOWED_DECISIONS = {"archive", "watch", "read_first", "ignore", "unset"}
+ALLOWED_DECISIONS = {"archive", "watch", "read_first", "skim", "skip_for_now", "watchlist", "ignore", "unset"}
 STATUS_TAG_PREFIX = "ra-status:"
 SYSTEM_TAG = "research-assist"
 

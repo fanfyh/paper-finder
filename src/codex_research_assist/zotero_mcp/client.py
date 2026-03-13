@@ -603,6 +603,18 @@ class ZoteroClient:
                 continue
 
             data = entry["data"]
+            if decision["decision"] == "unset":
+                planned.append(
+                    {
+                        "status": "skipped_unset",
+                        "item_key": data.get("key"),
+                        "title": data.get("title"),
+                        "decision": decision["decision"],
+                        "note_created": False,
+                    }
+                )
+                continue
+
             current_tags = [tag.get("tag", "").strip() for tag in data.get("tags", []) if tag.get("tag")]
             next_tags = [
                 tag
@@ -618,8 +630,18 @@ class ZoteroClient:
 
             current_collection_keys = list(data.get("collections", []))
             next_collection_keys = list(current_collection_keys)
+            existing_add_collection_keys = {
+                name.strip().lower(): key
+                for name, key in self.resolve_existing_collection_keys(decision["add_collections"]).items()
+            }
+            collections_to_create: list[str] = []
             for collection_name in decision["add_collections"]:
-                key = self.get_or_create_collection(collection_name)
+                key = existing_add_collection_keys.get(collection_name.strip().lower())
+                if not key:
+                    if dry_run:
+                        collections_to_create.append(collection_name)
+                        continue
+                    key = self.get_or_create_collection(collection_name)
                 if key not in next_collection_keys:
                     next_collection_keys.append(key)
             remove_keys = set(
@@ -641,6 +663,7 @@ class ZoteroClient:
                 "remove_tags": decision["remove_tags"],
                 "add_collections": decision["add_collections"],
                 "remove_collections": decision["remove_collections"],
+                "collections_to_create": collections_to_create,
                 "final_tags": sorted({tag for tag in next_tags if tag}),
                 "final_collection_keys": next_collection_keys,
                 "note_created": True,

@@ -6,7 +6,7 @@ This document defines the non-destructive Zotero feedback system used by the `re
 
 - provide a safe, incremental way to record user feedback into Zotero
 - keep all operations non-destructive by default
-- allow an agent to persist "archive/watch/read_first/ignore" decisions
+- allow an agent to persist `read_first`, `skim`, `watch`, `skip_for_now`, `archive`, `watchlist`, `ignore`, and `unset` decisions
 - support small corrections to tags and collections without taxonomy rewrites
 
 ## Safety Rules (Hard)
@@ -53,6 +53,17 @@ Each decision must match a Zotero item using at least one of:
 - `doi` (strong if present)
 - `title_contains` (weak fallback; use carefully)
 
+Supported decisions:
+
+- `read_first`
+- `skim`
+- `watch`
+- `skip_for_now`
+- `archive`
+- `watchlist`
+- `ignore`
+- `unset`
+
 ## How Feedback Is Applied
 
 The MCP tool `zotero_apply_feedback` performs the following actions per matched item:
@@ -61,7 +72,13 @@ The MCP tool `zotero_apply_feedback` performs the following actions per matched 
 - removes tags in `remove_tags`
 - adds one status tag: `ra-status:<decision>` (except `unset`)
 - ensures the system tag `research-assist` exists
-- adds/removes collections as requested (creating collections if missing)
+- adds/removes collections as requested
 - appends a Zotero child note recording the feedback event
 
-All operations are idempotent and safe to re-run.
+Special cases:
+
+- `unset` is a no-op for writeback: it is reported in the plan but does not change tags, collections, or notes
+- with `dry_run=true`, missing collections are reported in the plan and are not created yet
+- with `dry_run=false`, missing collections requested in `add_collections` may be created as part of the apply step
+
+All operations are intended to be idempotent and safe to re-run.

@@ -137,12 +137,59 @@ OpenClaw generation rule:
   - telegram compact message shell
 - do not ask the host agent to generate channel-specific wrappers
 
-### Optional extension: `zotero_feedback`
+### Stage 6: `feedback_sync`
 
-- collect explicit user feedback after review
-- encode feedback as `reports/schema/zotero-feedback.schema.json`
-- apply feedback through `research-assist-zotero-mcp` with `dry_run=true` first
-- use tag / collection tools only for non-destructive organization, not attachment file moves
+After the digest is reviewed and delivered, the host agent may push non-destructive feedback back into Zotero.
+
+Workflow:
+
+1. collect the user's explicit feedback on each digest candidate (keep, drop, archive, watch, etc.)
+2. encode feedback as `reports/schema/zotero-feedback.schema.json`
+3. call `zotero_apply_feedback` through the bundled Zotero MCP with `dry_run=true` first
+4. show the dry-run plan to the user and ask for confirmation before applying
+5. only after confirmation, re-run with `dry_run=false`
+
+Allowed feedback decisions:
+
+- `read_first` — high-priority paper, tag and promote in library
+- `skim` — worth scanning, tag for later review
+- `watch` — track this topic area, add to watchlist collection
+- `skip_for_now` — not relevant now, mark but do not remove
+- `archive` — reviewed and filed, move to archive collection
+- `watchlist` — add to a standing watchlist for periodic check-in
+- `ignore` — not relevant, tag to suppress in future runs
+- `unset` — no decision yet, skip writeback for this item
+
+What feedback can do (non-destructive only):
+
+- add tags (including `ra-status:*` decision tags)
+- add or change collection membership
+- append notes to items
+- create new collections if needed for organization
+
+What feedback must never do:
+
+- delete Zotero items or collections
+- modify item metadata (title, authors, abstract, DOI)
+- move or delete attachment files
+- rewrite top-level taxonomy without explicit user instruction
+- apply changes without showing the dry-run plan first
+
+Matching behavior:
+
+- match items by `item_key` (preferred), `doi`, or `title_contains`
+- at least one match field must be provided per decision
+- DOI matching is case-insensitive
+- `title_contains` uses substring match (not exact)
+- if no match is found, the decision is recorded as `not_found` in the plan
+
+Edge cases:
+
+- duplicate tags are deduplicated (case-insensitive)
+- previous `ra-status:*` tags are replaced when a new decision is applied
+- the `research-assist` system tag is always preserved
+- `unset` decisions produce no status tag and no writeback
+- empty `add_tags`, `remove_tags`, `add_collections`, `remove_collections` are allowed (no-op for that field)
 
 ## Hard Rules
 
