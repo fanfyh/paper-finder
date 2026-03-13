@@ -104,6 +104,8 @@ That's it. One command installs all dependencies.
 mkdir -p ~/.openclaw/skills/research-assist/profiles
 mkdir -p ~/.openclaw/skills/research-assist/reports
 cp config.example.json ~/.openclaw/skills/research-assist/config.json
+cp profiles/research-interest.example.json \
+  ~/.openclaw/skills/research-assist/profiles/research-interest.json
 ```
 
 Then edit `~/.openclaw/skills/research-assist/config.json` for your setup.
@@ -132,6 +134,16 @@ uv run research-assist --action render-digest \
 # Start the bundled Zotero MCP server
 uv run research-assist-zotero-mcp
 ```
+
+### 4. Build a portable skill package
+
+```bash
+uv run python scripts/distribution/build_skill_package.py
+unzip dist/research-assist-skill-v*.zip -d /tmp/research-assist-skill
+/tmp/research-assist-skill/research-assist-skill-v*/install.sh
+```
+
+The packaged skill ships with `install.sh`, which copies the runtime files into `~/.openclaw/skills/research-assist`, creates `config.json` and `profiles/research-interest.json` if missing, and runs `uv sync` when available.
 
 ## Pipeline stages
 

@@ -1,6 +1,6 @@
 ---
 name: research-assist
-description: A lightweight arXiv literature digest skill for OpenClaw, with Zotero-driven interest profiling, 3-dimensional candidate ranking, and abstract-first review.
+description: A lightweight arXiv literature digest skill for OpenClaw, with Zotero-driven interest profiling, research-map plus Zotero-semantic ranking, agent-enriched digest cards, and non-destructive feedback writeback.
 ---
 
 # Research Assist Skill
@@ -66,7 +66,7 @@ config.json (OpenClaw skill config)
 openclaw_runner.py (CLI entry, markdown to stdout)
     ├── profile_refresh_policy  → check if profile needs update
     ├── pipeline.py             → arXiv Atom API retrieval
-    ├── ranker.py               → 3-dim scoring (relevance × recency × novelty)
+    ├── ranker.py               → two-signal scoring (map_match + zotero_semantic)
     └── format_*_markdown()     → structured markdown output
 ```
 
@@ -105,10 +105,11 @@ OpenClaw generation rule:
 
 ### 3. `review`
 
-- rank candidates with 3-dimensional scoring:
-  - **relevance** (0.60): per-phrase keyword overlap against profile interests
-  - **recency** (0.25): exponential decay, 7-day full score window
-  - **novelty** (0.15): 1.0 if unseen, 0.0 if in history
+- rank candidates with two-signal scoring:
+  - **map_match** (0.30): how well the paper fits the current research-map slices
+  - **zotero_semantic** (0.70): how close the paper is to nearby Zotero literature
+- apply the low-map guard:
+  - if `map_match < 0.30`, apply the configured penalty to avoid semantic-only false positives
 - output ranked markdown to stdout for agent review
 - prefer a smaller sharper set over a noisy dump
 - stay `abstract-first`
@@ -220,13 +221,14 @@ Edge cases:
 
 Include in distributable skill:
 
-- `SKILL.md`, `pyproject.toml`, `uv.lock`
+- `SKILL.md`, `config.example.json`, `pyproject.toml`, `uv.lock`
 - `src/`
 - `references/`
 - `profiles/research-interest.example.json`
 - `automation/arxiv-profile-digest.example.toml`
 - `automation/prompts/`
 - `reports/schema/`
+- generated package-root `install.sh`
 
 Exclude:
 

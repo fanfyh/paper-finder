@@ -31,11 +31,9 @@
     }
   },
   "zotero": {
-    "library_id": "6433210",
+    "library_id": "",
     "api_key": "",
-    "library_type": "group",
-    "enforce_library_type": "group",
-    "enforce_library_id": "6433210",
+    "library_type": "user",
     "profile_collections": [],
     "profile_tags": [],
     "feedback_default_collections": [],
@@ -44,13 +42,13 @@
     ]
   },
   "semantic_search": {
-    "enabled": true,
-    "zotero_db_path": "~/Zotero/zotero.sqlite",
+    "enabled": false,
+    "zotero_db_path": "",
     "persist_directory": "~/.openclaw/skills/research-assist/.semantic-search",
     "collection_name": "research_assist_zotero",
     "embedding_model": "default",
-    "local_group_id": 6433210,
-    "local_library_id": 2,
+    "local_group_id": null,
+    "local_library_id": null,
     "extract_fulltext": false,
     "update_config": {
       "auto_update": false,

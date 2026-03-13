@@ -104,6 +104,8 @@ uv sync
 mkdir -p ~/.openclaw/skills/research-assist/profiles
 mkdir -p ~/.openclaw/skills/research-assist/reports
 cp config.example.json ~/.openclaw/skills/research-assist/config.json
+cp profiles/research-interest.example.json \
+  ~/.openclaw/skills/research-assist/profiles/research-interest.json
 ```
 
 然后按你的环境编辑 `~/.openclaw/skills/research-assist/config.json`。
@@ -132,6 +134,16 @@ uv run research-assist --action render-digest \
 # 启动内置 Zotero MCP 服务
 uv run research-assist-zotero-mcp
 ```
+
+### 4. 构建可分发 skill 包
+
+```bash
+uv run python scripts/distribution/build_skill_package.py
+unzip dist/research-assist-skill-v*.zip -d /tmp/research-assist-skill
+/tmp/research-assist-skill/research-assist-skill-v*/install.sh
+```
+
+生成出来的 skill 包会自带 `install.sh`。它会把运行时文件复制到 `~/.openclaw/skills/research-assist`，在缺失时创建 `config.json` 和 `profiles/research-interest.json`，并在本机存在 `uv` 时自动执行 `uv sync`。
 
 ## Pipeline 阶段
 

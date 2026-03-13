@@ -11,6 +11,7 @@ The distributed package is intentionally smaller than the source repository.
 Keep these items in the distributable skill:
 
 - `SKILL.md`
+- `config.example.json`
 - `references/`
 - `automation/prompts/`
 - `automation/arxiv-profile-digest.example.toml`
@@ -20,11 +21,16 @@ Keep these items in the distributable skill:
 - `pyproject.toml`
 - `uv.lock`
 
+Add these generated files at packaging time:
+
+- `install.sh` at the package root
+
 ## Exclude
 
 Do not include these items in the minimal packaged skill:
 
 - `README.md`
+- `README.zh-CN.md`
 - `CODEMAP.md`
 - `NEXT_PLAN.md`
 - `temp/`
@@ -51,3 +57,24 @@ Temporarily out of packaged baseline:
 - scheduler wiring
 
 These can return later as optional extensions, but they are not part of the current distributable baseline.
+
+## Packaging command
+
+Build the distributable package from the source repo with:
+
+```bash
+uv run python scripts/distribution/build_skill_package.py
+```
+
+This creates:
+
+- `dist/research-assist-skill-v<version>/`
+- `dist/research-assist-skill-v<version>.zip`
+- `dist/research-assist-skill-v<version>.tar.gz`
+
+The packaged root includes `install.sh`, which:
+
+- copies runtime files into `~/.openclaw/skills/research-assist`
+- creates `config.json` from `config.example.json` if missing
+- creates `profiles/research-interest.json` from the example profile if missing
+- runs `uv sync` in the installed skill directory when `uv` is available
