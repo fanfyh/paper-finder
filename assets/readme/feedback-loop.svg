@@ -1,0 +1,46 @@
+<svg width="1400" height="940" viewBox="0 0 1400 940" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="80" y1="60" x2="1320" y2="860" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FBF4E9"/>
+      <stop offset="1" stop-color="#F0E0CE"/>
+    </linearGradient>
+    <filter id="shadow" x="56" y="44" width="1288" height="840" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#9C7256" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+  <rect width="1400" height="940" rx="44" fill="#F6ECDF"/>
+  <g filter="url(#shadow)">
+    <rect x="78" y="66" width="1244" height="796" rx="38" fill="url(#bg)"/>
+  </g>
+
+  <text x="138" y="146" fill="#8E583A" font-size="15" font-family="Arial, Helvetica, sans-serif" font-weight="700" letter-spacing="1.8">FEEDBACK LOOP</text>
+  <text x="138" y="236" fill="#2F241D" font-size="60" font-family="Georgia, 'Times New Roman', serif" font-weight="700">A digest is only half the job.</text>
+  <text x="138" y="312" fill="#5B493E" font-size="28" font-family="Arial, Helvetica, sans-serif">The loop closes when the library becomes easier to search next time.</text>
+
+  <rect x="170" y="418" width="430" height="156" rx="28" fill="#FFF9F2" stroke="#E2CFBB" stroke-width="2"/>
+  <text x="206" y="458" fill="#8A5437" font-size="14" font-family="Arial, Helvetica, sans-serif" font-weight="700" letter-spacing="1.5">1. PROFILE</text>
+  <text x="206" y="512" fill="#2F241D" font-size="32" font-family="Georgia, 'Times New Roman', serif" font-weight="700">Read the map</text>
+  <text x="206" y="552" fill="#5B493E" font-size="22" font-family="Arial, Helvetica, sans-serif">collections, papers, semantic neighbors</text>
+
+  <rect x="800" y="418" width="430" height="156" rx="28" fill="#FFF8EF" stroke="#E2CFBB" stroke-width="2"/>
+  <text x="836" y="458" fill="#8A5437" font-size="14" font-family="Arial, Helvetica, sans-serif" font-weight="700" letter-spacing="1.5">2. RETRIEVE</text>
+  <text x="836" y="512" fill="#2F241D" font-size="32" font-family="Georgia, 'Times New Roman', serif" font-weight="700">Rank a batch</text>
+  <text x="836" y="552" fill="#5B493E" font-size="21" font-family="Arial, Helvetica, sans-serif">top 8 candidates, scored and traced</text>
+
+  <rect x="170" y="642" width="430" height="156" rx="28" fill="#FFF7EC" stroke="#E2CFBB" stroke-width="2"/>
+  <text x="206" y="682" fill="#8A5437" font-size="14" font-family="Arial, Helvetica, sans-serif" font-weight="700" letter-spacing="1.5">3. AI PATCH</text>
+  <text x="206" y="736" fill="#2F241D" font-size="32" font-family="Georgia, 'Times New Roman', serif" font-weight="700">Keep up to 5</text>
+  <text x="206" y="776" fill="#5B493E" font-size="22" font-family="Arial, Helvetica, sans-serif">recommendation, nearest anchors</text>
+
+  <rect x="800" y="642" width="430" height="156" rx="28" fill="#F1DBC4" stroke="#DEC3A8" stroke-width="2"/>
+  <text x="836" y="682" fill="#8A5437" font-size="14" font-family="Arial, Helvetica, sans-serif" font-weight="700" letter-spacing="1.5">4. FEEDBACK</text>
+  <rect x="978" y="658" width="116" height="34" rx="17" fill="#E7C8A8"/>
+  <text x="1036" y="680" text-anchor="middle" fill="#7A4F36" font-size="15" font-family="Arial, Helvetica, sans-serif" font-weight="700">Write back</text>
+  <text x="836" y="742" fill="#2F241D" font-size="30" font-family="Georgia, 'Times New Roman', serif" font-weight="700">Tag and tidy</text>
+  <text x="836" y="776" fill="#5B493E" font-size="20" font-family="Arial, Helvetica, sans-serif">for a cleaner next run</text>
+
+  <path d="M600 496H800" stroke="#B48A6B" stroke-width="5"/>
+  <path d="M1015 574V642" stroke="#B48A6B" stroke-width="5"/>
+  <path d="M800 720H600" stroke="#B48A6B" stroke-width="5"/>
+  <path d="M385 642V574" stroke="#B48A6B" stroke-width="5"/>
+</svg>

@@ -1,0 +1,49 @@
+<svg width="1400" height="940" viewBox="0 0 1400 940" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="80" y1="60" x2="1320" y2="840" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FBF4E9"/>
+      <stop offset="1" stop-color="#F1E2D1"/>
+    </linearGradient>
+    <filter id="shadow" x="56" y="44" width="1288" height="840" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#9A7055" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+  <rect width="1400" height="940" rx="44" fill="#F6ECDF"/>
+  <g filter="url(#shadow)">
+    <rect x="78" y="66" width="1244" height="796" rx="38" fill="url(#bg)"/>
+  </g>
+
+  <text x="138" y="146" fill="#8F593B" font-size="15" font-family="Arial, Helvetica, sans-serif" font-weight="700" letter-spacing="1.8">PROFILE MAP</text>
+  <text x="138" y="230" fill="#2F241D" font-size="56" font-family="Georgia, 'Times New Roman', serif" font-weight="700">A profile is painted</text>
+  <text x="138" y="294" fill="#2F241D" font-size="56" font-family="Georgia, 'Times New Roman', serif" font-weight="700">from evidence.</text>
+  <text x="138" y="372" fill="#5B493E" font-size="26" font-family="Arial, Helvetica, sans-serif">Collections sketch the shape.</text>
+  <text x="138" y="408" fill="#5B493E" font-size="26" font-family="Arial, Helvetica, sans-serif">Key papers supply the real color.</text>
+  <text x="138" y="444" fill="#5B493E" font-size="26" font-family="Arial, Helvetica, sans-serif">Nearby items connect the map.</text>
+
+  <g>
+    <rect x="138" y="536" width="446" height="246" rx="30" fill="#FFF8EF" stroke="#E2CFBB" stroke-width="2"/>
+    <text x="176" y="578" fill="#8A5437" font-size="14" font-family="Arial, Helvetica, sans-serif" font-weight="700" letter-spacing="1.5">VISIBLE BRANCHES</text>
+    <rect x="176" y="614" width="120" height="40" rx="20" fill="#EFDCC8"/>
+    <text x="236" y="639" text-anchor="middle" fill="#6A4C39" font-size="18" font-family="Arial, Helvetica, sans-serif" font-weight="700">Agents</text>
+    <rect x="312" y="614" width="176" height="40" rx="20" fill="#E7CCB3"/>
+    <text x="400" y="639" text-anchor="middle" fill="#6A4C39" font-size="18" font-family="Arial, Helvetica, sans-serif" font-weight="700">World models</text>
+    <rect x="176" y="668" width="164" height="40" rx="20" fill="#F2E6D7"/>
+    <text x="258" y="693" text-anchor="middle" fill="#6A4C39" font-size="18" font-family="Arial, Helvetica, sans-serif" font-weight="700">Multi-agent</text>
+    <rect x="356" y="668" width="58" height="40" rx="20" fill="#E5C7AF"/>
+    <text x="385" y="693" text-anchor="middle" fill="#6A4C39" font-size="18" font-family="Arial, Helvetica, sans-serif" font-weight="700">RL</text>
+    <text x="176" y="752" fill="#7B6453" font-size="20" font-family="Arial, Helvetica, sans-serif">Updated 03/12  •  refresh every 7 days</text>
+  </g>
+
+  <g>
+    <rect x="664" y="536" width="538" height="246" rx="30" fill="#FFF9F2" stroke="#E2CFBB" stroke-width="2"/>
+    <text x="702" y="578" fill="#8A5437" font-size="14" font-family="Arial, Helvetica, sans-serif" font-weight="700" letter-spacing="1.5">EVIDENCE LAYERS</text>
+    <circle cx="802" cy="666" r="64" fill="#D98A61"/>
+    <text x="758" y="674" fill="#FFF8F2" font-size="22" font-family="Arial, Helvetica, sans-serif" font-weight="700">Collect.</text>
+    <circle cx="962" cy="666" r="80" fill="#C96B56"/>
+    <text x="906" y="674" fill="#FFF8F2" font-size="22" font-family="Arial, Helvetica, sans-serif" font-weight="700">Papers</text>
+    <circle cx="1110" cy="634" r="48" fill="#D9AF72"/>
+    <text x="1075" y="641" fill="#FFF8F2" font-size="18" font-family="Arial, Helvetica, sans-serif" font-weight="700">Near</text>
+    <line x1="866" y1="666" x2="882" y2="666" stroke="#B98F70" stroke-width="5"/>
+    <line x1="1034" y1="642" x2="1062" y2="648" stroke="#B98F70" stroke-width="5"/>
+  </g>
+</svg>

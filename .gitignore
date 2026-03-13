@@ -15,3 +15,12 @@ temp/semantic-test/chroma_db/
 temp/semantic-test/chroma_db/**
 temp/semantic-test/zotero-data/
 temp/semantic-test/zotero-data/**
+temp/real-zotero/config.local.json
+temp/real-zotero/.env
+temp/real-zotero/runtime/
+temp/real-zotero/runtime/**
+temp/readme-preview/
+temp/readme-preview/**
+.omc/
+.omc/**
+TODO.local.md

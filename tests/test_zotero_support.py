@@ -7,6 +7,7 @@ import unittest
 from pathlib import Path
 
 from codex_research_assist.arxiv_profile_pipeline.profile_contract import normalize_profile_payload
+from codex_research_assist.profile_refresh_output import parse_profile_refresh_output
 from codex_research_assist.zotero_mcp.feedback import (
     build_feedback_note,
     decision_status_tag,
@@ -162,6 +163,55 @@ class ConfigRoundTripTest(unittest.TestCase):
             path.write_text(json.dumps(normalize_profile_payload(payload)), encoding="utf-8")
             loaded = json.loads(path.read_text(encoding="utf-8"))
             self.assertEqual(loaded["profile_id"], "demo")
+
+
+class ProfileRefreshOutputTest(unittest.TestCase):
+    def test_parse_profile_refresh_output_accepts_plain_json_only(self) -> None:
+        raw_text = json.dumps(
+            {
+                "profile_id": "demo",
+                "profile_name": "Demo",
+                "zotero_basis": {"collections": ["A"], "tags": ["pinn"], "notes": ""},
+                "retrieval_defaults": {
+                    "logic": "AND",
+                    "sort_by": "lastUpdatedDate",
+                    "sort_order": "descending",
+                    "since_days": 7,
+                    "max_results_per_interest": 10,
+                    "max_pages": 5,
+                },
+                "interests": [
+                    {
+                        "interest_id": "pinn",
+                        "label": "PINN",
+                        "enabled": True,
+                        "categories": ["cs.LG"],
+                        "method_keywords": ["PINN"],
+                        "query_aliases": ["physics-informed neural network"],
+                        "exclude_keywords": [],
+                        "logic": "AND",
+                        "notes": "",
+                    }
+                ],
+            },
+            ensure_ascii=False,
+        )
+        parsed = parse_profile_refresh_output(raw_text)
+        self.assertEqual(parsed["profile_id"], "demo")
+        self.assertEqual(parsed["interests"][0]["label"], "PINN")
+
+    def test_parse_profile_refresh_output_rejects_wrapped_prose(self) -> None:
+        raw_text = """Here is the JSON you requested:
+{"profile_id":"demo","profile_name":"Demo","zotero_basis":{"collections":["A"],"tags":[],"notes":""},"retrieval_defaults":{"logic":"AND","sort_by":"lastUpdatedDate","sort_order":"descending","since_days":7,"max_results_per_interest":10,"max_pages":5},"interests":[{"interest_id":"pinn","label":"PINN","enabled":true,"categories":["cs.LG"],"method_keywords":["PINN"],"query_aliases":[],"exclude_keywords":[],"logic":"AND","notes":""}]}"""
+        with self.assertRaisesRegex(ValueError, "must start with"):
+            parse_profile_refresh_output(raw_text)
+
+    def test_parse_profile_refresh_output_rejects_code_fences(self) -> None:
+        raw_text = """```json
+{"profile_id":"demo","profile_name":"Demo","zotero_basis":{"collections":["A"],"tags":[],"notes":""},"retrieval_defaults":{"logic":"AND","sort_by":"lastUpdatedDate","sort_order":"descending","since_days":7,"max_results_per_interest":10,"max_pages":5},"interests":[{"interest_id":"pinn","label":"PINN","enabled":true,"categories":["cs.LG"],"method_keywords":["PINN"],"query_aliases":[],"exclude_keywords":[],"logic":"AND","notes":""}]}
+```"""
+        with self.assertRaisesRegex(ValueError, "code fences"):
+            parse_profile_refresh_output(raw_text)
 
 
 if __name__ == "__main__":

@@ -29,6 +29,11 @@ Read the current Zotero library and produce one compact machine-readable researc
 - do not call `zotero_write_profile`; the controller script will persist the final JSON
 - do not output Markdown prose
 - do not include comments in JSON
+- the first non-whitespace character of the final answer must be `{`
+- the last non-whitespace character of the final answer must be `}`
+- do not wrap the JSON in code fences
+- do not prepend or append any explanation, note, heading, or apology
+- if you are uncertain, still return the best valid JSON object that fits the contract
 
 ## Required JSON Fields
 
@@ -54,3 +59,7 @@ Each `interest` must contain:
 - `exclude_keywords`
 - `logic`
 - `notes`
+
+## Output Gate
+
+Your response will be rejected unless it is a single valid JSON object with no extra text before or after it.

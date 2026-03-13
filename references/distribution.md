@@ -16,8 +16,6 @@ Keep these items in the distributable skill:
 - `automation/arxiv-profile-digest.example.toml`
 - `profiles/research-interest.example.json`
 - `reports/schema/`
-- `scripts/core/run_codex_task.sh`
-- `scripts/profile/refresh_profile.sh`
 - `src/`
 - `pyproject.toml`
 - `uv.lock`
@@ -42,11 +40,14 @@ The minimal packaged skill currently focuses on:
 - `profile_update`
 - `retrieval`
 - `review`
+- `render`
+- `delivery`
 - bundled Zotero MCP read/write support
+- host-side orchestration by OpenClaw rather than repo-local `codex exec` wrappers
+- machine-readable digest handoff artifacts for host-side orchestration
 
 Temporarily out of packaged baseline:
 
 - scheduler wiring
-- push delivery setup
 
 These can return later as optional extensions, but they are not part of the current distributable baseline.

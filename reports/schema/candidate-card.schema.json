@@ -386,7 +386,11 @@
         "review_status",
         "reviewer_summary",
         "zotero_comparison",
-        "recommendation"
+        "recommendation",
+        "why_it_matters",
+        "quick_takeaways",
+        "caveats",
+        "generation"
       ],
       "properties": {
         "review_status": {
@@ -394,7 +398,9 @@
           "enum": [
             "pending",
             "in_review",
-            "screened"
+            "screened",
+            "system_generated",
+            "agent_completed"
           ]
         },
         "reviewer_summary": {
@@ -405,18 +411,111 @@
         },
         "zotero_comparison": {
           "type": [
-            "string",
+            "object",
             "null"
-          ]
+          ],
+          "additionalProperties": false,
+          "required": [
+            "status",
+            "summary",
+            "related_items"
+          ],
+          "properties": {
+            "status": {
+              "type": "string",
+              "enum": [
+                "not_run",
+                "not_found",
+                "matched",
+                "uncertain"
+              ]
+            },
+            "summary": {
+              "type": "string"
+            },
+            "related_items": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "title",
+                  "relation"
+                ],
+                "properties": {
+                  "title": {
+                    "type": "string"
+                  },
+                  "item_key": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "relation": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
         },
         "recommendation": {
           "type": "string",
           "enum": [
+            "read_first",
+            "skim",
+            "watch",
+            "skip_for_now",
             "archive",
             "watchlist",
             "ignore",
             "unset"
           ]
+        },
+        "why_it_matters": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "quick_takeaways": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "caveats": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "generation": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "required": [
+            "mode",
+            "sources"
+          ],
+          "properties": {
+            "mode": {
+              "type": "string",
+              "enum": [
+                "system_profile_only",
+                "agent_zotero_fill"
+              ]
+            },
+            "sources": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            }
+          }
         }
       }
     }

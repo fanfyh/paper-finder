@@ -276,7 +276,7 @@ def zotero_semantic_search(
 def zotero_update_search_database(
     config_path: str | None = None,
     force_rebuild: bool = False,
-    limit: int | None = None,
+    limit: int | None = 500,
     extract_fulltext: bool | None = None,
 ) -> dict[str, Any]:
     """Rebuild or incrementally refresh the local semantic search index."""

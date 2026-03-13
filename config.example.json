@@ -1,6 +1,35 @@
 {
   "profile_path": "~/.openclaw/skills/research-assist/profiles/research-interest.json",
   "output_root": "~/.openclaw/skills/research-assist/reports",
+  "review_generation": {
+    "agent_top_n": 5,
+    "final_top_n": 5,
+    "fallback_to_system": true
+  },
+  "delivery": {
+    "primary_channel": "email",
+    "email": {
+      "send_enabled": false,
+      "sender": "",
+      "recipients": [],
+      "smtp_server": "",
+      "smtp_port": 465,
+      "smtp_user": "",
+      "smtp_pass": "",
+      "tls_mode": "ssl",
+      "timeout": 20,
+      "subject_prefix": "[research-assist]",
+      "attach_html": true,
+      "attach_digest_json": false,
+      "write_metadata": true,
+      "telegram_fallback_on_failure": true
+    },
+    "telegram": {
+      "send_enabled": false,
+      "write_html": true,
+      "write_metadata": true
+    }
+  },
   "zotero": {
     "library_id": "6433210",
     "api_key": "",
@@ -16,7 +45,7 @@
   },
   "semantic_search": {
     "enabled": true,
-    "zotero_db_path": "C:/Users/pcsys/Zotero/zotero.sqlite",
+    "zotero_db_path": "~/Zotero/zotero.sqlite",
     "persist_directory": "~/.openclaw/skills/research-assist/.semantic-search",
     "collection_name": "research_assist_zotero",
     "embedding_model": "default",

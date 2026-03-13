@@ -17,6 +17,146 @@ def _truncate(text: str, limit: int) -> str:
     return stripped[: max(0, limit - 1)].rstrip() + "..."
 
 
+def _clamp_score(value: object) -> float:
+    try:
+        score = float(value)
+    except (TypeError, ValueError):
+        score = 0.0
+    return max(0.0, min(1.0, score))
+
+
+def _score_cell_style(value: object, kind: str) -> str:
+    score = _clamp_score(value)
+    intensity = 0.28 + score * 0.62
+    shadow = 0.08 + score * 0.10
+    if kind == "total":
+        start = f"rgba(189, 106, 66, {0.18 + intensity * 0.42:.3f})"
+        end = f"rgba(244, 221, 201, {0.70 + score * 0.18:.3f})"
+        border = f"rgba(143, 75, 46, {0.18 + score * 0.36:.3f})"
+        text = "#6b341f" if score >= 0.55 else "#71594a"
+    elif kind == "map":
+        start = f"rgba(184, 138, 56, {0.18 + intensity * 0.40:.3f})"
+        end = f"rgba(244, 233, 197, {0.72 + score * 0.16:.3f})"
+        border = f"rgba(148, 109, 33, {0.16 + score * 0.30:.3f})"
+        text = "#6e4d12" if score >= 0.55 else "#74654f"
+    else:
+        start = f"rgba(105, 115, 88, {0.18 + intensity * 0.38:.3f})"
+        end = f"rgba(225, 233, 215, {0.72 + score * 0.16:.3f})"
+        border = f"rgba(86, 98, 69, {0.16 + score * 0.28:.3f})"
+        text = "#41503a" if score >= 0.55 else "#666559"
+    return (
+        f"background: linear-gradient(180deg, {start}, {end});"
+        f"border: 1px solid {border};"
+        f"box-shadow: inset 0 1px 0 rgba(255,255,255,0.35), 0 10px 24px rgba(98, 69, 46, {shadow:.3f});"
+        f"color: {text};"
+    )
+
+
+def _neighbor_display_items(neighbors: list[dict]) -> list[dict]:
+    cleaned: list[dict] = []
+    for neighbor in neighbors:
+        if not isinstance(neighbor, dict):
+            continue
+        title = str(neighbor.get("title") or "").strip()
+        if not title:
+            continue
+        cleaned.append(neighbor)
+    if not cleaned:
+        return []
+    if len(cleaned) == 1:
+        return cleaned[:1]
+    first_title = str(cleaned[0].get("title") or "").strip()
+    second_title = str(cleaned[1].get("title") or "").strip()
+    if len(first_title) + len(second_title) <= 72:
+        return cleaned[:2]
+    return cleaned[:1]
+
+
+def _render_neighbor_list(neighbors: list[dict]) -> str:
+    display_neighbors = _neighbor_display_items(neighbors)
+    if not display_neighbors:
+        return ""
+    items: list[str] = []
+    for neighbor in display_neighbors:
+        title = html.escape(str(neighbor.get("title") or "").strip())
+        if not title:
+            continue
+        collection = html.escape(str(neighbor.get("collections") or "").strip())
+        if collection:
+            items.append(f"<li><strong>{title}</strong><span class=\"neighbor-meta\">{collection}</span></li>")
+        else:
+            items.append(f"<li><strong>{title}</strong></li>")
+    if not items:
+        return ""
+    return f'<ul class="neighbor-list">{"".join(items)}</ul>'
+
+
+def _render_neighbor_summary(summary: str) -> str:
+    text = str(summary or "").strip()
+    if not text:
+        return ""
+    return f'<p class="neighbor-summary">{html.escape(text)}</p>'
+
+
+def _neighbor_candidates(scores: dict, review: dict) -> list[dict]:
+    neighbors = scores.get("semantic_neighbors")
+    if isinstance(neighbors, list) and neighbors:
+        return neighbors
+
+    top_title = str(scores.get("semantic_top_title") or "").strip()
+    top_item_key = str(scores.get("semantic_top_item_key") or "").strip()
+    if top_title:
+        return [
+            {
+                "item_key": top_item_key or None,
+                "title": top_title,
+                "collections": None,
+                "distance": scores.get("semantic_best_distance"),
+            }
+        ]
+
+    zotero_comparison = review.get("zotero_comparison") if isinstance(review, dict) else None
+    if isinstance(zotero_comparison, dict):
+        related_items = zotero_comparison.get("related_items")
+        if isinstance(related_items, list) and related_items:
+            fallback_neighbors: list[dict] = []
+            for item in related_items[:3]:
+                if not isinstance(item, dict):
+                    continue
+                title = str(item.get("title") or "").strip()
+                if not title:
+                    continue
+                relation = str(item.get("relation") or "").strip()
+                fallback_neighbors.append(
+                    {
+                        "item_key": item.get("item_key"),
+                        "title": title,
+                        "collections": relation or None,
+                        "distance": None,
+                    }
+                )
+            if fallback_neighbors:
+                return fallback_neighbors
+
+    return []
+
+
+def _neighbor_summary_text(scores: dict, review: dict) -> str:
+    top_title = str(scores.get("semantic_top_title") or "").strip()
+    if top_title:
+        return f"Closest Zotero anchor: {top_title}"
+    zotero_comparison = review.get("zotero_comparison") if isinstance(review, dict) else None
+    if isinstance(zotero_comparison, dict):
+        return str(zotero_comparison.get("summary") or "").strip()
+    return ""
+
+
+def _display_date(date_str: str) -> str:
+    if len(date_str) >= 10 and date_str[4] == "-" and date_str[7] == "-":
+        return f"{date_str[5:7]}/{date_str[8:10]}"
+    return date_str
+
+
 def _warm_page_css() -> str:
     return """
         :root {
@@ -123,18 +263,6 @@ def _warm_page_css() -> str:
             pointer-events: none;
         }
 
-        .hero-grid {
-            display: grid;
-            grid-template-columns: minmax(0, 1.45fr) minmax(300px, 0.85fr);
-            gap: 20px;
-            align-items: stretch;
-        }
-
-        .hero-copy-panel {
-            position: relative;
-            z-index: 1;
-        }
-
         .eyebrow {
             display: inline-flex;
             align-items: center;
@@ -164,106 +292,37 @@ def _warm_page_css() -> str:
             max-width: 720px;
             color: var(--ink-soft);
             font-size: 17px;
-            margin-bottom: 22px;
+            margin-bottom: 18px;
         }
 
         .hero-meta {
             display: flex;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 10px;
         }
 
         .meta-pill {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            padding: 10px 14px;
+            padding: 8px 12px;
             border-radius: 999px;
             background: rgba(255, 251, 246, 0.78);
             border: 1px solid rgba(151, 110, 81, 0.11);
             color: var(--ink-soft);
-            font-size: 13px;
-        }
-
-        .hero-route {
-            position: relative;
-            z-index: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            gap: 18px;
-            border-radius: 26px;
-            border: 1px solid rgba(151, 110, 81, 0.14);
-            background:
-                linear-gradient(180deg, rgba(255, 251, 245, 0.94), rgba(246, 235, 224, 0.92));
-            padding: 20px;
-            box-shadow: var(--shadow-soft);
-        }
-
-        .route-kicker {
             font-size: 12px;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            color: var(--accent-deep);
-            font-weight: 700;
-            margin-bottom: 8px;
-        }
-
-        .route-title {
-            font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
-            font-size: 27px;
-            line-height: 1.08;
-            margin-bottom: 8px;
-        }
-
-        .route-copy {
-            color: var(--ink-soft);
-            font-size: 14px;
-        }
-
-        .route-list {
-            list-style: none;
-            display: grid;
-            gap: 10px;
-        }
-
-        .route-item {
-            display: grid;
-            grid-template-columns: 24px 1fr;
-            gap: 10px;
-            align-items: start;
-            color: var(--ink-soft);
-            font-size: 14px;
-        }
-
-        .route-item strong {
-            color: var(--ink);
-            font-weight: 700;
-        }
-
-        .route-index {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            background: var(--accent-soft);
-            color: var(--accent-deep);
-            font-size: 12px;
-            font-weight: 700;
         }
 
         .overview-band {
             display: grid;
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-            gap: 14px;
-            margin-bottom: 22px;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+            margin-bottom: 18px;
         }
 
         .overview-card {
-            border-radius: 22px;
-            padding: 18px;
+            border-radius: 18px;
+            padding: 14px 16px;
             background: rgba(255, 249, 242, 0.82);
             border: 1px solid rgba(151, 110, 81, 0.12);
             box-shadow: var(--shadow-soft);
@@ -282,20 +341,21 @@ def _warm_page_css() -> str:
             font-size: 11px;
             text-transform: uppercase;
             letter-spacing: 0.09em;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             font-weight: 700;
         }
 
         .overview-value {
             font-family: "Iowan Old Style", "Palatino Linotype", Georgia, serif;
-            font-size: clamp(28px, 4vw, 42px);
+            font-size: clamp(24px, 3vw, 34px);
             line-height: 1;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
         }
 
         .overview-copy {
             color: var(--ink-soft);
-            font-size: 14px;
+            font-size: 12px;
+            line-height: 1.35;
         }
 
         .cards {
@@ -403,13 +463,41 @@ def _warm_page_css() -> str:
         }
 
         .recommendation-chip.read-first {
-            background: rgba(189, 106, 66, 0.14);
-            color: var(--accent-deep);
+            background: linear-gradient(180deg, rgba(189, 106, 66, 0.24), rgba(245, 220, 202, 0.92));
+            color: #7a3820;
+            border: 1px solid rgba(143, 75, 46, 0.22);
         }
 
         .recommendation-chip.skim {
-            background: rgba(184, 138, 56, 0.14);
-            color: #8d6928;
+            background: linear-gradient(180deg, rgba(184, 138, 56, 0.22), rgba(245, 234, 201, 0.92));
+            color: #7b5a18;
+            border: 1px solid rgba(148, 109, 33, 0.18);
+        }
+
+        .recommendation-chip.watch {
+            background: linear-gradient(180deg, rgba(105, 115, 88, 0.22), rgba(227, 235, 216, 0.94));
+            color: #445239;
+            border: 1px solid rgba(86, 98, 69, 0.18);
+        }
+
+        .recommendation-chip.skip-for-now,
+        .recommendation-chip.archive,
+        .recommendation-chip.ignore {
+            background: linear-gradient(180deg, rgba(129, 109, 94, 0.18), rgba(233, 225, 217, 0.92));
+            color: #66584c;
+            border: 1px solid rgba(120, 104, 91, 0.16);
+        }
+
+        .recommendation-chip.watchlist {
+            background: linear-gradient(180deg, rgba(123, 104, 151, 0.18), rgba(233, 226, 242, 0.92));
+            color: #5b4d75;
+            border: 1px solid rgba(104, 90, 128, 0.16);
+        }
+
+        .recommendation-chip.unset {
+            background: rgba(199, 186, 174, 0.28);
+            color: #6d6259;
+            border: 1px solid rgba(129, 109, 94, 0.14);
         }
 
         .score-badge {
@@ -530,8 +618,7 @@ def _warm_page_css() -> str:
         }
 
         .focus-panel,
-        .side-panel,
-        details {
+        .side-panel {
             border-radius: 20px;
             border: 1px solid rgba(151, 110, 81, 0.12);
             background: rgba(255, 251, 245, 0.75);
@@ -577,6 +664,12 @@ def _warm_page_css() -> str:
             border-radius: 16px;
             background: rgba(245, 235, 224, 0.76);
             text-align: center;
+            border: 1px solid rgba(151, 110, 81, 0.12);
+            transition: transform 140ms ease, box-shadow 140ms ease;
+        }
+
+        .score-cell:hover {
+            transform: translateY(-2px);
         }
 
         .score-k {
@@ -621,9 +714,61 @@ def _warm_page_css() -> str:
             color: #8d5d49;
         }
 
+        .neighbor-list {
+            list-style: none;
+            display: grid;
+            gap: 8px;
+            margin: 0 0 14px;
+        }
+
+        .neighbor-list li {
+            padding: 9px 10px;
+            border-radius: 12px;
+            background: rgba(255, 248, 239, 0.72);
+            border: 1px solid rgba(151, 110, 81, 0.1);
+            color: var(--ink-soft);
+            font-size: 13px;
+            line-height: 1.35;
+        }
+
+        .neighbor-list strong {
+            display: block;
+            color: var(--ink);
+            font-size: 13px;
+            font-weight: 700;
+            margin-bottom: 3px;
+        }
+
+        .neighbor-meta {
+            display: block;
+            color: var(--muted);
+            font-size: 11px;
+        }
+
+        .neighbor-summary {
+            color: var(--ink-soft);
+            font-size: 13px;
+            line-height: 1.5;
+            margin: 0 0 14px;
+        }
+
         details {
             margin-top: 16px;
             overflow: hidden;
+            border-radius: 18px;
+            border: 1px solid rgba(151, 110, 81, 0.08);
+            background: rgba(255, 251, 245, 0.42);
+            box-shadow: none;
+            transition:
+                background 160ms ease,
+                border-color 160ms ease,
+                box-shadow 160ms ease;
+        }
+
+        details[open] {
+            border-color: rgba(151, 110, 81, 0.18);
+            background: rgba(255, 251, 245, 0.82);
+            box-shadow: 0 12px 28px rgba(98, 69, 46, 0.06);
         }
 
         summary {
@@ -633,6 +778,16 @@ def _warm_page_css() -> str:
             font-weight: 700;
             color: var(--accent-deep);
             user-select: none;
+            transition: color 140ms ease, background 140ms ease;
+        }
+
+        details:not([open]) summary {
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        details[open] summary {
+            background: rgba(189, 106, 66, 0.06);
+            border-bottom: 1px solid rgba(151, 110, 81, 0.12);
         }
 
         summary::-webkit-details-marker {
@@ -652,10 +807,11 @@ def _warm_page_css() -> str:
         }
 
         .abstract {
-            padding: 0 18px 18px;
-            color: var(--ink-soft);
-            font-size: 14px;
-            line-height: 1.78;
+            padding: 14px 18px 18px;
+            color: #43342c;
+            font-size: 15px;
+            font-weight: 500;
+            line-height: 1.85;
         }
 
         .footer {
@@ -666,13 +822,8 @@ def _warm_page_css() -> str:
         }
 
         @media (max-width: 1120px) {
-            .hero-grid,
             .paper-card.featured .paper-card-shell {
                 grid-template-columns: 1fr;
-            }
-
-            .overview-band {
-                grid-template-columns: repeat(2, minmax(0, 1fr));
             }
 
             .cards {
@@ -697,6 +848,15 @@ def _warm_page_css() -> str:
             .paper-card {
                 padding: 18px;
                 border-radius: 22px;
+                min-height: 0;
+                height: auto;
+            }
+
+            .paper-card-shell,
+            .paper-card-main {
+                flex: initial;
+                min-height: 0;
+                height: auto;
             }
 
             .paper-topline {
@@ -704,8 +864,37 @@ def _warm_page_css() -> str:
                 align-items: stretch;
             }
 
+            .hero-meta {
+                gap: 8px;
+            }
+
+            .meta-pill {
+                padding: 7px 10px;
+                font-size: 11px;
+            }
+
             .overview-band {
-                grid-template-columns: 1fr;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                gap: 10px;
+            }
+
+            .overview-card {
+                padding: 12px;
+                border-radius: 16px;
+            }
+
+            .overview-label {
+                font-size: 10px;
+                margin-bottom: 4px;
+            }
+
+            .overview-value {
+                font-size: 24px;
+            }
+
+            .overview-copy {
+                font-size: 11px;
+                line-height: 1.2;
             }
 
             .content-grid {
@@ -714,6 +903,12 @@ def _warm_page_css() -> str:
 
             .score-grid {
                 grid-template-columns: repeat(3, 1fr);
+            }
+
+            details,
+            details[open] {
+                transition: none;
+                box-shadow: none;
             }
         }
     """
@@ -735,22 +930,7 @@ def format_digest_html(candidates: list[dict], date_str: str) -> str:
             for tag in ((candidate.get("triage") or {}).get("matched_interest_labels") or [])
         }
     )
-
-    if candidates:
-        lead_paper = candidates[0]["paper"]
-        lead_review = candidates[0].get("review") or {}
-        lead_title = html.escape(lead_paper.get("title", "Untitled"))
-        lead_reason = html.escape(
-            _truncate(
-                lead_review.get("why_it_matters")
-                or lead_review.get("reviewer_summary")
-                or lead_paper.get("abstract", ""),
-                150,
-            )
-        )
-    else:
-        lead_title = "No papers selected"
-        lead_reason = "The digest did not contain any candidate papers."
+    display_date = html.escape(_display_date(date_str))
 
     cards_html = []
     for idx, candidate in enumerate(candidates, 1):
@@ -780,12 +960,16 @@ def format_digest_html(candidates: list[dict], date_str: str) -> str:
         recommendation_class = recommendation_text.lower().replace(" ", "-")
 
         why_text = review.get("why_it_matters") or "No recommendation note was written for this paper yet."
-        why_it_matters = html.escape(why_text)
         reviewer_summary_text = review.get("reviewer_summary") or ""
         reviewer_summary = html.escape(reviewer_summary_text)
         quick_takeaways_html = _render_html_list(review.get("quick_takeaways") or [], "mini-list")
         caveats_html = _render_html_list(review.get("caveats") or [], "mini-list caution-list")
-        lede = html.escape(_truncate(why_text or reviewer_summary_text or abstract_text, 165))
+        semantic_neighbors = _neighbor_candidates(scores if isinstance(scores, dict) else {}, review if isinstance(review, dict) else {})
+        neighbor_html = _render_neighbor_list(semantic_neighbors)
+        neighbor_summary = _render_neighbor_summary(
+            _neighbor_summary_text(scores if isinstance(scores, dict) else {}, review if isinstance(review, dict) else {})
+        )
+        lede = html.escape(why_text or reviewer_summary_text or abstract_text)
         feature_class = " featured" if idx == 1 else ""
         paper_kicker = "Featured route" if idx == 1 else f"Paper {idx}"
 
@@ -810,26 +994,25 @@ def format_digest_html(candidates: list[dict], date_str: str) -> str:
                     <p class="lede">{lede}</p>
                     <div class="content-grid">
                         <div class="focus-panel">
-                            <p class="focus-label">Why it matters</p>
-                            <p class="focus-copy">{why_it_matters}</p>
-                            {"<p class=\"focus-label\">Paper summary</p><p class=\"focus-copy\">" + reviewer_summary + "</p>" if reviewer_summary else ""}
+                            {"<p class=\"focus-label\">Paper summary</p><p class=\"focus-copy\">" + reviewer_summary + "</p>" if reviewer_summary else "<p class=\"focus-label\">Paper summary</p><p class=\"focus-copy\">" + html.escape(abstract_text) + "</p>"}
                         </div>
                         <div class="side-panel">
                             <div class="score-grid">
-                                <div class="score-cell">
+                                <div class="score-cell" style="{_score_cell_style(total, 'total')}">
                                     <div class="score-k">Total</div>
                                     <div class="score-v">{total:.2f}</div>
                                 </div>
-                                <div class="score-cell">
+                                <div class="score-cell" style="{_score_cell_style(map_match, 'map')}">
                                     <div class="score-k">Map</div>
                                     <div class="score-v">{map_match:.2f}</div>
                                 </div>
-                                <div class="score-cell">
+                                <div class="score-cell" style="{_score_cell_style(zotero_semantic, 'zotero')}">
                                     <div class="score-k">Zotero</div>
                                     <div class="score-v">{zotero_semantic:.2f}</div>
                                 </div>
                             </div>
                             <p class="score-note">Total score balances map alignment and Zotero semantic resonance.</p>
+                            {"<p class=\"section-label\">Nearest Zotero</p>" + (neighbor_html or neighbor_summary) if (neighbor_html or neighbor_summary) else ""}
                             {"<p class=\"section-label\">Quick takeaways</p>" + quick_takeaways_html if quick_takeaways_html else ""}
                             {"<p class=\"section-label\">Caveats</p>" + caveats_html if caveats_html else ""}
                         </div>
@@ -857,51 +1040,35 @@ def format_digest_html(candidates: list[dict], date_str: str) -> str:
 <body>
     <div class="page-shell">
         <div class="hero">
-            <div class="hero-grid">
-                <div class="hero-copy-panel">
-                    <div class="eyebrow">Research Assist Digest</div>
-                    <h1>Research Digest</h1>
-                    <p class="hero-copy">A warmer, more editorial reading surface for your shortlist: map-aligned signals, Zotero resonance, and concrete reasons to care, arranged like a research notebook rather than a dashboard.</p>
-                    <div class="hero-meta">
-                        <span class="meta-pill">{html.escape(date_str)}</span>
-                        <span class="meta-pill">{paper_count} papers selected</span>
-                        <span class="meta-pill">{theme_count} active themes</span>
-                    </div>
-                </div>
-                <aside class="hero-route">
-                    <div>
-                        <p class="route-kicker">Reading route</p>
-                        <h2 class="route-title">Start with the papers that actually move your map.</h2>
-                        <p class="route-copy">This digest now treats the shortlist like a route: a featured lead, then supporting branches, then lower-priority references.</p>
-                    </div>
-                    <ol class="route-list">
-                        <li class="route-item"><span class="route-index">1</span><span><strong>{lead_title}</strong><br>{lead_reason}</span></li>
-                        <li class="route-item"><span class="route-index">2</span><span><strong>{read_first_count} read-first papers</strong><br>These are the closest bets for immediate reading and note-taking.</span></li>
-                        <li class="route-item"><span class="route-index">3</span><span><strong>{skim_count} skim papers</strong><br>These are still useful, but more for boundary checking or branch expansion.</span></li>
-                    </ol>
-                </aside>
+            <div class="eyebrow">Research Assist Digest</div>
+            <h1>Research Digest</h1>
+            <p class="hero-copy">Five papers, one clean reading route. Open the cards below and use the attachment when you want the full browser view.</p>
+            <div class="hero-meta">
+                <span class="meta-pill">{display_date}</span>
+                <span class="meta-pill">{paper_count} selected</span>
+                <span class="meta-pill">{theme_count} themes</span>
             </div>
         </div>
         <div class="overview-band">
             <div class="overview-card warm">
                 <p class="overview-label">Selected</p>
                 <div class="overview-value">{paper_count}</div>
-                <p class="overview-copy">Final papers kept in this digest after ranking and selection.</p>
+                <p class="overview-copy">Kept picks</p>
             </div>
             <div class="overview-card olive">
                 <p class="overview-label">Read First</p>
                 <div class="overview-value">{read_first_count}</div>
-                <p class="overview-copy">High-priority papers that most likely deserve immediate attention.</p>
+                <p class="overview-copy">Start here</p>
             </div>
             <div class="overview-card">
                 <p class="overview-label">Themes</p>
                 <div class="overview-value">{theme_count}</div>
-                <p class="overview-copy">Distinct profile branches touched by the current shortlist.</p>
+                <p class="overview-copy">Map lanes</p>
             </div>
             <div class="overview-card">
                 <p class="overview-label">Signals</p>
                 <div class="overview-value">2</div>
-                <p class="overview-copy">Every card balances map alignment and Zotero semantic resonance.</p>
+                <p class="overview-copy">Map + Zotero</p>
             </div>
         </div>
         <div class="cards">{''.join(cards_html)}</div>
@@ -969,28 +1136,12 @@ def format_search_html(papers: list[dict], query: str) -> str:
 <body>
     <div class="page-shell">
         <div class="hero">
-            <div class="hero-grid">
-                <div class="hero-copy-panel">
-                    <div class="eyebrow">Research Assist Search</div>
-                    <h1>Search Results</h1>
-                    <p class="hero-copy">A denser reading layout for ad-hoc arXiv exploration, using the same warm editorial surface as the digest while giving the first result stronger emphasis.</p>
-                    <div class="hero-meta">
-                        <span class="meta-pill">Query: {html.escape(query)}</span>
-                        <span class="meta-pill">{paper_count} papers</span>
-                    </div>
-                </div>
-                <aside class="hero-route">
-                    <div>
-                        <p class="route-kicker">Search view</p>
-                        <h2 class="route-title">Scan faster, then open the few that matter.</h2>
-                        <p class="route-copy">This layout uses a featured first result, wider cards, and more compact summaries so the page carries more signal per screen.</p>
-                    </div>
-                    <ol class="route-list">
-                        <li class="route-item"><span class="route-index">1</span><span><strong>Featured first hit</strong><br>The first result gets the strongest visual emphasis for rapid triage.</span></li>
-                        <li class="route-item"><span class="route-index">2</span><span><strong>Compact previews</strong><br>Every card shows a visible lede before the expandable abstract.</span></li>
-                        <li class="route-item"><span class="route-index">3</span><span><strong>Two-column flow</strong><br>Desktop space is used more aggressively, while mobile still collapses cleanly.</span></li>
-                    </ol>
-                </aside>
+            <div class="eyebrow">Research Assist Search</div>
+            <h1>Search Results</h1>
+            <p class="hero-copy">A compact search view for quick triage. Open the strongest hits and skip the rest.</p>
+            <div class="hero-meta">
+                <span class="meta-pill">Query: {html.escape(query)}</span>
+                <span class="meta-pill">{paper_count} papers</span>
             </div>
         </div>
         <div class="cards">{''.join(cards_html)}</div>

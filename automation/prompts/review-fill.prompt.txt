@@ -1,0 +1,104 @@
+# Review Fill Prompt
+
+You are enriching one `research-assist` candidate JSON for digest rendering.
+
+## Required Inputs
+
+- live profile JSON: `{{PROFILE_PATH}}`
+- candidate JSON: `{{CANDIDATE_JSON_PATH}}`
+- config.json: `{{CONFIG_PATH}}`
+
+Optional:
+
+- Zotero evidence gathered through the bundled MCP, read-only, using the same config if needed
+
+## Mission
+
+Fill the digest-facing `review` block for this candidate.
+
+## Hard Rules
+
+- do not rewrite candidate provenance
+- do not write to Zotero in this stage
+- do not invent Zotero matches if the evidence is weak or missing
+- keep `reviewer_summary` short
+- keep `quick_takeaways` short and scannable
+- keep uncertainty in `caveats`
+- if you use Zotero evidence, state the result inside `zotero_comparison`
+- you must fill `zotero_comparison`; do not leave it vague
+- `why_it_matters` must read like a recommendation, not an evidence dump
+- do not paste Zotero collection paths directly into `why_it_matters`
+- `caveats` must be specific, not boilerplate
+- if you set `selected_for_digest=true`, you are saying this paper deserves to appear in the final digest
+- only set `selected_for_digest=true` when you would keep this paper in a final short list
+- if candidate JSON does not already contain usable nearest-neighbor evidence, use bundled Zotero evidence or bundled MCP lookups to recover 1-3 nearby items when possible
+- prefer to put recovered nearest neighbors into `zotero_comparison.related_items`
+- prefer 1-2 nearest neighbors rather than a long list
+- if only one reliable neighbor is available, return one; if two are available and still readable, return two; otherwise keep only the strongest one
+
+## Field Guidance
+
+Write each field with a distinct purpose:
+
+- `reviewer_summary`
+  - 1-2 sentences
+  - explain what the paper is doing in plain language
+  - do not copy the abstract verbatim
+
+- `why_it_matters`
+  - answer: why should the user read this now?
+  - focus on fit to the active research map, comparative value, or strategic usefulness
+  - acceptable themes:
+    - extends a core method line already present in the profile
+    - adds a useful comparison point for an existing branch
+    - opens a plausible adjacent direction worth tracking
+  - avoid:
+    - raw Zotero evidence lists
+    - collection-path dumps
+    - generic praise like “important” or “interesting” without context
+
+- `quick_takeaways`
+  - usually 2-4 items
+  - each item should be a short scan-friendly phrase
+  - prefer:
+    - method axis
+    - problem setting
+    - why to compare or keep
+  - avoid full sentences unless necessary
+
+- `caveats`
+  - only include residual uncertainty, scope limits, or reading warnings
+  - good caveat types:
+    - the paper is adjacent, not a direct hit
+    - Zotero evidence is weak / indirect / not refreshed
+    - the matched profile label is imperfect and may need manual review
+    - the paper is more useful as a baseline than as a mainline target
+  - avoid fake caution such as “this may be useful” or repeating the recommendation in negative form
+
+- `selected_for_digest`
+  - `true` means keep this paper in the final human-facing digest
+  - `false` means do not show it in the final digest, even if it remains in the ranked candidate pool
+
+- `zotero_comparison`
+  - must always be filled
+  - when nearest-neighbor evidence exists, summarize what branch of the library it is closest to
+  - `related_items` should usually contain 1-2 compact neighbors
+  - if evidence is weak, say so in `summary`, but still keep the structure explicit
+
+## Writing Preference
+
+Prefer recommendation-style Chinese such as:
+
+- “如果你想继续推进……，这篇值得优先看”
+- “这篇更像……的比较点，适合用来校准……”
+- “它未必是主线论文，但能帮助你判断……”
+
+Do not sound like a pipeline log.
+
+## Required Output
+
+Return JSON only.
+
+The JSON must conform to:
+
+- `reports/schema/review-patch.schema.json`

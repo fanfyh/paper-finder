@@ -5,22 +5,22 @@ description: A lightweight arXiv literature digest skill for OpenClaw, with Zote
 
 # Research Assist Skill
 
-A lightweight arXiv literature digest skill for OpenClaw.
+An OpenClaw skill that turns Zotero evidence into a profile-driven arXiv digest, then lets the host agent sharpen the final shortlist.
 
 ## CLI Usage
 
 ```bash
 # Full digest: profile check → arXiv retrieval → rank → markdown output
-research-assist --action digest --config path/to/config.json
+uv run research-assist --action digest --config path/to/config.json
 
 # Ad-hoc arXiv search
-research-assist --action search --query "gaussian process" --top 5
+uv run research-assist --action search --query "gaussian process" --top 5
 
 # Check profile refresh status
-research-assist --action profile-refresh --config path/to/config.json
+uv run research-assist --action profile-refresh --config path/to/config.json
 
 # Zotero MCP server (for profile evidence + feedback writeback)
-research-assist-zotero-mcp
+uv run research-assist-zotero-mcp
 ```
 
 Or via Python module:
@@ -30,6 +30,19 @@ python3 -m codex_research_assist --action digest --config ~/.openclaw/skills/res
 ```
 
 Default config path: `~/.openclaw/skills/research-assist/config.json`
+
+During install or reconfiguration, do not embed the full setup questionnaire in this file. Use `references/setup-routing.md` as the install-time interaction guide, ask only the questions relevant to the user's goal, then edit `config.json` directly.
+
+## Install-Time Behavior
+
+Installation and reconfiguration are one-time operations.
+
+Hard rules for the host agent:
+
+- use `references/setup-routing.md` only when the user is installing, reconfiguring, or when required config is missing
+- once `config.json` is valid, normal digest/search/render/feedback runs must not reopen setup questions
+- do not restate dormant install options during regular literature work
+- if the user asks for normal runtime work, prefer using the existing config over discussing installation
 
 ## Config Format
 
@@ -60,7 +73,7 @@ openclaw_runner.py (CLI entry, markdown to stdout)
 No LLM calls inside the packaged Python pipeline. Retrieval, ranking, and formatting are pure data operations.
 Intelligence comes from the calling agent (OpenClaw / Claude Code / Codex CLI).
 
-Profile refresh is handled by a controller script (`scripts/profile/refresh_profile.sh`) which delegates the profile drafting to the calling agent, using live Zotero evidence via the bundled Zotero MCP.
+Profile refresh should be handled by the OpenClaw controller or agent layer, using live Zotero evidence via the bundled Zotero MCP.
 
 ## Workflow Stages
 
@@ -72,6 +85,17 @@ Profile refresh is handled by a controller script (`scripts/profile/refresh_prof
 - keep method labels short and retrieval-friendly
 - prefer `zotero_semantic_search` for discovery, then `zotero_search_items` for exact resolution
 - use `research-assist-zotero-mcp` for live Zotero reads (no direct API calls)
+
+OpenClaw generation rule:
+
+- treat Zotero like a studio palette, not a flat folder dump
+- use collection structure as the sketch of the research map
+- use representative papers as the main evidence for what each region actually contains
+- use semantic search as the blending layer that connects nearby themes across collections
+- write interests that feel like stable method axes, not loose keyword bags
+- if collection names and paper content disagree, trust the papers more than the folder label
+- if summary terms are frequent but too generic, use them only to refine wording, not to define the map
+- the final profile should read like a compact map of the user's research territory: a few clear regions, each with short labels and retrieval-friendly aliases
 
 ### 2. `retrieval`
 
@@ -88,6 +112,30 @@ Profile refresh is handled by a controller script (`scripts/profile/refresh_prof
 - output ranked markdown to stdout for agent review
 - prefer a smaller sharper set over a noisy dump
 - stay `abstract-first`
+
+### Digest Enrichment
+
+- OpenClaw should treat agent-filled review as the default digest-enrichment path
+- after retrieval, let the host agent enrich the top-ranked candidate JSON files with review patches
+- use `review_generation.agent_top_n` to cap how many ranked candidates the host agent needs to inspect
+- let the host agent decide the final visible subset by setting `review.selected_for_digest`
+- use `review_generation.final_top_n` as the hard upper bound for the final rendered digest
+- keep `fallback_to_system` enabled unless the user explicitly wants hard failure instead of fallback text
+- after patches are applied, re-render the digest so HTML / Telegram outputs use the enriched review text
+- `why_it_matters` should sound like a recommendation, not a provenance report
+- `caveats` should capture real uncertainty or scope boundaries, not generic hedging
+- the host agent should also fill `review.zotero_comparison`, including nearest-neighbor fallback when candidate-level evidence is missing
+- keep nearest-neighbor output compact: usually 1-2 items
+- the host agent is not responsible for email / telegram wrapper copy, subjects, or routing
+
+### Delivery Routing
+
+- use one shared delivery path and branch at the end with `delivery.primary_channel`
+- default primary channel is `email`; `telegram` is backup or alternate primary
+- channel wrappers are system-owned:
+  - email subject/body/profile card/stat cards
+  - telegram compact message shell
+- do not ask the host agent to generate channel-specific wrappers
 
 ### Optional extension: `zotero_feedback`
 
@@ -109,15 +157,17 @@ Profile refresh is handled by a controller script (`scripts/profile/refresh_prof
 - OpenClaw runner: `src/codex_research_assist/openclaw_runner.py`
 - Ranker: `src/codex_research_assist/ranker.py`
 - Pipeline: `src/codex_research_assist/arxiv_profile_pipeline/pipeline.py`
-- Live profile: `profiles/research-interest.json`
-- Example config: `automation/arxiv-profile-digest.example.toml`
+- Example config: `config.example.json`
+- Example profile: `profiles/research-interest.example.json`
 
 ## Reference Documents
 
 - `references/workflow.md` — stage order and controller boundary
 - `references/contracts.md` — profile contract and review policy
 - `references/distribution.md` — packaging include/exclude rules
-- `explain/interests-and-arxiv-matching.md` — plain-language matching explanation
+- `references/setup-routing.md` — install-time route selection and option questions
+- `references/review-generation.md` — `system` vs `agent_fill` review contract
+- `references/profile-map-generation.md` — how to turn Zotero evidence into a research-map-style profile
 
 ## Packaging Boundary
 

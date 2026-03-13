@@ -1,0 +1,65 @@
+<svg width="1400" height="980" viewBox="0 0 1400 980" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="80" y1="60" x2="1320" y2="900" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FBF4E9"/>
+      <stop offset="1" stop-color="#F1E2D2"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#D57557"/>
+      <stop offset="1" stop-color="#E2A067"/>
+    </linearGradient>
+    <filter id="shadow" x="56" y="44" width="1288" height="860" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="18" stdDeviation="18" flood-color="#9D7457" flood-opacity="0.18"/>
+    </filter>
+  </defs>
+  <rect width="1400" height="980" rx="44" fill="#F6ECDF"/>
+  <g filter="url(#shadow)">
+    <rect x="78" y="66" width="1244" height="816" rx="38" fill="url(#bg)"/>
+  </g>
+
+  <text x="138" y="146" fill="#8E583A" font-size="15" font-family="Arial, Helvetica, sans-serif" font-weight="700" letter-spacing="1.8">DIGEST VIEW</text>
+  <text x="138" y="236" fill="#2F241D" font-size="60" font-family="Georgia, 'Times New Roman', serif" font-weight="700">A shortlist should scan fast</text>
+  <text x="138" y="304" fill="#2F241D" font-size="60" font-family="Georgia, 'Times New Roman', serif" font-weight="700">and justify itself.</text>
+
+  <rect x="138" y="372" width="252" height="126" rx="24" fill="#FFF8EF" stroke="#E2CFBB" stroke-width="2"/>
+  <text x="172" y="410" fill="#8C7564" font-size="14" font-family="Arial, Helvetica, sans-serif" font-weight="700">SELECTED</text>
+  <text x="172" y="458" fill="#2F241D" font-size="48" font-family="Georgia, 'Times New Roman', serif" font-weight="700">5</text>
+  <text x="172" y="482" fill="#5B493E" font-size="19" font-family="Arial, Helvetica, sans-serif">final papers kept</text>
+
+  <rect x="410" y="372" width="252" height="126" rx="24" fill="#FCEFE2" stroke="#E2CFBB" stroke-width="2"/>
+  <text x="444" y="410" fill="#8C7564" font-size="14" font-family="Arial, Helvetica, sans-serif" font-weight="700">READ FIRST</text>
+  <text x="444" y="458" fill="#2F241D" font-size="48" font-family="Georgia, 'Times New Roman', serif" font-weight="700">3</text>
+  <text x="444" y="482" fill="#5B493E" font-size="19" font-family="Arial, Helvetica, sans-serif">urgent starting points</text>
+
+  <rect x="682" y="372" width="252" height="126" rx="24" fill="#F7E8DA" stroke="#E2CFBB" stroke-width="2"/>
+  <text x="716" y="410" fill="#8C7564" font-size="14" font-family="Arial, Helvetica, sans-serif" font-weight="700">THEMES</text>
+  <text x="716" y="458" fill="#2F241D" font-size="48" font-family="Georgia, 'Times New Roman', serif" font-weight="700">4</text>
+  <text x="716" y="482" fill="#5B493E" font-size="19" font-family="Arial, Helvetica, sans-serif">branches touched</text>
+
+  <rect x="954" y="372" width="252" height="126" rx="24" fill="#F2E2D2" stroke="#E2CFBB" stroke-width="2"/>
+  <text x="988" y="410" fill="#8C7564" font-size="14" font-family="Arial, Helvetica, sans-serif" font-weight="700">DELIVERY</text>
+  <text x="988" y="458" fill="#2F241D" font-size="40" font-family="Georgia, 'Times New Roman', serif" font-weight="700">Email</text>
+  <text x="988" y="482" fill="#5B493E" font-size="19" font-family="Arial, Helvetica, sans-serif">telegram optional</text>
+
+  <g>
+    <rect x="138" y="560" width="528" height="248" rx="30" fill="#FFF9F2" stroke="#E2CFBB" stroke-width="2"/>
+    <rect x="174" y="598" width="118" height="38" rx="19" fill="#EFD1B4"/>
+    <text x="233" y="622" text-anchor="middle" fill="#7A4F36" font-size="15" font-family="Arial, Helvetica, sans-serif" font-weight="700">Read first</text>
+    <text x="174" y="692" fill="#2F241D" font-size="34" font-family="Georgia, 'Times New Roman', serif" font-weight="700">Generative Agents</text>
+    <text x="174" y="746" fill="#5B493E" font-size="22" font-family="Arial, Helvetica, sans-serif">Useful when the active map cares about</text>
+    <text x="174" y="778" fill="#5B493E" font-size="22" font-family="Arial, Helvetica, sans-serif">memory, social behavior, and agent simulation.</text>
+  </g>
+
+  <g>
+    <rect x="694" y="560" width="528" height="248" rx="30" fill="#FFF8EF" stroke="#E2CFBB" stroke-width="2"/>
+    <text x="730" y="602" fill="#8A5437" font-size="14" font-family="Arial, Helvetica, sans-serif" font-weight="700" letter-spacing="1.5">VISIBLE SIGNALS</text>
+    <rect x="730" y="646" width="136" height="42" rx="21" fill="url(#accent)"/>
+    <text x="798" y="672" text-anchor="middle" fill="#FFF8F0" font-size="17" font-family="Arial, Helvetica, sans-serif" font-weight="700">Total 0.92</text>
+    <rect x="880" y="646" width="120" height="42" rx="21" fill="#EBD8C6"/>
+    <text x="940" y="672" text-anchor="middle" fill="#704F3B" font-size="17" font-family="Arial, Helvetica, sans-serif" font-weight="700">Map 0.94</text>
+    <rect x="1014" y="646" width="144" height="42" rx="21" fill="#E5C8AE"/>
+    <text x="1086" y="672" text-anchor="middle" fill="#704F3B" font-size="17" font-family="Arial, Helvetica, sans-serif" font-weight="700">Zotero 0.89</text>
+    <text x="730" y="744" fill="#5B493E" font-size="22" font-family="Arial, Helvetica, sans-serif">Nearest Zotero: Voyager, ReAct</text>
+    <text x="730" y="790" fill="#5B493E" font-size="21" font-family="Arial, Helvetica, sans-serif">Fit and evidence stay visible at a glance.</text>
+  </g>
+</svg>

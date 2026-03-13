@@ -145,6 +145,9 @@ def _render_candidate_markdown(candidate: dict[str, object]) -> str:
             f"- Reviewer Summary: {review.get('reviewer_summary') or ''}",
             f"- Zotero Comparison: {review.get('zotero_comparison') or ''}",
             f"- Recommendation: `{review['recommendation']}`",
+            f"- Why It Matters: {review.get('why_it_matters') or ''}",
+            f"- Quick Takeaways: {'; '.join(review.get('quick_takeaways') or [])}",
+            f"- Caveats: {'; '.join(review.get('caveats') or [])}",
         ]
     )
 
@@ -234,6 +237,10 @@ def _build_candidate(
             "reviewer_summary": None,
             "zotero_comparison": None,
             "recommendation": "unset",
+            "why_it_matters": None,
+            "quick_takeaways": [],
+            "caveats": [],
+            "generation": None,
         },
     }
     if write_markdown:

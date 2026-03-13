@@ -259,7 +259,7 @@ class ResearchAssistSemanticSearch:
         self,
         *,
         force_rebuild: bool = False,
-        limit: int | None = None,
+        limit: int | None = 500,
         extract_fulltext: bool = False,
     ) -> dict[str, Any]:
         if force_rebuild:

@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://codex-research-assist.local/reports/schema/digest-run-summary.schema.json",
+  "title": "Digest Run Summary",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "run",
+    "artifacts"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0.0"
+    },
+    "run": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "component",
+        "action",
+        "generated_at",
+        "profile_path",
+        "output_root",
+        "candidate_count"
+      ],
+      "properties": {
+        "component": {
+          "type": "string",
+          "const": "research-assist"
+        },
+        "action": {
+          "type": "string",
+          "enum": [
+            "digest",
+            "render-digest"
+          ]
+        },
+        "generated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "profile_path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "output_root": {
+          "type": "string"
+        },
+        "candidate_count": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "artifacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "digest_json_path",
+        "candidate_paths",
+        "html_path",
+        "email_json_path",
+        "telegram_json_path",
+        "summary_path"
+      ],
+      "properties": {
+        "digest_json_path": {
+          "type": "string"
+        },
+        "candidate_paths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "html_path": {
+          "type": "string"
+        },
+        "email_json_path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "telegram_json_path": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "summary_path": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}
