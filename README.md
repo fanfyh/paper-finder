@@ -113,27 +113,26 @@ Configure your research profile first (see Configuration), then:
 
 Direct retrieval of NBER working papers across all research programs.
 
-### 17 Economics & Politics Journals
+### 145+ AAA & AA Journals
 
+Journal list is loaded from `assets/journal_list.json`, containing AAA and AA journals from 中央财经大学期刊目录（2025版）.
+
+**Coverage:**
+- **AAA (68 journals)**: Top-tier journals across Economics, Political Science, Sociology, Business, and more
+- **AA (87 journals)**: High-impact journals including JPubE, JUE, JPART, etc.
+
+**Common aliases:**
 | Code | Journal |
 |------|---------|
 | AER | American Economic Review |
 | JPE | Journal of Political Economy |
 | QJE | Quarterly Journal of Economics |
-| RES | Review of Economic Studies |
-| REStat | Review of Economics and Statistics |
-| EJ | Economic Journal |
-| Econometrica | Econometrica |
-| JPubE | Journal of Public Economics |
-| JDE | Journal of Development Economics |
-| JUE | Journal of Urban Economics |
-| AJPS | American Journal of Political Science |
 | APSR | American Political Science Review |
-| BJPS | British Journal of Political Science |
-| PA | Political Analysis |
-| WP | World Politics |
-| Governance | Governance |
-| RP | Research Policy |
+| AJPS | American Journal of Political Science |
+| JPubE | Journal of Public Economics |
+| JPAM | Journal of Policy Analysis and Management |
+
+See `assets/journal_list.json` for the complete list.
 
 ### OpenAlex Full Database
 

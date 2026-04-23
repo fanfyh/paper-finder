@@ -8,7 +8,7 @@
 
 | 功能 | 说明 | 依赖 |
 |------|------|------|
-| **检索论文** | 按 NBER、17期刊或全库搜索关键词 | 无 |
+| **检索论文** | 按 NBER、145+期刊或全库搜索关键词 | 无 |
 | **订阅推送** | 根据研究兴趣定期推送新论文 | 研究画像配置 |
 | **（可选）Zotero 增强** | 用你的 Zotero 文库优化排序 | Zotero + 语义搜索 |
 
@@ -97,27 +97,26 @@ uv run --project ~/.claude/tools/paper-finder \
 
 直接检索 NBER 发布的工作论文，覆盖所有研究项目。
 
-### 17本经政期刊
+### 145+ AAA & AA 期刊
 
+期刊列表从 `assets/journal_list.json` 动态加载，包含中央财经大学期刊目录（2025版）的 AAA 和 AA 类期刊。
+
+**覆盖范围：**
+- **AAA（68种）**：经济学、政治学、社会学、商学等顶尖期刊
+- **AA（87种）**：包括 JPubE、JUE、JPART 等高影响力期刊
+
+**常用简写：**
 | 简写 | 期刊 |
 |------|------|
 | AER | American Economic Review |
 | JPE | Journal of Political Economy |
 | QJE | Quarterly Journal of Economics |
-| RES | Review of Economic Studies |
-| REStat | Review of Economics and Statistics |
-| EJ | Economic Journal |
-| Econometrica | Econometrica |
-| JPubE | Journal of Public Economics |
-| JDE | Journal of Development Economics |
-| JUE | Journal of Urban Economics |
-| AJPS | American Journal of Political Science |
 | APSR | American Political Science Review |
-| BJPS | British Journal of Political Science |
-| PA | Political Analysis |
-| WP | World Politics |
-| Governance | Governance |
-| RP | Research Policy |
+| AJPS | American Journal of Political Science |
+| JPubE | Journal of Public Economics |
+| JPAM | Journal of Policy Analysis and Management |
+
+完整列表见 `assets/journal_list.json`。
 
 ### OpenAlex 全库
 
