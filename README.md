@@ -26,7 +26,7 @@
 
 | Feature | Description | Dependencies |
 |---------|-------------|--------------|
-| **Paper Search** | Search by keywords across NBER, 17 journals, or full OpenAlex | None |
+| **Paper Search** | Search by keywords across NBER, 145+ journals, or full OpenAlex | None |
 | **Subscription Digest** | Regular paper pushes based on your research profile | Profile config |
 | **(Optional) Zotero Enhancement** | Use your Zotero library to improve ranking | Zotero + semantic search |
 
