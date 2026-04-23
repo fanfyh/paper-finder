@@ -1698,30 +1698,30 @@ ALL_SOURCES = [NBER_REPO_ID] + list(JOURNAL_ALIAS.values())
 def action_search(
     query: str,
     top: int = 20,
-    source: str = "openalex",
+    source: str | None = None,
     from_date: str | None = None,
 ) -> str:
-    """Search papers on OpenAlex - unified search for NBER and journals.
+    """Search papers on OpenAlex.
+
+    Default: Global search (no journal restriction).
+    With --source: Search specific journal or NBER.
 
     Args:
         query: Search keywords
         top: Number of results
-        source: Source to search - "nber", "openalex" (all), journal short name (JPE, AER...), or "all"
+        source: Optional - "nber" or journal short name (JPE, AER, etc.) to restrict search
         from_date: Filter by publication date
     """
     from .openalex_pipeline.client import search_journal_papers, search_and_parse, search_works
 
     keywords = [kw.strip() for kw in query.replace(",", " ").split() if kw.strip()]
 
-    # Resolve source
-    source_lower = source.lower() if source else "nber"
-
-    if source_lower == "openalex":
-        # Search all sources via OpenAlex (no journal restriction)
-        LOG.info("Searching OpenAlex (all sources): keywords=%s", keywords)
+    # Default: Global search (no source specified)
+    if source is None or source.lower() == "openalex":
+        LOG.info("Searching OpenAlex (global, no journal restriction): keywords=%s", keywords)
         papers = search_works(keywords=keywords, from_date=from_date, per_page=top, sort="relevance_score:desc")
-        source_label = "OpenAlex (All Sources)"
-        # Format output with journal name
+        source_label = "OpenAlex (Global)"
+
         lines = [f"# Search: \"{query}\"", f"**Source:** {source_label}\n", f"\nFound {len(papers)} papers:\n"]
         for i, p in enumerate(papers, 1):
             title = p.get("title", "Untitled")
@@ -1751,48 +1751,23 @@ def action_search(
             lines.append("")
         return "\n".join(lines)
 
-    source_upper = source.upper() if source else "NBER"
+    # Journal/NBER specific search (only when explicitly requested)
+    source_upper = source.upper() if source else ""
 
-    if source_upper == "NBER" or source_upper == "":
-        # Search NBER only
+    if source_upper == "NBER":
         LOG.info("Searching NBER: keywords=%s", keywords)
         papers = search_and_parse(keywords=keywords, from_date=from_date, per_page=top)
         source_label = "NBER Working Papers"
-        source_id = NBER_REPO_ID
     elif source_upper in JOURNAL_ALIAS:
-        # Search specific journal
         source_id = JOURNAL_ALIAS[source_upper]
         source_label = f"{source_upper} ({source_id})"
-        LOG.info("Searching %s: keywords=%s", source_label, keywords)
+        LOG.info("Searching %s: keywords=%s", source_upper, keywords)
         papers = search_journal_papers(source_id=source_id, keywords=keywords, from_date=from_date, per_page=top)
-    elif source_upper == "ALL":
-        # Search all sources
-        source_label = "All Sources (NBER + Journals)"
-        LOG.info("Searching all sources: keywords=%s", keywords)
-        papers = []
-        # Search NBER
-        nber_papers = search_and_parse(keywords=keywords, from_date=from_date, per_page=top)
-        for p in nber_papers:
-            p["_source"] = "NBER"
-        papers.extend(nber_papers)
-        # Search each journal
-        for journal_name, journal_id in JOURNAL_ALIAS.items():
-            try:
-                journal_papers = search_journal_papers(source_id=journal_id, keywords=keywords, from_date=from_date, per_page=5)
-                for p in journal_papers:
-                    p["_source"] = journal_name
-                papers.extend(journal_papers)
-            except Exception as e:
-                LOG.warning(f"Failed to search {journal_name}: {e}")
-        # Sort by citations and limit
-        papers.sort(key=lambda x: x.get("cited_by_count", 0), reverse=True)
-        papers = papers[:top]
     else:
-        # Unknown source, try as OpenAlex ID directly
-        source_id = source
-        source_label = f"Custom Source ({source_id})"
-        LOG.info("Searching custom source %s: keywords=%s", source_id, keywords)
-        papers = search_journal_papers(source_id=source_id, keywords=keywords, from_date=from_date, per_page=top)
+        # Unknown source
+        source_label = f"Unknown ({source})"
+        LOG.warning("Unknown source '%s', trying as OpenAlex ID", source)
+        papers = search_journal_papers(source_id=source, keywords=keywords, from_date=from_date, per_page=top)
 
     LOG.info("Found %d papers", len(papers))
 
@@ -1850,8 +1825,8 @@ def main():
         help="Action to perform")
     parser.add_argument("--config", type=Path, default=DEFAULT_CONFIG, help="Path to config.json")
     parser.add_argument("--query", type=str, default="", help="Search query")
-    parser.add_argument("--source", type=str, default="openalex",
-        help="Source: openalex (all), nber, journal short name (JPE, AER...), or 'all' for all sources")
+    parser.add_argument("--source", type=str, default=None,
+        help="Optional: Restrict to 'nber' or a journal (JPE, AER, JPubE, etc.). Default: global search (all sources)")
     parser.add_argument("--top", type=int, default=10, help="Number of results")
     parser.add_argument("--format", choices=["markdown", "telegram", "delivery"], default="markdown", help="Output format (default: markdown)")
     parser.add_argument("--force-rebuild", action="store_true", help="Force rebuild semantic index (for sync-index action)")

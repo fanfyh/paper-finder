@@ -10,10 +10,20 @@ An OpenAlex-based literature discovery tool for economics. Search NBER working p
 ## CLI Usage
 
 ```bash
-# Search OpenAlex for papers
+# Global search (default, all sources)
+uv run --project ~/.claude/tools/paper-finder \
+  paper-finder --config ~/.claude/tools/paper-finder/config.json \
+  --action search --query "fiscal competition" --top 20
+
+# Search NBER only
 uv run --project ~/.claude/tools/paper-finder \
   paper-finder --config ~/.claude/tools/paper-finder/config.json \
   --action search --query "fiscal competition" --source nber --top 20
+
+# Search specific journal
+uv run --project ~/.claude/tools/paper-finder \
+  paper-finder --config ~/.claude/tools/paper-finder/config.json \
+  --action search --query "housing" --source JPubE --top 20
 
 # Subscribe to digest (based on research profile)
 uv run --project ~/.claude/tools/paper-finder \
@@ -77,13 +87,13 @@ No LLM calls inside the packaged Python pipeline. Retrieval, ranking, and format
 
 ### search — Paper Retrieval
 
-Query OpenAlex API for papers by keyword and source.
+Query OpenAlex API for papers by keyword.
 
-Supported sources:
-- `nber` — NBER working papers
-- `openalex` — Full OpenAlex database
-- `all` — NBER + 17 configured journals
-- `JPE/AER/QJE/...` — Specific journal
+**Default behavior**: Global search across all sources (no journal restriction).
+
+**Optional sources** (only when explicitly specified):
+- `nber` — NBER working papers only
+- `JPE/AER/JPubE/...` — Specific journal only
 
 ### digest-all — Subscription Digest
 
