@@ -1,0 +1,75 @@
+{
+  "ssrn_source_id": "S4210172589",
+
+  "institutions": {
+    "NBER": "I1321305853",
+    "CEPR": "I4210140326",
+    "IZA": "I197518295",
+    "RAND": "I1309849503",
+    "Brookings": "I115283149",
+    "PIIE": "I149640151",
+    "RFF": "I2801278523",
+    "Urban_Institute": "I183320395",
+    "AEI": "I1301666793",
+    "Cato": "I1313505808",
+    "J-PAL": "I4210113636",
+    "World_Bank": "I1334329717",
+    "IMF": "I1310145890",
+    "Fed": "I1317239608",
+    "Fed_Board": "I2802905149",
+    "Fed_NY": "I43638361",
+    "Fed_StLouis": "I77793887",
+    "Fed_Philadelphia": "I57502794",
+    "Fed_Cleveland": "I4210109900",
+    "Fed_Chicago": "I77697173",
+    "Fed_SF": "I19990318",
+    "Fed_Atlanta": "I119878761",
+    "Fed_Dallas": "I68415526",
+    "Fed_Richmond": "I4210158875",
+    "Fed_Boston": "I46510805",
+    "Fed_Minneapolis": "I1341575764",
+    "Fed_KansasCity": "I84318336"
+  },
+
+  "fields": {
+    "Economics": "fields/20",
+    "Business_Accounting": "fields/14",
+    "Social_Sciences": "fields/33",
+    "Arts_Humanities": "fields/12",
+    "Decision_Sciences": "fields/18",
+    "Mathematics": "fields/26",
+    "Computer_Science": "fields/17",
+    "Environmental_Science": "fields/23",
+    "Psychology": "fields/32"
+  },
+
+  "subfields": {
+    "Economics_Econometrics": "subfields/2002",
+    "Finance": "subfields/2003",
+    "Accounting": "subfields/1402",
+    "Marketing": "subfields/1406",
+    "Strategy_Management": "subfields/1408",
+    "Law": "subfields/3308",
+    "Political_Science": "subfields/3312",
+    "Public_Administration": "subfields/3321",
+    "Education": "subfields/3304",
+    "Demography": "subfields/3317",
+    "Development": "subfields/3303",
+    "Urban_Studies": "subfields/3322",
+    "History": "subfields/1202",
+    "Philosophy": "subfields/1211",
+    "Statistics_Probability": "subfields/2613",
+    "Applied_Mathematics": "subfields/2604",
+    "AI": "subfields/1702",
+    "CS_Applications": "subfields/1706",
+    "Env_Policy_Law": "subfields/2308"
+  },
+
+  "economics_field_id": "fields/20",
+
+  "default_filters": {
+    "institution_mode": "authorships.institutions.id:I1321305853|I4210140326",
+    "field_mode": "primary_topic.field.id:fields/20",
+    "source_filter": "primary_location.source.id:S4210172589"
+  }
+}
