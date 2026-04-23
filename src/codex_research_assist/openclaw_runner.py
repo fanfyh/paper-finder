@@ -1665,26 +1665,129 @@ def action_digest_all(config: dict, fmt: str = "markdown", *, config_path: Path 
 
 
 # Journal short name to OpenAlex ID mapping
+# Format: "ALIAS": "OpenAlex_ID"
+# Sources: 中央财经大学期刊目录（2025版） AAA & AA 类期刊
 JOURNAL_ALIAS = {
-    # Economics
-    "JPE": "S95323914",
-    "QJE": "S203860005",
-    "AER": "S23254222",
-    "RES": "S88935262",
-    "REStat": "S180061323",
-    "EJ": "S45992627",
-    "ECONOMETRICA": "S95464858",
-    "JPubE": "S199447588",
-    "JDE": "S101209419",
-    "JUE": "S147692640",
-    # Political Science
-    "AJPS": "S90314269",
-    "APSR": "S176007004",
-    "BJPS": "S95691132",
-    "PA": "S29331042",
-    "WP": "S143110675",
-    "GOVERNANCE": "S62375027",
-    "RP": "S9731383",
+    # ========== AAA 类期刊 ==========
+    # Economics (5)
+    "AER": "S23254222",          # American Economic Review
+    "JPE": "S95323914",          # Journal of Political Economy
+    "QJE": "S203860005",         # Quarterly Journal of Economics
+    "RES": "S88935262",          # Review of Economic Studies
+    "ECONOMETRICA": "S95464858", # Econometrica
+
+    # Political Science (3)
+    "APSR": "S176007004",        # American Political Science Review
+    "AJPS": "S90314269",         # American Journal of Political Science
+    "WP": "S143110675",          # World Politics
+
+    # Sociology (3)
+    "AJS": "S122471516",         # American Journal of Sociology
+    "ASR": "S157620343",         # American Sociological Review
+    "SF": "S130611943",          # Social Forces
+
+    # ========== AA 类期刊 - Economics ==========
+    "AEJ-AE": "S4210175212",     # American Economic Journal: Applied Economics
+    "AEJ-EP": "S4210175213",     # American Economic Journal: Economic Policy
+    "AEJ-MAC": "S4210175214",    # American Economic Journal: Macroeconomics
+    "AEJ-MIC": "S4210175215",    # American Economic Journal: Microeconomics
+    "AER-I": "S4210174288",      # American Economic Review: Insights
+    "BPEA": "S2778659703",       # Brookings Papers on Economic Activity
+    "EJ": "S45992627",           # Economic Journal
+    "EER": "S69338747",          # European Economic Review
+    "EE": "S181493553",          # Experimental Economics
+    "GEB": "S94044085",          # Games and Economic Behavior
+    "HE": "S145200904",          # Health Economics
+    "IER": "S179979277",         # International Economic Review
+    "JAE": "S4210182309",        # Journal of Applied Econometrics
+    "JCE": "S4210187821",        # Journal of Computational Economics
+    "JDE": "S101209419",         # Journal of Development Economics
+    "JEBO": "S62201805",         # Journal of Economic Behavior & Organization
+    "JEDC": "S44585919",         # Journal of Economic Dynamics and Control
+    "JEG": "S46039370",          # Journal of Economic Geography
+    "JEH": "S122073985",         # Journal of Economic History
+    "JET": "S149131268",         # Journal of Economic Theory
+    "JEEA": "S165087003",        # Journal of the European Economic Association
+    "JFE": "S149240962",         # Journal of Financial Economics
+    "JHR": "S62957338",          # Journal of Human Resources
+    "JIE": "S99067594",          # Journal of Industrial Economics
+    "JIE-INT": "S198098467",     # Journal of International Economics
+    "JJIE": "S4210207474",       # Journal of the Japanese and International Economies
+    "JLE": "S8557221",           # Journal of Labor Economics
+    "JLE&E": "S4387283559",      # Journal of Law and Economics
+    "JME": "S6711363",           # Journal of Monetary Economics
+    "JMCB": "S2778662496",       # Journal of Money, Credit and Banking
+    "JPubE": "S199447588",       # Journal of Public Economics
+    "JRE": "S114801022",         # Journal of Regulatory Economics
+    "JUE": "S147692640",         # Journal of Urban Economics
+    "JFEcon": "S207154782",      # Journal of Financial Econometrics
+    "MD": "S136745531",          # Macroeconomic Dynamics
+    "MF": "S133335107",          # Mathematical Finance
+    "NTJ": "S116184629",         # National Tax Journal
+    "OEP": "S26073974",          # Oxford Economic Papers
+    "QE": "S156003414",          # Quantitative Economics
+    "RJE": "S34139249",          # Rand Journal of Economics
+    "RSUE": "S107631327",        # Regional Science and Urban Economics
+    "RED": "S163499366",         # Review of Economic Dynamics
+    "REStat": "S180061323",      # Review of Economics and Statistics
+    "SJE": "S165253824",         # Scandinavian Journal of Economics
+    "SCW": "S107325288",         # Social Choice and Welfare
+    "TE": "S10997704",           # Theoretical Economics
+    "TD": "S134979503",          # Theory and Decision
+    "WBER": "S2735890421",       # World Bank Economic Review
+    "JEMS": "S5407052554",       # Journal of Economics and Management Strategy
+
+    # ========== AA 类期刊 - Sociology ==========
+    "DEMOG": "S30543418",        # Demography
+    "SPQ": "S131591925",         # Social Psychology Quarterly
+    "SOCPR": "S129389861",       # Social Problems
+    "SM": "S181883320",          # Sociological Methodology
+    "SSR": "S59311786",          # Social Science Research
+    "SSH": "S61028752",          # Social Science History
+    "JHSB": "S122290859",        # Journal of Health and Social Behavior
+    "MOB": "S190942573",         # Mobilization
+    "SOCFOR": "S193359815",      # Sociological Forum
+    "SOCNET": "S26186134",       # Social Networks
+
+    # ========== AA 类期刊 - Political Science ==========
+    "APR": "S4210233832",        # American Politics Research
+    "BJPS": "S95691132",         # British Journal of Political Science
+    "CPS": "S105556297",         # Comparative Political Studies
+    "EJPR": "S135158421",        # European Journal of Political Research
+    "ELEC": "S2778675147",       # Electoral Studies
+    "GO": "S29411750",           # Government and Opposition
+    "II": "S2778678866",         # International Interactions
+    "IO": "S160686149",          # International Organization
+    "IS": "S99767407",           # International Security
+    "ISQ": "S91639875",          # International Studies Quarterly
+    "JCR": "S20177303",          # Journal of Conflict Resolution
+    "JPR": "S71119591",          # Journal of Peace Research
+    "JPOL": "S95650557",         # Journal of Politics
+    "PPART": "S6959732",         # Party Politics
+    "PA": "S29331042",           # Political Analysis
+    "PB": "S110036823",          # Political Behavior
+    "PG": "S202534398",          # Political Geography
+    "POLITY": "S72648116",       # Polity
+    "POQ": "S135539873",         # Public Opinion Quarterly
+    "LSQ": "S48869744",          # Legislative Studies Quarterly
+
+    # ========== AA 类期刊 - Public Administration ==========
+    "AS": "S5465880",            # Administration & Society
+    "ARPA": "S106702950",        # American Review of Public Administration
+    "IPMJ": "S63571029",         # International Public Management Journal
+    "JPAM": "S25370267",         # Journal of Policy Analysis and Management
+    "JPART": "S169433491",       # Journal of Public Administration Research and Theory
+    "JEPP": "S22371039",         # Journal of European Public Policy
+    "P&P": "S17167983",          # Policy & Politics
+    "PSCI": "S197895017",        # Policy Sciences
+    "PA-J": "S201221823",        # Public Administration
+    "PAD": "S189395249",         # Public Administration and Development
+    "PAR": "S76877748",          # Public Administration Review
+    "PMR": "S37623806",          # Public Management Review
+
+    # ========== 其他期刊 ==========
+    "GOVERNANCE": "S62375027",   # Governance
+    "RP": "S9731383",            # Research Policy
 }
 
 JOURNAL_NAME = {v: k for k, v in JOURNAL_ALIAS.items()}

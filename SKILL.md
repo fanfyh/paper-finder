@@ -93,7 +93,84 @@ Query OpenAlex API for papers by keyword.
 
 **Optional sources** (only when explicitly specified):
 - `nber` — NBER working papers only
-- `JPE/AER/JPubE/...` — Specific journal only
+- Journal aliases (see below) — Specific journal only
+
+### Available Journal Sources
+
+Based on 中央财经大学期刊目录（2025版） AAA & AA 类：
+
+**AAA - Economics:**
+| Alias | Journal |
+|-------|---------|
+| AER | American Economic Review |
+| JPE | Journal of Political Economy |
+| QJE | Quarterly Journal of Economics |
+| RES | Review of Economic Studies |
+| ECONOMETRICA | Econometrica |
+
+**AAA - Political Science:**
+| Alias | Journal |
+|-------|---------|
+| APSR | American Political Science Review |
+| AJPS | American Journal of Political Science |
+| WP | World Politics |
+
+**AAA - Sociology:**
+| Alias | Journal |
+|-------|---------|
+| AJS | American Journal of Sociology |
+| ASR | American Sociological Review |
+| SF | Social Forces |
+
+**AA - Economics (selected):**
+| Alias | Journal |
+|-------|---------|
+| JPubE | Journal of Public Economics |
+| JUE | Journal of Urban Economics |
+| REStat | Review of Economics and Statistics |
+| JME | Journal of Monetary Economics |
+| EJ | Economic Journal |
+| JET | Journal of Economic Theory |
+| GEB | Games and Economic Behavior |
+| JFE | Journal of Financial Economics |
+| RJE | Rand Journal of Economics |
+| TE | Theoretical Economics |
+| JEEA | Journal of the European Economic Association |
+| JDE | Journal of Development Economics |
+| EER | European Economic Review |
+| JEBO | Journal of Economic Behavior & Organization |
+| RSUE | Regional Science and Urban Economics |
+| JLE | Journal of Labor Economics |
+| OEP | Oxford Economic Papers |
+| NTJ | National Tax Journal |
+
+**AA - Political Science (selected):**
+| Alias | Journal |
+|-------|---------|
+| BJPS | British Journal of Political Science |
+| CPS | Comparative Political Studies |
+| EJPR | European Journal of Political Research |
+| PA | Political Analysis |
+| GOVERNANCE | Governance |
+
+**AA - Sociology:**
+| Alias | Journal |
+|-------|---------|
+| DEMOG | Demography |
+| SM | Sociological Methodology |
+| SSR | Social Science Research |
+| SOCNET | Social Networks |
+
+**AA - Public Administration:**
+| Alias | Journal |
+|-------|---------|
+| JPAM | Journal of Policy Analysis and Management |
+| JPART | Journal of Public Administration Research and Theory |
+| JEPP | Journal of European Public Policy |
+| PAR | Public Administration Review |
+| PMR | Public Management Review |
+
+Full alias list available in `openclaw_runner.py:JOURNAL_ALIAS`.
 
 ### digest-all — Subscription Digest
 
