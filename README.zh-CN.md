@@ -22,7 +22,7 @@
 # 搜索 NBER 工作论文
 export PATH="$HOME/.local/bin:$PATH" && \
 uv run --project ~/.claude/tools/paper-finder \
-  research-assist --config ~/.claude/tools/paper-finder/config.json \
+  paper-finder --config ~/.claude/tools/paper-finder/config.json \
   --action search --query "fiscal competition" --source nber --top 20
 
 # 搜索特定期刊
