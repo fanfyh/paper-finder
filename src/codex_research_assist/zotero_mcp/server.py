@@ -21,9 +21,9 @@ logging.basicConfig(
     format="%(asctime)s [%(name)s] %(levelname)s: %(message)s",
     level=logging.INFO,
 )
-LOG = logging.getLogger("research-assist.zotero-mcp")
+LOG = logging.getLogger("paper-finder.zotero-mcp")
 
-mcp = FastMCP("research-assist-zotero")
+mcp = FastMCP("paper-finder-zotero")
 
 
 def _client(config_path: str | None = None) -> tuple[ZoteroClient, Any]:
@@ -354,7 +354,7 @@ def zotero_sync_index(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Run the research-assist Zotero MCP server")
+    parser = argparse.ArgumentParser(description="Run the paper-finder Zotero MCP server")
     parser.add_argument("--transport", choices=["stdio", "http"], default="stdio")
     parser.add_argument("--host", default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8766)

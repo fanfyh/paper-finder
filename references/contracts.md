@@ -2,88 +2,86 @@
 
 ## Research Interest Profile
 
-The live profile contract is:
+The profile contract in `research-interest.json`:
 
-- `method_keywords`
-- `query_aliases`
-- `exclude_keywords`
+```json
+{
+  "interests": [
+    {
+      "interest_id": "unique-id",
+      "label": "Display Name",
+      "enabled": true,
+      "method_keywords": ["term1", "term2"],
+      "query_aliases": ["alias1", "alias2"],
+      "exclude_keywords": [],
+      "logic": "OR"
+    }
+  ]
+}
+```
 
 Rules:
-
-- prefer short method labels
-- keep each interest compact
-- keep `method_keywords` usually at 1-2 terms
-- keep `query_aliases` usually at 0-2 terms
-- retrieval should use at most the first 3 terms
-- do not regress to long sentence-style topic phrases
+- Keep `method_keywords` short (1-3 terms)
+- Keep `query_aliases` focused (0-3 terms)
+- Use `logic: "OR"` for broad matching, `"AND"` for narrow
+- `exclude_keywords` filters out unwanted results
 
 ## Candidate Artifacts
 
 Authoritative artifact:
-
 - candidate `json`
 
 Optional debug artifact:
-
 - candidate `md`
 
 Meaning:
-
-- downstream review should trust JSON first
-- Markdown is only for human debugging or inspection
+- Downstream processing trusts JSON first
+- Markdown is for human inspection only
 
 ## Review Policy
 
-- default to `abstract-first`
-- rank by fit to the live profile
-- trim weak or off-target items
-- prefer concise output over exhaustive output
-
 Ownership boundary:
+- Host agent may only fill `candidate.review`
+- Host agent must NOT rewrite `candidate.paper`, provenance, or delivery wrappers
+- Email/Telegram templates belong to system-side
 
-- the host agent may only fill `candidate.review`
-- the host agent must not rewrite `candidate.paper`, candidate provenance, or delivery wrappers
-- email / telegram title, body shell, profile card, statistics card, and attachment policy belong to system-side delivery templates
-- channel routing belongs to config + runtime, not to agent prose
-
-Digest-facing review fields may include:
-
-- `review.recommendation`
-- `review.why_it_matters`
-- `review.quick_takeaways`
-- `review.caveats`
-- `review.zotero_comparison`
-- `review.generation`
+Review fields:
+- `review.recommendation` — Overall verdict
+- `review.why_it_matters` — Why this paper matters
+- `review.quick_takeaways` — Key points
+- `review.caveats` — Limitations and uncertainties
+- `review.zotero_comparison` — Nearest Zotero neighbors (if available)
+- `review.generation` — Metadata about how review was generated
 
 Rules:
-
-- `why_it_matters` should explain why the paper is worth attention for the active profile now
-- `quick_takeaways` should stay short and scannable
-- `caveats` should state uncertainty and missing evidence explicitly
-- if Zotero comparison was not run, say so rather than inferring library context
-- if the review was agent-filled, record that in `review.generation.mode`
-- nearest-neighbor recovery belongs inside `review.zotero_comparison`, not in delivery-layer prose
-- prefer 1-2 nearest neighbors for rendering; if only one clean anchor exists, keep one
+- `why_it_matters` explains relevance to the research profile
+- `quick_takeaways` should be scannable (3-5 bullets)
+- `caveats` states uncertainty explicitly
+- If Zotero comparison unavailable, say so explicitly
+- Prefer 1-2 nearest neighbors
 
 ## Delivery Routing
 
-- use `delivery.primary_channel` to choose the primary outbound channel
-- currently supported primary channels are `email` and `telegram`
-- email and telegram share the same ranked candidate / review data, but they must use different presentation templates
-- do not ask the host agent to write channel-specific wrappers such as email subjects, email profile cards, or telegram intro text
-- fallback from email to telegram is runtime policy, not agent policy
+- Use `delivery.primary_channel` to choose outbound channel
+- Supported: `email`, `telegram`
+- Channels share same data but use different templates
+- Do NOT ask agent to write channel-specific wrappers
 
 ## Zotero Safety
 
-- no automatic delete
-- no automatic collection deletion
-- no speculative top-level taxonomy rewrites
-- prefer explicit rationale for any future write action
+No automatic:
+- Deletes of items or collections
+- Collection restructuring
+- Metadata modifications (title, authors, etc.)
+
+All writes:
+- Default to `dry_run=true` first
+- Show preview before applying
+- Use non-destructive operations only: add tags, add to collections, append notes
 
 ## Zotero MCP Usage
 
-- use the bundled `research-assist-zotero-mcp` server for live Zotero reads
-- during `profile_update`, keep Zotero access read-only
-- during feedback sync, default to `dry_run=true`
-- only use non-destructive writes: add tags, add collection membership, append notes
-- encode persistent item state with `ra-status:*` tags rather than destructive cleanup
+- Use bundled `paper-finder-zotero-mcp` server for live Zotero reads
+- During `profile_refresh`: read-only access
+- During feedback: default `dry_run=true`
+- Encode persistent state with `ra-status:*` tags

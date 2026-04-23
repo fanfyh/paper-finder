@@ -1,4 +1,4 @@
-"""Email sender for research-assist delivery."""
+"""Email sender for paper-finder delivery."""
 
 from __future__ import annotations
 

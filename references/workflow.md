@@ -2,87 +2,92 @@
 
 ## Operating Model
 
-The active operating model is:
-
-- `one controller-backed skill session`
-
-The repository no longer depends on role-split prompt surfaces as its primary control surface.
+- CLI-based tool with optional agent integration
+- Core functions work standalone
+- Zotero integration is optional
 
 ## Stage Order
 
-### 1. `profile_update`
+### 1. `search` — Paper Retrieval
 
-- decide whether refresh is needed from config and live profile age
-- when refresh runs, inspect Zotero through `research-assist-zotero-mcp`
-- if refresh runs, write normalized profile JSON to:
-  - `profiles/research-interest.json`
-  - one timestamped profile report under `reports/generated/`
-- this stage should be orchestrated by the OpenClaw controller or host agent, not by a repo-local `codex exec` script
+- Query OpenAlex API by keyword and source
+- Sources: `nber`, specific journals, `all`, or `openalex` (full database)
+- Output: JSON + Markdown candidate files
 
-### 2. `retrieval`
+### 2. `digest-all` — Profile-based Digest (optional)
 
-- use `src/codex_research_assist/arxiv_profile_pipeline/pipeline.py` through the packaged CLI / runner
-- generate:
-  - one batch manifest JSON
-  - per-paper candidate JSON files
-  - optional candidate Markdown files only when debug mode is enabled
+- Requires `research-interest.json` profile
+- Retrieves papers from configured sources
+- Ranks by profile match + semantic similarity (if enabled)
+- Output: Ranked digest with enriched reviews
 
-### 3. `review`
+### 3. `sync-index` — Zotero Semantic Index (optional)
 
-- read the live profile plus retrieval manifest and candidate JSON
-- produce one structured literature review JSON
-- preserve provenance and ranking rationale
-- keep Zotero writeback outside this stage's output
+- Syncs Zotero library to semantic search index
+- Uses embedding model for similarity matching
+- Required for semantic ranking
 
-### 4. `agent_fill`
+### 4. `profile-refresh` — Update Research Profile (optional)
 
-- use as the default host-side digest enrichment step
-- enrich the top-ranked candidate JSON files with assistant-written review text
-- keep fallback to `system` review text when agent fill is unavailable and fallback is enabled
-- write review patches that conform to `reports/schema/review-patch.schema.json`
-- keep Zotero access read-only in this stage
-- this stage should be orchestrated by the OpenClaw controller or host agent, not by a repo-local `codex exec` script
+- Reads Zotero evidence (collections, tags, papers)
+- Updates `research-interest.json`
+- Orchestrate by host agent or run manually
 
-### 5. `render`
+### 5. `render` — Digest Output
 
-- re-render the final digest from the patched candidate JSON artifacts
-- use `research-assist --action render-digest --config <config.json> --digest-json <digest.json>`
-- this stage should happen after agent patches are merged
+- Generates HTML digest from ranked candidates
+- Email or Telegram delivery (if configured)
+- Local HTML output always available
 
-### Optional later extension: `zotero_feedback`
+### Optional: `feedback_sync` — Zotero Writeback
 
-- resolve target Zotero items through MCP search/read tools
-- generate one feedback JSON report conforming to `reports/schema/zotero-feedback.schema.json`
-- apply writeback in `dry_run=true` first, then only opt into explicit non-destructive writes
+- Non-destructive feedback to Zotero
+- Adds tags, collections, notes
+- Default `dry_run=true`
 
-### 6. `delivery`
+## Data Flow
 
-- branch at the end with `delivery.primary_channel`
-- default primary route is `email`
-- `telegram` can be alternate primary or runtime fallback
-- channel wrappers are system-owned, not agent-owned
-- keep HTML artifacts even when direct delivery is enabled
+```
+User Input (keywords OR profile)
+         │
+         ▼
+OpenAlex Retrieval
+         │
+         ▼
+  ┌──────┴──────┐
+  │             │
+Keyword    Semantic
+Match      Similarity
+  │             │
+  └──────┬──────┘
+         ▼
+    Ranking
+         │
+         ▼
+    Output
+   (HTML/Email)
+```
 
-## Naming Guidance
+## CLI Commands
 
-The runtime surface uses functional directories:
+```bash
+# Search
+paper-finder --action search --query "keyword" --source nber --top 20
 
-- `scripts/core/`
-- `scripts/profile/`
-- `src/codex_research_assist/zotero_mcp/`
+# Digest
+paper-finder --action digest-all
 
-## Controller Boundary
+# Sync index
+paper-finder --action sync-index
 
-The controller should:
+# Refresh profile
+paper-finder --action profile-refresh
+```
 
-- interpret the stage plan
-- execute the enabled stages
-- track artifact paths
-- emit one final controller summary JSON
+## Component Locations
 
-The controller should not:
-
-- grow a new shell-chain orchestrator
-- reintroduce split role-specific prompt layers
-- depend on memory maintenance for one run
-- depend on scheduler wrappers in the minimal packaged baseline
+- CLI runner: `src/codex_research_assist/openclaw_runner.py`
+- OpenAlex client: `src/codex_research_assist/openalex_pipeline/`
+- NBER pipeline: `src/codex_research_assist/nber_pipeline/`
+- Zotero MCP: `src/codex_research_assist/zotero_mcp/`
+- Ranker: `src/codex_research_assist/ranker.py`

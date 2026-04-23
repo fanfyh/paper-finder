@@ -102,7 +102,7 @@ def normalize_profile_payload(raw: Any) -> dict[str, Any]:
         "profile_id": _as_string(raw.get("profile_id"), "profile_id"),
         "profile_name": _as_string(raw.get("profile_name"), "profile_name"),
         "updated_at": updated_at,
-        "maintainer": str(raw.get("maintainer") or "research-assist").strip() or "research-assist",
+        "maintainer": str(raw.get("maintainer") or "paper-finder").strip() or "paper-finder",
         "zotero_basis": {
             "collections": _as_string_list(zotero_basis_raw.get("collections"), "zotero_basis.collections"),
             "tags": _as_string_list(zotero_basis_raw.get("tags"), "zotero_basis.tags"),

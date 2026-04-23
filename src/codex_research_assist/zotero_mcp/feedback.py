@@ -7,7 +7,7 @@ from typing import Any
 
 ALLOWED_DECISIONS = {"archive", "watch", "read_first", "skim", "skip_for_now", "watchlist", "ignore", "unset"}
 STATUS_TAG_PREFIX = "ra-status:"
-SYSTEM_TAG = "research-assist"
+SYSTEM_TAG = "paper-finder"
 
 
 def _as_string(value: Any, field_name: str, *, allow_empty: bool = False) -> str:
@@ -121,7 +121,7 @@ def normalize_feedback_payload(raw: Any) -> dict[str, Any]:
     return {
         "schema_version": str(raw.get("schema_version") or "1.0.0"),
         "generated_at": generated_at,
-        "source": _as_string(raw.get("source"), "source", allow_empty=True) or "research-assist",
+        "source": _as_string(raw.get("source"), "source", allow_empty=True) or "paper-finder",
         "decisions": decisions,
     }
 
@@ -135,7 +135,7 @@ def decision_status_tag(decision: str) -> str | None:
 
 def build_feedback_note(decision: dict[str, Any], *, generated_at: str, source: str) -> str:
     lines = [
-        "<p>research-assist feedback</p>",
+        "<p>paper-finder feedback</p>",
         f"<p>time: {generated_at}</p>",
         f"<p>source: {source}</p>",
         f"<p>decision: {decision['decision']}</p>",

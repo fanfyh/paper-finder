@@ -2,87 +2,67 @@
 
 ## Goal
 
-Produce one minimal distributable skill package from this repository.
-
-The distributed package is intentionally smaller than the source repository.
+Produce a minimal distributable package from this repository.
 
 ## Include
 
-Keep these items in the distributable skill:
+Keep these in the distributable:
 
 - `SKILL.md`
 - `config.example.json`
 - `references/`
-- `automation/prompts/`
-- `automation/arxiv-profile-digest.example.toml`
 - `profiles/research-interest.example.json`
 - `reports/schema/`
 - `src/`
 - `pyproject.toml`
 - `uv.lock`
 
-Add these generated files at packaging time:
-
-- `install.sh` at the package root
+Add generated files at packaging:
+- `install.sh` at package root
 
 ## Exclude
 
-Do not include these items in the minimal packaged skill:
+Do NOT include:
 
-- `README.md`
-- `README.zh-CN.md`
-- `CODEMAP.md`
-- `NEXT_PLAN.md`
-- `temp/`
-- `.state/`
-- `automation/*.local.toml`
-- `profiles/research-interest.json`
-- `reports/generated/`
+- `README.md`, `README.zh-CN.md`
+- `CODEMAP.md`, `NEXT_PLAN.md`
+- `temp/`, `.state/`
+- `profiles/research-interest.json` (user's personal config)
+- `reports/generated/` (runtime output)
 
-## Current Scope Decision
+## Current Scope
 
-The minimal packaged skill currently focuses on:
+The packaged skill includes:
 
-- `profile_update`
-- `retrieval`
-- `review`
-- `render`
-- `delivery`
-- bundled Zotero MCP read/write support
-- host-side orchestration by OpenClaw rather than repo-local `codex exec` wrappers
-- machine-readable digest handoff artifacts for host-side orchestration
+- Paper search via OpenAlex
+- Profile-based digest
+- Zotero semantic search (optional)
+- Zotero MCP read/write support
+- Email/Telegram delivery (optional)
 
-Temporarily out of packaged baseline:
-
-- scheduler wiring
-
-These can return later as optional extensions, but they are not part of the current distributable baseline.
-
-## Packaging command
-
-Build the distributable package from the source repo with:
+## Packaging Command
 
 ```bash
 uv run python scripts/distribution/build_skill_package.py
 ```
 
-This creates:
+Creates:
+- `dist/paper-finder-v<version>/`
+- `dist/paper-finder-v<version>.zip`
+- `dist/paper-finder-v<version>.tar.gz`
 
-- `dist/research-assist-skill-v<version>/`
-- `dist/research-assist-skill-v<version>.zip`
-- `dist/research-assist-skill-v<version>.tar.gz`
+## Installation
 
-The packaged root includes `install.sh`, which:
+The package includes `install.sh`, which:
+- Copies runtime files to target directory
+- Creates `config.json` from example if missing
+- Rewrites runtime paths to actual install target
+- Creates `research-interest.json` from example if missing
+- Runs `uv sync` when available
 
-- copies runtime files into `~/.openclaw/skills/research-assist`
-- creates `config.json` from `config.example.json` if missing
-- rewrites freshly created runtime paths (`profile_path`, `output_root`, `semantic_search.persist_directory`) to the actual install target
-- creates `profiles/research-interest.json` from the example profile if missing
-- runs `uv sync` in the installed skill directory when `uv` is available
-
-After installation, run commands against the installed skill root, for example:
+After installation:
 
 ```bash
-uv run --project ~/.openclaw/skills/research-assist \
-  research-assist --action digest --config ~/.openclaw/skills/research-assist/config.json
+uv run --project ~/.claude/tools/paper-finder \
+  paper-finder --action search --query "test" --source nber --top 10
 ```

@@ -1,7 +1,7 @@
 [project]
-name = "research-assist"
+name = "paper-finder"
 version = "0.1.0"
-description = "Lightweight arXiv literature digest skill for OpenClaw"
+description = "OpenAlex-based literature discovery tool for economics (NBER + top journals)"
 requires-python = ">=3.12"
 dependencies = [
   "feedparser>=6.0.11",
@@ -10,6 +10,7 @@ dependencies = [
   "pyzotero>=1.5.0",
   "fastmcp>=0.4.0",
   "chromadb>=0.5.0",
+  "beautifulsoup4>=4.12.0",
 ]
 
 [project.optional-dependencies]
@@ -32,8 +33,8 @@ semantic-fulltext = [
 ]
 
 [project.scripts]
-research-assist = "codex_research_assist.openclaw_runner:main"
-research-assist-zotero-mcp = "codex_research_assist.zotero_mcp.server:main"
+paper-finder = "codex_research_assist.openclaw_runner:main"
+paper-finder-zotero-mcp = "codex_research_assist.zotero_mcp.server:main"
 
 [build-system]
 requires = ["hatchling"]

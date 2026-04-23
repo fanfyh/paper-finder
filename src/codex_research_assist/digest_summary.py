@@ -24,7 +24,7 @@ def write_digest_run_summary(
     payload = {
         "schema_version": "1.0.0",
         "run": {
-            "component": "research-assist",
+            "component": "paper-finder",
             "action": action,
             "generated_at": datetime.now(timezone.utc).isoformat(),
             "profile_path": profile_path.as_posix() if profile_path is not None else None,

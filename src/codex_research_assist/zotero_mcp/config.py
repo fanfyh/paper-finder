@@ -9,7 +9,7 @@ from typing import Any
 from dotenv import load_dotenv
 
 
-DEFAULT_SKILL_ROOT = Path.home() / ".openclaw" / "skills" / "research-assist"
+DEFAULT_SKILL_ROOT = Path.home() / ".claude" / "tools" / "paper-finder"
 DEFAULT_CONFIG_PATH = DEFAULT_SKILL_ROOT / "config.json"
 DEFAULT_ENV_PATH = DEFAULT_SKILL_ROOT / ".env"
 

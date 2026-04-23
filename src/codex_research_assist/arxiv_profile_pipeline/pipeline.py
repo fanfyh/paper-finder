@@ -463,7 +463,7 @@ def run_pipeline(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Run the research-assist arXiv profile pipeline")
+    parser = argparse.ArgumentParser(description="Run the paper-finder arXiv profile pipeline")
     parser.add_argument("--config", required=True, help="Path to the pipeline TOML config")
     parser.add_argument("--profile", default=None, help="Override the research-interest profile JSON path")
     parser.add_argument("--with-candidate-markdown", action="store_true", help="Force candidate Markdown debug artifacts on")

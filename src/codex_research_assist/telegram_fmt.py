@@ -1,4 +1,4 @@
-"""Telegram message formatting for research-assist digest.
+"""Telegram message formatting for paper-finder digest.
 
 Formats candidates as Telegram HTML messages (parse_mode='HTML').
 Does NOT send — the caller (agent or script) handles delivery.

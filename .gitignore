@@ -1,12 +1,18 @@
+# Python
 .venv/
 __pycache__/
 *.pyc
 *.egg-info/
 dist/
+
+# Project specific
 .state/
-reports/generated/
-*.local.toml
-.env
+.semantic-search/
+config.json
+profiles/
+reports/
+
+# Temp files
 temp/private/
 temp/private/**
 temp/models/
@@ -21,6 +27,13 @@ temp/real-zotero/runtime/
 temp/real-zotero/runtime/**
 temp/readme-preview/
 temp/readme-preview/**
+
+# Local configs
+*.local.toml
+.env
+TODO.local.md
+
+# macOS
+.DS_Store
 .omc/
 .omc/**
-TODO.local.md

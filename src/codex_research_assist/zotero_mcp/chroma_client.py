@@ -48,8 +48,15 @@ class OpenAIEmbeddingFunction(EmbeddingFunction):
         self.client = openai.OpenAI(**client_kwargs)
 
     def __call__(self, input: Documents) -> Embeddings:
-        response = self.client.embeddings.create(model=self.model_name, input=input)
-        return [data.embedding for data in response.data]
+        # Batch processing for APIs with batch size limits (e.g., Tongyi limits to 10)
+        batch_size = 10
+        all_embeddings: list[list[float]] = []
+        input_list = list(input)
+        for i in range(0, len(input_list), batch_size):
+            batch = input_list[i:i + batch_size]
+            response = self.client.embeddings.create(model=self.model_name, input=batch)
+            all_embeddings.extend([data.embedding for data in response.data])
+        return all_embeddings
 
     # chromadb may call `EmbeddingFunction.name()` as an unbound method when
     # serializing legacy configs. Accept being called with no `self`.

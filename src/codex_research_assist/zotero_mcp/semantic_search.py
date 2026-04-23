@@ -267,14 +267,23 @@ class ResearchAssistSemanticSearch:
         self,
         *,
         collection_names: list[str] | None = None,
-        limit: int = 500,
+        limit: int | None = None,
         force_rebuild: bool = False,
     ) -> dict[str, Any]:
         """Fetch items from Zotero API and index into ChromaDB.
 
         Works without a local zotero.sqlite — items are pulled via the
         Zotero Web API and embedded directly into the vector store.
+
+        Args:
+            collection_names: Optional list of collection names to filter by
+            limit: Maximum number of items to fetch (None for unlimited, defaults to 10000)
+            force_rebuild: Whether to reset the collection before indexing
         """
+        # Default to a higher limit for full library sync
+        if limit is None:
+            limit = 10000
+
         if force_rebuild:
             self.chroma_client.reset_collection()
 
@@ -325,9 +334,19 @@ class ResearchAssistSemanticSearch:
         self,
         *,
         force_rebuild: bool = False,
-        limit: int | None = 500,
+        limit: int | None = None,
         extract_fulltext: bool = False,
     ) -> dict[str, Any]:
+        """Update the semantic search database from local Zotero database.
+
+        Args:
+            force_rebuild: Whether to reset the collection before indexing
+            limit: Maximum items to fetch (None for unlimited, defaults to 10000)
+            extract_fulltext: Whether to extract PDF fulltext
+        """
+        # Default to a higher limit for full library sync
+        if limit is None:
+            limit = 10000
         if force_rebuild:
             self.chroma_client.reset_collection()
 

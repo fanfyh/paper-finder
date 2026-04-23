@@ -1,4 +1,4 @@
-"""Zotero MCP support for the research-assist skill."""
+"""Zotero MCP support for the paper-finder tool."""
 
 from .server import mcp, main
 
