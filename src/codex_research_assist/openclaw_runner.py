@@ -1560,11 +1560,12 @@ def _write_viewer_json(candidates: list[dict], date_str: str, output_root: Path)
                 )
                 abstract = ""
         # Log if abstract ended up empty despite source data
+        debug_info = {}
         if not abstract:
-            import logging
-            logging.getLogger(__name__).warning(
-                "abstract is empty for %s (type=%s, raw=%s)",
-                title, type(raw_abstract), repr(str(raw_abstract)[:100]) if raw_abstract else "None"
+            debug_info["abstract_empty"] = True
+            debug_info["raw_abstract_type"] = str(type(raw_abstract).__name__)
+            debug_info["raw_abstract_repr"] = (
+                repr(str(raw_abstract)[:200]) if raw_abstract else "None"
             )
 
         # Build affiliations from OpenAlex authorships if available
@@ -1596,6 +1597,7 @@ def _write_viewer_json(candidates: list[dict], date_str: str, output_root: Path)
             ),
             "arxiv_id": paper.get("arxiv_id", ""),
             "relevance": paper.get("_relevance", 0),
+            "_debug": debug_info if debug_info else None,
         }
 
         # Keep entry with more info (summary_cn or affiliations filled)
