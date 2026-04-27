@@ -1,0 +1,28 @@
+## 任务：每周论文 Digest（GitHub Pages 模式）
+
+### 第一步：运行 Digest
+```bash
+cd /path/to/paper-finder && \
+uv run --project ~/.claude/tools/paper-finder \
+  paper-finder --action digest-all --config ~/.claude/tools/paper-finder/config.json
+```
+
+### 第二步：确认完成
+检查输出中的 `Wrote viewer JSON` 确认 papers_data.json 已生成。
+
+### 第三步：发布静态网站到 GitHub Pages
+```bash
+cd /path/to/paper-finder && \
+bash scripts/publish_viewer.sh
+```
+该脚本会检查 papers_data.json 是否有变化，有变化则 git add → commit → push。push 后 GitHub Actions 自动部署，1-2 分钟后可在 `https://<username>.github.io/paper-finder/` 访问。
+
+### 第四步：构建飞书 Markdown 消息
+输出格式：
+```
+📚 **论文日报** | YYYY-MM-DD
+共发现 **N** 篇新论文（来源：NBER + 期刊）
+🔗 阅读网站：https://<username>.github.io/paper-finder/
+[每篇：标题、作者、单位（若有）、PDF/URL、中文总结（若有）]
+```
+**重要：最终回复只输出飞书消息文本，不要输出其他说明。**
