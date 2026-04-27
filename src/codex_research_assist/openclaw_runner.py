@@ -1548,18 +1548,22 @@ def _write_viewer_json(candidates: list[dict], date_str: str, output_root: Path)
         key = f"{title}|{year}"
 
         raw_abstract = paper.get("abstract")
-        abstract = raw_abstract if raw_abstract else ""
-        if isinstance(abstract, dict):
+        # Always try to decode dict-format abstracts; convert non-string to string
+        if isinstance(raw_abstract, dict):
             try:
                 from .openalex_pipeline.client import decode_abstract
-                abstract = decode_abstract(abstract)
+                abstract = decode_abstract(raw_abstract)
             except Exception as e:
                 import logging
                 logging.getLogger(__name__).warning(
                     "decode_abstract failed for %s: %s", title, e
                 )
                 abstract = ""
-        # Log if abstract ended up empty despite source data
+        elif isinstance(raw_abstract, str):
+            abstract = raw_abstract
+        else:
+            abstract = str(raw_abstract) if raw_abstract else ""
+
         debug_info = {}
         if not abstract:
             debug_info["abstract_empty"] = True
