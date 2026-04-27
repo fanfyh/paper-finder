@@ -1,0 +1,27 @@
+## 任务：每周论文 Digest（本地模式）
+
+### 第一步：运行 Digest
+```bash
+cd /path/to/paper-finder && \
+uv run --project ~/.claude/tools/paper-finder \
+  paper-finder --action digest-all --config ~/.claude/tools/paper-finder/config.json
+```
+
+### 第二步：确认完成
+检查输出中的 `Wrote viewer JSON` 确认 papers_data.json 已生成。
+
+### 第三步：启动本地阅读网站
+```bash
+cd /path/to/paper-finder/reports/viewer && \
+python3 -m http.server 8765
+```
+浏览器访问 http://localhost:8765
+
+### 第四步：构建飞书 Markdown 消息
+输出格式：
+```
+📚 **论文日报** | YYYY-MM-DD
+共发现 **N** 篇新论文（来源：NBER + 期刊）
+[每篇：标题、作者、单位（若有）、PDF/URL、中文总结（若有）]
+```
+**重要：最终回复只输出飞书消息文本，不要输出其他说明。**
