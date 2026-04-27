@@ -236,4 +236,24 @@ function bindFilters() {
   document.getElementById("keyword").addEventListener("keydown", e => {
     if (e.key === "Enter") render();
   });
+
+  // Export favorites modal
+  document.getElementById("exportFavBtn").addEventListener("click", () => {
+    const favData = [...favorites].map(k => {
+      const [title, year] = k.split("|");
+      return { title, year: year || null };
+    });
+    const payload = { updated: new Date().toISOString().slice(0, 10), favorites: favData };
+    document.getElementById("favJson").value = JSON.stringify(payload, null, 2);
+    document.getElementById("favModal").style.display = "flex";
+  });
+
+  document.getElementById("copyFavBtn").addEventListener("click", () => {
+    navigator.clipboard.writeText(document.getElementById("favJson").value)
+      .then(() => { document.getElementById("copyFavBtn").textContent = "已复制 ✓"; setTimeout(() => { document.getElementById("copyFavBtn").textContent = "复制到剪贴板"; }, 2000); });
+  });
+
+  document.getElementById("closeFavBtn").addEventListener("click", () => {
+    document.getElementById("favModal").style.display = "none";
+  });
 }

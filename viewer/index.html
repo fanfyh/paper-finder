@@ -76,8 +76,20 @@
       <div class="actions">
         <button id="applyBtn" class="btn btn-primary">筛选</button>
         <button id="resetBtn" class="btn">重置</button>
+        <button id="exportFavBtn" class="btn">导出收藏</button>
       </div>
     </section>
+
+    <div id="favModal" class="modal" style="display:none">
+      <div class="modal-content">
+        <h3>收藏数据</h3>
+        <p>复制以下内容发给 Hermes：</p>
+        <textarea id="favJson" rows="8" readonly style="width:100%;font-size:12px"></textarea>
+        <br>
+        <button id="copyFavBtn" class="btn btn-primary">复制到剪贴板</button>
+        <button id="closeFavBtn" class="btn">关闭</button>
+      </div>
+    </div>
 
     <section class="summary" id="summary"></section>
     <section class="cards" id="cards"></section>
