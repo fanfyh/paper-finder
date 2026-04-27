@@ -10,11 +10,12 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import html
 import json
 import logging
 import sys
 import tempfile
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from .arxiv_profile_pipeline.client import fetch_arxiv_feed
@@ -41,101 +42,6 @@ LOG = logging.getLogger("openclaw_runner")
 DEFAULT_CONFIG_DIR = Path.home() / ".claude" / "tools" / "paper-finder"
 DEFAULT_CONFIG = DEFAULT_CONFIG_DIR / "config.json"
 JOURNAL_LIST_PATH = DEFAULT_CONFIG_DIR / "assets" / "journal_list.json"
-
-
-def _load_journal_aliases() -> dict[str, str]:
-    """Load journal aliases from journal_list.json.
-
-    Returns:
-        dict mapping alias to OpenAlex ID
-    """
-    aliases = {}
-
-    # Try to load from assets
-    if JOURNAL_LIST_PATH.exists():
-        try:
-            with open(JOURNAL_LIST_PATH, "r", encoding="utf-8") as f:
-                journals = json.load(f)
-
-            for j in journals:
-                openalex_id = j.get("openalex_id", "")
-                if not openalex_id:
-                    continue
-
-                # Extract ID from URL if needed
-                if "/" in openalex_id:
-                    openalex_id = openalex_id.split("/")[-1]
-
-                title = j.get("title", "")
-                cufe_rank = j.get("cufe_rank", "")
-
-                # Only include AAA and AA journals
-                if cufe_rank not in ("AAA", "AA"):
-                    continue
-
-                # Create alias from title
-                alias = _create_journal_alias(title)
-                if alias:
-                    aliases[alias] = openalex_id
-
-            LOG.info("Loaded %d journal aliases from %s", len(aliases), JOURNAL_LIST_PATH)
-            return aliases
-        except Exception as e:
-            LOG.warning("Failed to load journal list: %s", e)
-
-    # Fallback: empty dict
-    LOG.warning("Using empty journal alias list")
-    return {}
-
-
-def _create_journal_alias(title: str) -> str | None:
-    """Create a short alias from journal title.
-
-    Examples:
-        "American Economic Review" -> "AER"
-        "Journal of Political Economy" -> "JPE"
-        "Quarterly Journal of Economics" -> "QJE"
-    """
-    if not title:
-        return None
-
-    # Common abbreviations
-    common = {
-        "American": "A",
-        "Journal": "J",
-        "Review": "R",
-        "Quarterly": "Q",
-        "Studies": "S",
-        "Economic": "E",
-        "Economics": "E",
-        "Political": "P",
-        "Science": "S",
-        "Public": "P",
-        "Administration": "A",
-        "Sociology": "Soc",
-        "Development": "D",
-        "International": "I",
-        "European": "E",
-        "Theoretical": "T",
-        "Applied": "A",
-        "Management": "M",
-        "Policy": "P",
-        "Organization": "O",
-        "Organizations": "O",
-    }
-
-    words = title.split()
-    alias_parts = []
-
-    for word in words:
-        if word in ("of", "the", "and", "&"):
-            continue
-        alias_parts.append(common.get(word, word[0].upper()))
-
-    alias = "".join(alias_parts)
-
-    # Handle conflicts by adding numbers
-    return alias
 
 
 def _config_bool(value: object, default: bool) -> bool:
@@ -240,13 +146,7 @@ def _search_email_subject(config: dict, *, date_str: str, query: str, paper_coun
 
 
 def _email_escape(text: str) -> str:
-    return (
-        str(text)
-        .replace("&", "&amp;")
-        .replace("<", "&lt;")
-        .replace(">", "&gt;")
-        .replace('"', "&quot;")
-    )
+    return html.escape(str(text), quote=True)
 
 
 def _display_date(date_str: str) -> str:
@@ -1080,205 +980,7 @@ def action_digest(config: dict, fmt: str = "markdown", *, config_path: Path | No
             pass
 
 
-def action_search(query: str, top: int = 5, fmt: str = "markdown", config: dict | None = None, config_path: Path | None = None, source: str = "openalex") -> str:
-    config = config or {}
-
-    # Use OpenAlex search (default, no journal restriction)
-    if source == "openalex" or source == "all":
-        LOG.info("Searching OpenAlex (all sources) for: %s", query)
-        try:
-            from .openalex_pipeline.client import search_works
-            papers = search_works(keywords=[query], per_page=top, sort="relevance_score:desc")
-            LOG.info("Found %d results from OpenAlex", len(papers))
-
-            lines = [f"# OpenAlex Search: \"{query}\"", f"\nFound {len(papers)} results:\n"]
-            for i, paper in enumerate(papers, 1):
-                title = paper.get("title", "Untitled")
-                authors = ", ".join([a["name"] for a in paper.get("authors", [])[:3]])
-                if len(paper.get("authors", [])) > 3:
-                    authors += " et al."
-                source_name = paper.get("_source", "Unknown")
-                date = paper.get("publication_date", "")
-                cited = paper.get("cited_by_count", 0)
-                url = paper.get("url", "")
-                abstract = paper.get("abstract", "")[:300] + "..." if len(paper.get("abstract", "")) > 300 else paper.get("abstract", "")
-
-                lines.append(f"## {i}. {title}")
-                if authors:
-                    lines.append(f"**Authors:** {authors}")
-                if source_name:
-                    lines.append(f"**Source:** {source_name}")
-                if date:
-                    lines.append(f"**Date:** {date}")
-                if cited:
-                    lines.append(f"**Cited:** {cited}")
-                if url:
-                    lines.append(f"**URL:** {url}")
-                if abstract:
-                    lines.append(f"\n> {abstract}")
-                lines.append("")
-            return "\n".join(lines)
-        except Exception as exc:
-            LOG.warning("OpenAlex search failed: %s", exc)
-
-    # NBER search
-    if source == "nber":
-        LOG.info("Searching NBER for: %s", query)
-        try:
-            from .openalex_pipeline.client import search_and_parse
-            papers = search_and_parse(keywords=[query], per_page=top)
-            LOG.info("Found %d results from NBER", len(papers))
-
-            lines = [f"# NBER Search: \"{query}\"", f"\nFound {len(papers)} results:\n"]
-            for i, paper in enumerate(papers, 1):
-                title = paper.get("title", "Untitled")
-                authors = ", ".join([a["name"] for a in paper.get("authors", [])[:3]])
-                if len(paper.get("authors", [])) > 3:
-                    authors += " et al."
-                nber_id = paper.get("nber_id", "")
-                date = paper.get("publication_date", "")
-                cited = paper.get("cited_by_count", 0)
-                url = paper.get("url", "")
-                abstract = paper.get("abstract", "")[:300] + "..." if len(paper.get("abstract", "")) > 300 else paper.get("abstract", "")
-
-                lines.append(f"## {i}. {title}")
-                if authors:
-                    lines.append(f"**Authors:** {authors}")
-                if nber_id:
-                    lines.append(f"**NBER:** {nber_id}")
-                if date:
-                    lines.append(f"**Date:** {date}")
-                if cited:
-                    lines.append(f"**Cited:** {cited}")
-                if url:
-                    lines.append(f"**URL:** {url}")
-                if abstract:
-                    lines.append(f"\n> {abstract}")
-                lines.append("")
-            return "\n".join(lines)
-        except Exception as exc:
-            LOG.warning("NBER search failed: %s", exc)
-
-    # Journal search (e.g., JPE, AER, etc.)
-    if source.upper() in JOURNAL_ALIAS:
-        journal_id = JOURNAL_ALIAS[source.upper()]
-        LOG.info("Searching %s for: %s", source, query)
-        try:
-            from .openalex_pipeline.client import search_journal_papers
-            papers = search_journal_papers(source_id=journal_id, keywords=[query], per_page=top)
-            LOG.info("Found %d results from %s", len(papers), source)
-
-            lines = [f"# {source} Search: \"{query}\"", f"\nFound {len(papers)} results:\n"]
-            for i, paper in enumerate(papers, 1):
-                title = paper.get("title", "Untitled")
-                authors = ", ".join([a["name"] for a in paper.get("authors", [])[:3]])
-                if len(paper.get("authors", [])) > 3:
-                    authors += " et al."
-                date = paper.get("publication_date", "")
-                cited = paper.get("cited_by_count", 0)
-                url = paper.get("url", "")
-                abstract = paper.get("abstract", "")[:300] + "..." if len(paper.get("abstract", "")) > 300 else paper.get("abstract", "")
-
-                lines.append(f"## {i}. {title}")
-                if authors:
-                    lines.append(f"**Authors:** {authors}")
-                if date:
-                    lines.append(f"**Date:** {date}")
-                if cited:
-                    lines.append(f"**Cited:** {cited}")
-                if url:
-                    lines.append(f"**URL:** {url}")
-                if abstract:
-                    lines.append(f"\n> {abstract}")
-                lines.append("")
-            return "\n".join(lines)
-        except Exception as exc:
-            LOG.warning("%s search failed: %s", source, exc)
-
-    # Use Zotero semantic search if enabled
-    if source == "zotero" and _semantic_search_enabled(config) and config_path is not None:
-        LOG.info("Searching Zotero library for: %s", query)
-        try:
-            semantic_search = create_semantic_search(config_path=config_path)
-            result = semantic_search.search(query=query, limit=top)
-            items = result.get("results", [])
-            LOG.info("Found %d results in Zotero library", len(items))
-            lines = [f"# Zotero Library Search: \"{query}\"", f"\nFound {len(items)} results:\n"]
-            for i, item in enumerate(items, 1):
-                meta = item.get("metadata") or {}
-                title = meta.get("title") or item.get("item_key", "Unknown")
-                creators = meta.get("creators") or meta.get("author") or ""
-                year = meta.get("date") or meta.get("year") or ""
-                score = item.get("similarity_score")
-                score_str = f" (similarity: {score:.2f})" if score is not None else ""
-                abstract = meta.get("abstract") or item.get("matched_text") or ""
-                abstract_preview = abstract[:200] + "..." if len(abstract) > 200 else abstract
-                lines.append(f"## {i}. {title}")
-                if creators:
-                    lines.append(f"**Authors:** {creators}")
-                if year:
-                    lines.append(f"**Year:** {year}{score_str}")
-                elif score_str:
-                    lines.append(f"**Score:**{score_str}")
-                if abstract_preview:
-                    lines.append(f"\n{abstract_preview}")
-                lines.append("")
-            return "\n".join(lines)
-        except Exception as exc:
-            LOG.warning("Semantic search failed, falling back to arXiv: %s", exc)
-
-    LOG.info("Searching arXiv for: %s", query)
-    search_query = build_search_query(categories=[], keywords=[query], exclude_keywords=None, logic="OR")
-    xml_text = fetch_arxiv_feed(search_query, start=0, max_results=top, sort_by="relevance", sort_order="descending")
-    papers = parse_feed(xml_text)
-    LOG.info("Found %d results", len(papers))
-
-    papers_subset = papers[:top]
-
-    if fmt in {"telegram", "delivery"}:
-        telegram_summary = format_search_telegram(papers_subset, query)
-        html_content = format_search_html(papers_subset, query)
-        date_str = datetime.now(timezone.utc).strftime("%Y-%m-%d-%H%M%S")
-        search_output_dir = Path.home() / ".claude" / "tools" / "paper-finder" / "reports" / "search"
-        search_output_dir.mkdir(parents=True, exist_ok=True)
-
-        html_path = search_output_dir / f"search-{date_str}.html"
-        html_path.write_text(html_content, encoding="utf-8")
-        LOG.info("Wrote HTML search results to %s", html_path)
-
-        telegram_json_path = search_output_dir / f"search-{date_str}.telegram.json"
-        email_json_path = search_output_dir / f"search-{date_str}.email.json"
-        email_body_text, email_body_html = _format_search_email_body(query=query, papers=papers_subset, date_str=date_str, html_path=html_path)
-        email_status, email_json_path, telegram_status, telegram_json_path = _deliver_report(
-            config=config or {},
-            preferred_channel=_primary_delivery_channel(config or {}),
-            subject=_search_email_subject(config or {}, date_str=date_str, query=query, paper_count=len(papers_subset)),
-            summary_text=format_search_markdown(papers_subset, query),
-            email_body_text=email_body_text,
-            email_body_html=email_body_html,
-            html_path=html_path,
-            email_json_path=email_json_path,
-            telegram_json_path=telegram_json_path,
-            extra_email_attachments=None,
-        )
-
-        lines = [f"Found {len(papers_subset)} results for \"{query}\":"]
-        for i, paper in enumerate(papers_subset, 1):
-            title = paper.get("title", "Untitled")
-            arxiv_id = paper.get("arxiv_id", "")
-            lines.append(f"{i}. {title[:60]}... ({arxiv_id})")
-        file_names = [html_path.name]
-        if email_json_path is not None:
-            file_names.append(email_json_path.name)
-        if telegram_json_path is not None:
-            file_names.append(telegram_json_path.name)
-        lines.append(f"Files: {', '.join(file_names)}")
-        lines.append(f"Primary channel: {_primary_delivery_channel(config or {})}")
-        lines.append(f"Email: {email_status}")
-        lines.append(f"Telegram: {telegram_status}")
-        return "\n".join(lines)
-
-    return format_search_markdown(papers_subset, query)
+# DELETED: duplicate action_search that fell back to arXiv — consolidated into the version below
 
 
 def action_render_digest(config: dict, digest_json: Path, fmt: str = "markdown") -> str:
@@ -1415,7 +1117,6 @@ def action_digest_nber(config: dict, fmt: str = "markdown", *, config_path: Path
 
     if fmt in {"telegram", "delivery"}:
         # Simple HTML for NBER
-        from .html_fmt import format_digest_html
         html_content = format_digest_html(candidates, date_str)
         html_path = output_root / f"nber-digest-{date_str}.html"
         html_path.write_text(html_content, encoding="utf-8")
@@ -1558,7 +1259,7 @@ def action_digest_all(config: dict, fmt: str = "markdown", *, config_path: Path 
     Uses the interest profile to score and rank papers by relevance.
     Saves result to vault and prints to stdout.
     """
-    from .openalex_pipeline.client import search_journal_papers, search_and_parse
+    from .openalex_pipeline.client import resolve_source, search_works
     from .ranker import score_map_match
 
     profile_path = get_profile_path(config)
@@ -1568,15 +1269,51 @@ def action_digest_all(config: dict, fmt: str = "markdown", *, config_path: Path 
     if not interests:
         return "No interests found in profile. Please run profile-refresh first."
 
+    # Compute from_date based on since_days (default 7)
+    since_days = (profile.get("retrieval_defaults") or {}).get("since_days", 7)
+    from_date = (datetime.now() - timedelta(days=since_days)).strftime("%Y-%m-%d")
+    LOG.info("Filtering papers published from %s (since_days=%d)", from_date, since_days)
+
     LOG.info("Running digest-all for %d interests across NBER + %d journals", len(interests), len(JOURNAL_ALIAS))
 
     all_candidates = []
     per_source_limit = 10
 
-    # First: NBER
-    LOG.info("Searching NBER...")
+    # Build combined search keywords from all interests (for journal/NBER search)
+    search_keywords = []
+    for interest in interests:
+        keywords = interest.get("query_aliases", [])
+        search_keywords.extend(keywords[:2])  # Take top 2 keywords per interest
+    search_keywords = list(set(search_keywords))[:5]  # Unique, max 5
+
+    # OpenAlex source filters don't work correctly with from_date (date field coverage gap),
+    # so we do a single global search with date filter and tag sources per-paper.
+    LOG.info("Searching global (with date filter: from %s)...", from_date)
     try:
-        nber_papers = search_and_parse(per_page=per_source_limit)
+        global_papers = search_works(
+            keywords=search_keywords,
+            per_page=per_source_limit * 10,  # Get more candidates globally
+            from_date=from_date,
+            sort="cited_by_count:desc",
+        )
+        for paper in global_papers:
+            src = paper.get("primary_location", {}) or {}
+            source_name = src.get("source", {}).get("display_name", "Unknown") if src else "Unknown"
+            paper["_source"] = source_name
+        all_candidates.extend(global_papers)
+        LOG.info("Found %d global papers", len(global_papers))
+    except Exception as e:
+        LOG.warning("Failed global search: %s", e)
+
+    # Also search NBER without date (NBER has complete date coverage)
+    LOG.info("Searching NBER (no date filter)...")
+    try:
+        nber_papers = search_works(
+            keywords=search_keywords,
+            source="NBER",
+            per_page=per_source_limit,
+            sort="publication_date:desc",
+        )
         for paper in nber_papers:
             paper["_source"] = "NBER"
             paper["_source_id"] = NBER_REPO_ID
@@ -1584,26 +1321,6 @@ def action_digest_all(config: dict, fmt: str = "markdown", *, config_path: Path 
         LOG.info("Found %d NBER papers", len(nber_papers))
     except Exception as e:
         LOG.warning("Failed to search NBER: %s", e)
-
-    # Then: each journal
-    for journal_name, journal_id in JOURNAL_ALIAS.items():
-        LOG.info("Searching %s...", journal_name)
-        try:
-            # Build search query from interest keywords
-            search_keywords = []
-            for interest in interests:
-                keywords = interest.get("keywords", [])
-                search_keywords.extend(keywords[:2])  # Take top 2 keywords per interest
-            search_keywords = list(set(search_keywords))[:5]  # Unique, max 5
-
-            papers = search_journal_papers(source_id=journal_id, keywords=search_keywords, per_page=per_source_limit)
-            for paper in papers:
-                paper["_source"] = journal_name
-                paper["_source_id"] = journal_id
-            all_candidates.extend(papers)
-            LOG.info("Found %d papers from %s", len(papers), journal_name)
-        except Exception as e:
-            LOG.warning("Failed to search %s: %s", journal_name, e)
 
     # Score by relevance to interests
     LOG.info("Scoring papers by relevance...")
@@ -1630,6 +1347,14 @@ def action_digest_all(config: dict, fmt: str = "markdown", *, config_path: Path 
     # Build index mapping for high-relevance papers in top_candidates
     high_paper_ids = {id(p): idx + 1 for idx, p in enumerate(high_relevance_papers)}
 
+    # Attach summary_cn to each paper that has an LLM insight (persist for viewer)
+    for paper in top_candidates:
+        paper_id = id(paper)
+        if paper_id in high_paper_ids:
+            insight_idx = high_paper_ids[paper_id]
+            if insight_idx in llm_insights:
+                paper["summary_cn"] = llm_insights[insight_idx]
+
     # Generate output
     date_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
@@ -1643,7 +1368,7 @@ def action_digest_all(config: dict, fmt: str = "markdown", *, config_path: Path 
         f"# Literature Digest (All Sources) - {date_str}",
         "",
         f"> Sources: NBER + {len(JOURNAL_ALIAS)} journals",
-        f"> Interests: {', '.join(i.get('name', '') for i in interests)}",
+        f"> Interests: {', '.join(i.get('label', '') for i in interests)}",
         f"> Total found: {len(all_candidates)} papers",
         f"> Sorted by: Relevance score",
         "",
@@ -1653,9 +1378,21 @@ def action_digest_all(config: dict, fmt: str = "markdown", *, config_path: Path 
 
     for i, paper in enumerate(top_candidates, 1):
         title = paper.get("title", "Untitled")
-        authors = ", ".join([a["name"] for a in paper.get("authors", [])[:3]])
-        if len(paper.get("authors", [])) > 3:
-            authors += " et al."
+        authors_raw = paper.get("authors", paper.get("authorships", []))
+        if isinstance(authors_raw, list) and len(authors_raw) > 0:
+            first = authors_raw[0]
+            if isinstance(first, dict) and "author" in first:
+                author_names = [a.get("author", {}).get("display_name", "") for a in authors_raw[:3]]
+            elif isinstance(first, dict):
+                author_names = [a.get("name", "") for a in authors_raw[:3]]
+            else:
+                author_names = [str(a) for a in authors_raw[:3]]
+        else:
+            author_names = []
+        if len(authors_raw) > 3:
+            authors = ", ".join(author_names) + " et al."
+        else:
+            authors = ", ".join(author_names)
         source = paper.get("_source", "Unknown")
         nber_id = paper.get("nber_id", "")
         date = paper.get("publication_date", "")
@@ -1695,6 +1432,14 @@ def action_digest_all(config: dict, fmt: str = "markdown", *, config_path: Path 
 
     output = "\n".join(lines)
 
+    # Always write HTML digest alongside the vault markdown
+    output_root = get_output_root(config)
+    output_root.mkdir(parents=True, exist_ok=True)
+    html_content = format_digest_html([{"paper": p} for p in top_candidates], date_str)
+    html_path = output_root / f"digest-all-{date_str}.html"
+    html_path.write_text(html_content, encoding="utf-8")
+    LOG.info("Wrote HTML digest to %s", html_path)
+
     # If format is delivery or telegram, also send via email
     if fmt in {"telegram", "delivery"}:
         # Get output root for saving files
@@ -1712,7 +1457,6 @@ def action_digest_all(config: dict, fmt: str = "markdown", *, config_path: Path 
             candidates_for_delivery.append({"paper": paper_copy})
 
         # Format HTML for email - use candidates format
-        from .html_fmt import format_digest_html
         html_content = format_digest_html(candidates_for_delivery, date_str)
         html_path = output_root / f"digest-all-{date_str}.html"
         html_path.write_text(html_content, encoding="utf-8")
@@ -1728,9 +1472,13 @@ def action_digest_all(config: dict, fmt: str = "markdown", *, config_path: Path 
             profile_summary=profile_summary,
         )
 
-        # Save JSON
+        # Save JSON with summary_cn for viewer
         digest_json_path = output_root / f"digest-all-{date_str}.json"
         digest_json_path.write_text(json.dumps({"candidates": candidates_for_delivery, "date": date_str}, indent=2), encoding="utf-8")
+        LOG.info("Wrote digest JSON to %s", digest_json_path)
+
+        # Also write viewer/papers_data.json for GitHub Pages static site
+        _write_viewer_json(candidates_for_delivery, date_str, output_root)
 
         # Send email
         email_cfg = _email_config(config)
@@ -1757,20 +1505,191 @@ def action_digest_all(config: dict, fmt: str = "markdown", *, config_path: Path 
     output_file.write_text(output, encoding="utf-8")
     LOG.info("Saved digest to %s", output_file)
 
+    # Also write viewer JSON for GitHub Pages (non-delivery branch)
+    _write_viewer_json([{"paper": p} for p in top_candidates], date_str, output_root)
+
     return output
 
 
-# Journal short name to OpenAlex ID mapping
-# Loaded from assets/journal_list.json (AAA & AA journals only)
-# Use `--source list` to see all available journals
-JOURNAL_ALIAS = _load_journal_aliases()
+def _write_viewer_json(candidates: list[dict], date_str: str, output_root: Path) -> None:
+    """Write/update viewer/papers_data.json from digest candidates for GitHub Pages."""
+    import json as _json
 
+    VIEWER_DIR = output_root / "viewer"
+    VIEWER_JSON = VIEWER_DIR / "papers_data.json"
+    VIEWER_DIR.mkdir(parents=True, exist_ok=True)
+
+    # Load existing data to accumulate papers across digests
+    existing: dict[str, dict] = {}
+    if VIEWER_JSON.exists():
+        try:
+            existing_data = _json.loads(VIEWER_JSON.read_text(encoding="utf-8"))
+            for p in existing_data.get("papers", []):
+                key = f"{p.get('title', '')}|{p.get('year', '')}"
+                if key:
+                    existing[key] = p
+        except Exception:
+            existing = {}
+
+    # Merge new candidates (prefer entries with more fields filled in)
+    for cand in candidates:
+        paper = cand.get("paper", {})
+        # Normalize authors
+        authors_raw = paper.get("authors", [])
+        if isinstance(authors_raw, list) and authors_raw and isinstance(authors_raw[0], dict):
+            author_names = [a.get("name", "") for a in authors_raw if a.get("name")]
+        elif isinstance(authors_raw, list):
+            author_names = [str(a) for a in authors_raw]
+        else:
+            author_names = []
+
+        title = paper.get("title", "Untitled")
+        year = paper.get("publication_year", "") or (paper.get("publication_date", "")[:4] if paper.get("publication_date") else "")
+        key = f"{title}|{year}"
+
+        raw_abstract = paper.get("abstract")
+        abstract = raw_abstract if raw_abstract else ""
+        if isinstance(abstract, dict):
+            try:
+                from .openalex_pipeline.client import decode_abstract
+                abstract = decode_abstract(abstract)
+            except Exception as e:
+                import logging
+                logging.getLogger(__name__).warning(
+                    "decode_abstract failed for %s: %s", title, e
+                )
+                abstract = ""
+        # Log if abstract ended up empty despite source data
+        if not abstract:
+            import logging
+            logging.getLogger(__name__).warning(
+                "abstract is empty for %s (type=%s, raw=%s)",
+                title, type(raw_abstract), repr(str(raw_abstract)[:100]) if raw_abstract else "None"
+            )
+
+        # Build affiliations from OpenAlex authorships if available
+        affiliations = []
+        for authorship in paper.get("authorships", []):
+            inst = (authorship.get("institutions") or [{}])[0] or {}
+            name = inst.get("display_name", "") or inst.get("name", "")
+            if name:
+                affiliations.append(name)
+        affiliation_str = "; ".join(affiliations) if affiliations else paper.get("affiliations", "")
+
+        entry = {
+            "title": title,
+            "authors": author_names,
+            "author_line": (", ".join(author_names[:3]) + (" et al." if len(author_names) > 3 else "")) if author_names else "",
+            "affiliations": affiliation_str,
+            "year": str(year),
+            "published_date": paper.get("publication_date", ""),
+            "crawled_date": date_str,
+            "abstract": abstract,
+            "summary_cn": paper.get("summary_cn", ""),
+            "cited_by_count": paper.get("cited_by_count", 0),
+            "source_title": paper.get("_source", "") or paper.get("source_title", ""),
+            "url": (
+                paper.get("url")
+                or paper.get("doi", "")
+                or (paper.get("primary_location") or {}).get("landing_page_url", "")
+                or f"https://openalex.org/{paper.get('id', '')}"
+            ),
+            "arxiv_id": paper.get("arxiv_id", ""),
+            "relevance": paper.get("_relevance", 0),
+        }
+
+        # Keep entry with more info (summary_cn or affiliations filled)
+        existing_key = existing.get(key)
+        if not existing_key or (
+            len(entry.get("summary_cn", "")) > len(existing_key.get("summary_cn", ""))
+            or len(entry.get("affiliations", "")) > len(existing_key.get("affiliations", ""))
+        ):
+            existing[key] = entry
+
+    papers = list(existing.values())
+    papers.sort(key=lambda x: (x.get("crawled_date", ""), x.get("published_date", "")), reverse=True)
+
+    crawled_dates = sorted({p.get("crawled_date", "") for p in papers if p.get("crawled_date")})
+    published_dates = sorted({p.get("published_date", "") for p in papers if p.get("published_date")})
+
+    payload = {
+        "count": len(papers),
+        "crawled_date_min": crawled_dates[0] if crawled_dates else "",
+        "crawled_date_max": crawled_dates[-1] if crawled_dates else "",
+        "published_date_min": published_dates[0] if published_dates else "",
+        "published_date_max": published_dates[-1] if published_dates else "",
+        "date": date_str,
+        "papers": papers,
+    }
+
+    VIEWER_JSON.write_text(_json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    LOG.info("Wrote viewer JSON: %s (%d papers)", VIEWER_JSON, len(papers))
+
+
+# Source alias map — loaded lazily from journal_list.json via the unified client
+from .openalex_pipeline.client import _load_journal_aliases, resolve_source
+
+JOURNAL_ALIAS = _load_journal_aliases()
 JOURNAL_NAME = {v: k for k, v in JOURNAL_ALIAS.items()}
 
+# Hard-coded NBER repo ID — kept here for action_digest_all compatibility
+# (NBER is also in journal_list.json; this is the canonical OpenAlex source ID)
 NBER_REPO_ID = "S2809516038"
 
 # All sources for journal-digest
-ALL_SOURCES = [NBER_REPO_ID] + list(JOURNAL_ALIAS.values())
+ALL_SOURCES = [NBER_REPO_ID] + list(set(JOURNAL_ALIAS.values()))
+
+
+def _normalize_openalex_for_html(paper: dict) -> dict:
+    """Convert OpenAlex paper dict to the flat dict format expected by format_search_html."""
+    # OpenAlex uses 'authorships', not 'authors'
+    authors_raw = paper.get("authorships", paper.get("authors", []))
+    if isinstance(authors_raw, list) and len(authors_raw) > 0:
+        # OpenAlex: [{'author': {'display_name': 'Alice'}, ...}]
+        # arXiv: [{'name': 'Alice'}, ...] or ['Alice', 'Bob']
+        first = authors_raw[0]
+        if isinstance(first, dict) and "author" in first:
+            # OpenAlex nested format
+            author_names = [a.get("author", {}).get("display_name", "") for a in authors_raw]
+        elif isinstance(first, dict):
+            author_names = [a.get("name", "") for a in authors_raw]
+        else:
+            author_names = [str(a) for a in authors_raw]
+    else:
+        author_names = []
+
+    if len(author_names) > 2:
+        author_line = author_names[0] + " et al."
+    else:
+        author_line = ", ".join(author_names)
+
+    abstract = paper.get("abstract", "") or ""
+    if isinstance(abstract, dict):
+        from .openalex_pipeline.client import decode_abstract
+        abstract = decode_abstract(abstract)
+
+    url = (
+        paper.get("url")
+        or paper.get("doi")
+        or (paper.get("primary_location") or {}).get("landing_page_url")
+        or paper.get("id", "")
+    )
+    if url and not url.startswith("http"):
+        url = f"https://doi.org/{url}" if url.startswith("10.") else url
+    if url and not url.startswith("http"):
+        url = f"https://openalex.org/{url}"
+
+    return {
+        "title": paper.get("title", "Untitled"),
+        "authors": author_names,
+        "author_line": author_line,
+        "summary": abstract,
+        "html_url": url,
+        "arxiv_id": paper.get("arxiv_id", ""),
+        "year": paper.get("publication_year", ""),
+        "cited_by_count": paper.get("cited_by_count", 0),
+        "source_title": paper.get("_source") or paper.get("source_title", ""),
+    }
 
 
 def action_search(
@@ -1778,19 +1697,22 @@ def action_search(
     top: int = 20,
     source: str | None = None,
     from_date: str | None = None,
+    fmt: str = "markdown",
 ) -> str:
     """Search papers on OpenAlex.
 
     Default: Global search (no journal restriction).
     With --source: Search specific journal or NBER.
+    Supports fmt=markdown (default) or fmt=html for HTML output.
 
     Args:
         query: Search keywords
         top: Number of results
         source: Optional - "nber" or journal short name (JPE, AER, etc.) to restrict search
         from_date: Filter by publication date
+        fmt: Output format — "markdown" (default) or "html"
     """
-    from .openalex_pipeline.client import search_journal_papers, search_and_parse, search_works
+    from .openalex_pipeline.client import resolve_source, search_works
 
     keywords = [kw.strip() for kw in query.replace(",", " ").split() if kw.strip()]
 
@@ -1799,88 +1721,75 @@ def action_search(
         LOG.info("Searching OpenAlex (global, no journal restriction): keywords=%s", keywords)
         papers = search_works(keywords=keywords, from_date=from_date, per_page=top, sort="relevance_score:desc")
         source_label = "OpenAlex (Global)"
-
-        lines = [f"# Search: \"{query}\"", f"**Source:** {source_label}\n", f"\nFound {len(papers)} papers:\n"]
-        for i, p in enumerate(papers, 1):
-            title = p.get("title", "Untitled")
-            authors = ", ".join(a["name"] for a in p.get("authors", [])[:3])
-            if len(p.get("authors", [])) > 3:
-                authors += " et al."
-            journal_name = p.get("_source", "Unknown")
-            date = p.get("publication_date", "")
-            cited = p.get("cited_by_count", 0)
-            abstract = p.get("abstract", "")
-            abstract_preview = abstract[:300] + "..." if len(abstract) > 300 else abstract
-            url = p.get("url", "")
-
-            lines.append(f"## {i}. {title}")
-            if authors:
-                lines.append(f"**Authors:** {authors}")
-            meta_parts = [journal_name]
-            if date:
-                meta_parts.append(f"Date: {date}")
-            if cited:
-                meta_parts.append(f"Cited: {cited}")
-            lines.append(f"**{' | '.join(meta_parts)}**")
-            if url:
-                lines.append(f"**URL:** {url}")
-            if abstract_preview:
-                lines.append(f"\n> {abstract_preview}")
-            lines.append("")
-        return "\n".join(lines)
-
-    # Journal/NBER specific search (only when explicitly requested)
-    source_upper = source.upper() if source else ""
-
-    if source_upper == "NBER":
+    elif source.upper() == "NBER":
         LOG.info("Searching NBER: keywords=%s", keywords)
-        papers = search_and_parse(keywords=keywords, from_date=from_date, per_page=top)
+        papers = search_works(keywords=keywords, source="NBER", from_date=from_date, per_page=top)
         source_label = "NBER Working Papers"
-    elif source_upper in JOURNAL_ALIAS:
-        source_id = JOURNAL_ALIAS[source_upper]
-        source_label = f"{source_upper} ({source_id})"
-        LOG.info("Searching %s: keywords=%s", source_upper, keywords)
-        papers = search_journal_papers(source_id=source_id, keywords=keywords, from_date=from_date, per_page=top)
+    elif source.upper() in JOURNAL_ALIAS:
+        source_id = JOURNAL_ALIAS[source.upper()]
+        source_label = f"{source.upper()} ({source_id})"
+        LOG.info("Searching %s: keywords=%s", source.upper(), keywords)
+        papers = search_works(source=source_id, keywords=keywords, from_date=from_date, per_page=top)
     else:
-        # Unknown source
-        source_label = f"Unknown ({source})"
-        LOG.warning("Unknown source '%s', trying as OpenAlex ID", source)
-        papers = search_journal_papers(source_id=source, keywords=keywords, from_date=from_date, per_page=top)
+        try:
+            resolved_id = resolve_source(source)
+            papers = search_works(source=resolved_id, keywords=keywords, from_date=from_date, per_page=top)
+            source_label = f"{source} ({resolved_id})"
+        except ValueError:
+            return f"Unknown source '{source}'. Available aliases: NBER, {', '.join(sorted(JOURNAL_ALIAS.keys())[:10])}..."
 
     LOG.info("Found %d papers", len(papers))
 
+    # HTML output path
+    if fmt == "html":
+        normalized = [_normalize_openalex_for_html(p) for p in papers]
+        html_content = format_search_html(normalized, query)
+        date_str = datetime.now(timezone.utc).strftime("%Y-%m-%d-%H%M%S")
+        search_output_dir = Path.home() / ".claude" / "tools" / "paper-finder" / "reports" / "search"
+        search_output_dir.mkdir(parents=True, exist_ok=True)
+        html_path = search_output_dir / f"search-{date_str}.html"
+        html_path.write_text(html_content, encoding="utf-8")
+        LOG.info("Wrote HTML search results to %s", html_path)
+        return f"HTML saved to: {html_path}"
+
+    # Markdown output (default)
     lines = [f"# Search: \"{query}\"", f"**Source:** {source_label}\n", f"\nFound {len(papers)} papers:\n"]
     for i, p in enumerate(papers, 1):
         title = p.get("title", "Untitled")
-        authors = ", ".join(a["name"] for a in p.get("authors", [])[:3])
-        if len(p.get("authors", [])) > 3:
+        authors_raw = p.get("authors", [])
+        if isinstance(authors_raw, list) and len(authors_raw) > 0:
+            if isinstance(authors_raw[0], dict):
+                author_names = [a.get("name", "") for a in authors_raw[:3]]
+            else:
+                author_names = [str(a) for a in authors_raw[:3]]
+        else:
+            author_names = []
+        authors = ", ".join(author_names)
+        if len(authors_raw) > 3:
             authors += " et al."
-        nber_id = p.get("nber_id", "")
-        source_tag = p.get("_source", "")
+        journal_name = p.get("_source", "") or p.get("source_title", "Unknown")
         date = p.get("publication_date", "")
         cited = p.get("cited_by_count", 0)
-        abstract = p.get("abstract", "")
+        abstract = p.get("abstract", "") or ""
+        if isinstance(abstract, dict):
+            from .openalex_pipeline.client import decode_abstract
+            abstract = decode_abstract(abstract)
         abstract_preview = abstract[:300] + "..." if len(abstract) > 300 else abstract
-        url = p.get("url", "")
+        url = p.get("url", "") or p.get("doi_url", "")
 
         lines.append(f"## {i}. {title}")
         if authors:
             lines.append(f"**Authors:** {authors}")
-        meta_parts = []
-        if source_tag:
-            meta_parts.append(source_tag)
-        if nber_id:
-            meta_parts.append(f"NBER: {nber_id}")
+        meta_parts = [journal_name]
         if date:
             meta_parts.append(f"Date: {date}")
         if cited:
             meta_parts.append(f"Cited: {cited}")
-        if meta_parts:
-            lines.append(f"**{' | '.join(meta_parts)}**")
+        lines.append(f"**{' | '.join(meta_parts)}**")
         if url:
             lines.append(f"**URL:** {url}")
         if abstract_preview:
-            lines.append(f"\n{abstract_preview}")
+            lines.append(f"\n> {abstract_preview}")
         lines.append("")
 
     return "\n".join(lines)
@@ -1893,7 +1802,7 @@ def action_journal_search(query: str, journal: str, top: int = 20, from_date: st
 
 def action_nber_search(query: str, top: int = 20, from_date: str | None = None) -> str:
     """Search NBER working papers on OpenAlex. (Legacy, use action_search instead)"""
-    return action_search(query=query, top=top, source="nber", from_date=from_date)
+    return action_search(query=query, top=top, source="NBER", from_date=from_date)
 
 
 def main():
