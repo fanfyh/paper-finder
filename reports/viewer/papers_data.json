@@ -1,11 +1,200 @@
 {
-  "count": 23,
+  "count": 32,
   "crawled_date_min": "2026-04-27",
-  "crawled_date_max": "2026-04-27",
+  "crawled_date_max": "2026-04-28",
   "published_date_min": "",
   "published_date_max": "",
-  "date": "2026-04-27",
+  "date": "2026-04-28",
   "papers": [
+    {
+      "title": "Moving to Opportunity and Tranquility: Neighborhood Effects on Adult Economic Self-Sufficiency and Health from a Randomized Housing Voucher Experiment",
+      "authors": [],
+      "author_line": "",
+      "affiliations": "Government of the United States of America; Harvard University; National Bureau of Economic Research; National Bureau of Economic Research",
+      "year": "2004",
+      "published_date": "",
+      "crawled_date": "2026-04-28",
+      "abstract": "",
+      "summary_cn": "",
+      "cited_by_count": 117,
+      "source_title": "NBER",
+      "url": "https://doi.org/10.2139/ssrn.588942",
+      "arxiv_id": "",
+      "relevance": 0.1,
+      "_debug": {
+        "abstract_empty": true,
+        "raw_abstract_type": "NoneType",
+        "raw_abstract_repr": "None"
+      }
+    },
+    {
+      "title": "High-Skilled Migration and Agglomeration",
+      "authors": [],
+      "author_line": "",
+      "affiliations": "International Organization for Migration; Wellesley Centers for Women; Wellesley Centers for Women; International Organization for Migration",
+      "year": "2016",
+      "published_date": "",
+      "crawled_date": "2026-04-28",
+      "abstract": "",
+      "summary_cn": "",
+      "cited_by_count": 9,
+      "source_title": "NBER",
+      "url": "https://doi.org/10.3386/w22926",
+      "arxiv_id": "",
+      "relevance": 0.1,
+      "_debug": {
+        "abstract_empty": true,
+        "raw_abstract_type": "NoneType",
+        "raw_abstract_repr": "None"
+      }
+    },
+    {
+      "title": "Age-Based Property Tax Exemptions",
+      "authors": [],
+      "author_line": "",
+      "affiliations": "National Bureau of Economic Research; Maryville University; Georgia State University",
+      "year": "2019",
+      "published_date": "",
+      "crawled_date": "2026-04-28",
+      "abstract": "",
+      "summary_cn": "",
+      "cited_by_count": 0,
+      "source_title": "NBER",
+      "url": "https://openalex.org/https://openalex.org/W3198441664",
+      "arxiv_id": "",
+      "relevance": 0.1,
+      "_debug": {
+        "abstract_empty": true,
+        "raw_abstract_type": "NoneType",
+        "raw_abstract_repr": "None"
+      }
+    },
+    {
+      "title": "The Economics of Place-Making Policies",
+      "authors": [],
+      "author_line": "",
+      "affiliations": "National Bureau of Economic Research; National Bureau of Economic Research",
+      "year": "2008",
+      "published_date": "",
+      "crawled_date": "2026-04-28",
+      "abstract": "",
+      "summary_cn": "",
+      "cited_by_count": 337,
+      "source_title": "NBER",
+      "url": "https://doi.org/10.3386/w14373",
+      "arxiv_id": "",
+      "relevance": 0.0667,
+      "_debug": {
+        "abstract_empty": true,
+        "raw_abstract_type": "NoneType",
+        "raw_abstract_repr": "None"
+      }
+    },
+    {
+      "title": "Money, Credit, Banking, and Payments System Policy",
+      "authors": [],
+      "author_line": "",
+      "affiliations": "Carnegie Mellon University",
+      "year": "1989",
+      "published_date": "",
+      "crawled_date": "2026-04-28",
+      "abstract": "",
+      "summary_cn": "",
+      "cited_by_count": 25,
+      "source_title": "NBER",
+      "url": "https://doi.org/10.2139/ssrn.2123526",
+      "arxiv_id": "",
+      "relevance": 0.0667,
+      "_debug": {
+        "abstract_empty": true,
+        "raw_abstract_type": "NoneType",
+        "raw_abstract_repr": "None"
+      }
+    },
+    {
+      "title": "Urban Public Finance",
+      "authors": [],
+      "author_line": "",
+      "affiliations": "National Bureau of Economic Research",
+      "year": "2012",
+      "published_date": "",
+      "crawled_date": "2026-04-28",
+      "abstract": "",
+      "summary_cn": "",
+      "cited_by_count": 20,
+      "source_title": "NBER",
+      "url": "https://doi.org/10.3386/w18244",
+      "arxiv_id": "",
+      "relevance": 0.0667,
+      "_debug": {
+        "abstract_empty": true,
+        "raw_abstract_type": "NoneType",
+        "raw_abstract_repr": "None"
+      }
+    },
+    {
+      "title": "China's Real Estate Market",
+      "authors": [],
+      "author_line": "",
+      "affiliations": "National Bureau of Economic Research; National Bureau of Economic Research",
+      "year": "2018",
+      "published_date": "",
+      "crawled_date": "2026-04-28",
+      "abstract": "",
+      "summary_cn": "",
+      "cited_by_count": 68,
+      "source_title": "NBER",
+      "url": "https://doi.org/10.3386/w25297",
+      "arxiv_id": "",
+      "relevance": 0.05,
+      "_debug": {
+        "abstract_empty": true,
+        "raw_abstract_type": "NoneType",
+        "raw_abstract_repr": "None"
+      }
+    },
+    {
+      "title": "Working from Home Around the World",
+      "authors": [],
+      "author_line": "",
+      "affiliations": "National Bureau of Economic Research; National Bureau of Economic Research; National Bureau of Economic Research; National Bureau of Economic Research; National Bureau of Economic Research; National Bureau of Economic Research",
+      "year": "2022",
+      "published_date": "",
+      "crawled_date": "2026-04-28",
+      "abstract": "",
+      "summary_cn": "",
+      "cited_by_count": 166,
+      "source_title": "NBER",
+      "url": "https://doi.org/10.3386/w30446",
+      "arxiv_id": "",
+      "relevance": 0.0,
+      "_debug": {
+        "abstract_empty": true,
+        "raw_abstract_type": "NoneType",
+        "raw_abstract_repr": "None"
+      }
+    },
+    {
+      "title": "Neighborhoods Matter: Assessing the Evidence for Place Effects",
+      "authors": [],
+      "author_line": "",
+      "affiliations": "Dartmouth College; Dartmouth College",
+      "year": "2021",
+      "published_date": "",
+      "crawled_date": "2026-04-28",
+      "abstract": "",
+      "summary_cn": "",
+      "cited_by_count": 38,
+      "source_title": "NBER",
+      "url": "https://doi.org/10.3386/w28953",
+      "arxiv_id": "",
+      "relevance": 0.0,
+      "_debug": {
+        "abstract_empty": true,
+        "raw_abstract_type": "NoneType",
+        "raw_abstract_repr": "None"
+      }
+    },
     {
       "title": "China's Macroeconomic Development: The Role of Gradualist Reforms",
       "authors": [],
