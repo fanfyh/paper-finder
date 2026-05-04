@@ -1,24 +1,11 @@
 {
-  "count": 61,
+  "count": 56,
   "crawled_date_min": "2026-05-04",
   "crawled_date_max": "2026-05-04",
   "published_date_min": "",
   "published_date_max": "",
   "date": "2026-05-04",
   "papers": [
-    {
-      "title": "PSR volume 120 issue 2 Cover and Back matter",
-      "authors": [],
-      "venue": "Journal",
-      "year": "None",
-      "published_at": "None",
-      "abstract": "",
-      "url": "https://doi.org/10.1017/s000305542510110x",
-      "doi": "https://doi.org/10.1017/s000305542510110x",
-      "cited_by_count": 0,
-      "relevance": 0.1,
-      "interest_name": "American Political Science Review"
-    },
     {
       "title": "Access to credit reduces the value of insurance",
       "authors": [],
@@ -30,20 +17,8 @@
       "doi": "https://doi.org/10.1016/j.jpubeco.2026.105633",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "Journal of Public Economics"
-    },
-    {
-      "title": "Editorial Board",
-      "authors": [],
-      "venue": "Journal",
-      "year": "None",
-      "published_at": "None",
-      "abstract": "",
-      "url": "https://doi.org/10.1016/s0047-2727(26)00083-6",
-      "doi": "https://doi.org/10.1016/s0047-2727(26)00083-6",
-      "cited_by_count": 0,
-      "relevance": 0.0,
-      "interest_name": "Journal of Public Economics"
+      "interest_name": "Journal of Public Economics",
+      "source_title": "Journal of Public Economics"
     },
     {
       "title": "Taxation and business entry: Evidence from the Polish self-employment “Flat” tax",
@@ -56,7 +31,8 @@
       "doi": "https://doi.org/10.1016/j.jpubeco.2026.105640",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "Journal of Public Economics"
+      "interest_name": "Journal of Public Economics",
+      "source_title": "Journal of Public Economics"
     },
     {
       "title": "Better late than never? Quantifying funding and liquidity effects of the PPP on pandemic-era employment recovery",
@@ -69,7 +45,8 @@
       "doi": "https://doi.org/10.1016/j.jpubeco.2026.105641",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "Journal of Public Economics"
+      "interest_name": "Journal of Public Economics",
+      "source_title": "Journal of Public Economics"
     },
     {
       "title": "Judge for yourself? The impact of controls on the rental market in interwar New York",
@@ -82,7 +59,8 @@
       "doi": "https://doi.org/10.1016/j.jue.2026.103859",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "Journal of Urban Economics"
+      "interest_name": "Journal of Urban Economics",
+      "source_title": "Journal of Urban Economics"
     },
     {
       "title": "Minimum wages, low-wage workers, and compliance under imperfect enforcement",
@@ -95,7 +73,8 @@
       "doi": "https://doi.org/10.1016/j.jdeveco.2026.103792",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "Journal of Development Economics"
+      "interest_name": "Journal of Development Economics",
+      "source_title": "Journal of Development Economics"
     },
     {
       "title": "Estimating how much children work: Questionnaires versus time use diaries",
@@ -108,7 +87,8 @@
       "doi": "https://doi.org/10.1016/j.jdeveco.2026.103797",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "Journal of Development Economics"
+      "interest_name": "Journal of Development Economics",
+      "source_title": "Journal of Development Economics"
     },
     {
       "title": "Desired fertility, realized fertility and the effects of China's Universal Two-Child Policy∗",
@@ -121,7 +101,8 @@
       "doi": "https://doi.org/10.1016/j.jdeveco.2026.103796",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "Journal of Development Economics"
+      "interest_name": "Journal of Development Economics",
+      "source_title": "Journal of Development Economics"
     },
     {
       "title": "Winning hearts after tying hands: The political impact of land titling reform in China",
@@ -134,7 +115,8 @@
       "doi": "https://doi.org/10.1016/j.jdeveco.2026.103800",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "Journal of Development Economics"
+      "interest_name": "Journal of Development Economics",
+      "source_title": "Journal of Development Economics"
     },
     {
       "title": "Ancestral irrigation and collective climate action",
@@ -147,7 +129,8 @@
       "doi": "https://doi.org/10.1016/j.jdeveco.2026.103805",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "Journal of Development Economics"
+      "interest_name": "Journal of Development Economics",
+      "source_title": "Journal of Development Economics"
     },
     {
       "title": "The emergence of the poverty-mental health gradient: Evidence from the great Pakistan earthquake of 2005",
@@ -160,7 +143,8 @@
       "doi": "https://doi.org/10.1016/j.jdeveco.2026.103795",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "Journal of Development Economics"
+      "interest_name": "Journal of Development Economics",
+      "source_title": "Journal of Development Economics"
     },
     {
       "title": "Landmine clearance and economic development: Evidence from multispectral satellite imagery, nighttime lights, and conflict events in Afghanistan",
@@ -173,7 +157,8 @@
       "doi": "https://doi.org/10.1016/j.jdeveco.2026.103791",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "Journal of Development Economics"
+      "interest_name": "Journal of Development Economics",
+      "source_title": "Journal of Development Economics"
     },
     {
       "title": "Contract enforcement in a stateless economy",
@@ -186,7 +171,8 @@
       "doi": "https://doi.org/10.1016/j.jdeveco.2026.103802",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "Journal of Development Economics"
+      "interest_name": "Journal of Development Economics",
+      "source_title": "Journal of Development Economics"
     },
     {
       "title": "Number one girl: Female top scorers and peer academic performance in junior high schools",
@@ -199,7 +185,8 @@
       "doi": "https://doi.org/10.1016/j.jdeveco.2026.103801",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "Journal of Development Economics"
+      "interest_name": "Journal of Development Economics",
+      "source_title": "Journal of Development Economics"
     },
     {
       "title": "The limits of local laws in global supply chains: Cutting ties or “edutrading” procurement partners?",
@@ -212,7 +199,8 @@
       "doi": "https://doi.org/10.1016/j.jdeveco.2026.103804",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "Journal of Development Economics"
+      "interest_name": "Journal of Development Economics",
+      "source_title": "Journal of Development Economics"
     },
     {
       "title": "China and African Parliaments Innocent Batsani-Ncube. Oxford: Oxford University Press, 2025. 235 pp. 256 pp. £84.00 (hbk). ISBN 9780198922292",
@@ -225,7 +213,8 @@
       "doi": "https://doi.org/10.1017/s0305741026102173",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "The China Quarterly"
+      "interest_name": "The China Quarterly",
+      "source_title": "China Quarterly"
     },
     {
       "title": "From Contention to Clientelism: Evidence from the Ten-Year Fishing Ban in China",
@@ -233,12 +222,13 @@
       "venue": "Journal",
       "year": "None",
       "published_at": "None",
-      "abstract": "",
+      "abstract": "\n How do ordinary Chinese people circumvent unpopular state policies? The existing literature primarily focuses on resistance against local bureaucrats. Drawing on ethnographic research on the ten-year fishing ban in the Yangtze River Basin, this article finds that fishermen (clients) continue to fish by maintaining patron–client relationships with the enforcers of the fishing ban (patrons). Ordinary fishermen seek the protection of enforcers through bribery. Enhanced state monitoring under the fishing ban facilitates bribery-based clientelism by weakening the fishermen’s everyday resistance, but it also constrains the power of enforcers by increasing the risk that their corruption will be discovered by upper-level authorities. For extremely poor fishermen, who are barely able to afford to pay bribes, their daily acts of resistance are morally justified by the need for subsistence safety, presenting enforcers with a dilemma: they must fulfil their law enforcement duties while also ensuring the survival of these individuals to maintain social stability. Therefore, cultivating a clientelist relationship with impoverished fishermen enables enforcers to manage their noncompliance, thereby balancing these conflicting goals. While clientelism protects people from unpopular policies to some extent, it more fundamentally strengthens the power of local bureaucrats, creating the potential for greater exploitation and larger-scale popular grievances in the long run.",
       "url": "https://doi.org/10.1017/s030574102610215x",
       "doi": "https://doi.org/10.1017/s030574102610215x",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "The China Quarterly"
+      "interest_name": "The China Quarterly",
+      "source_title": "China Quarterly"
     },
     {
       "title": "Governing through Visibility: Local Government Experimentation with Internet Celebrity Cities in China",
@@ -246,12 +236,13 @@
       "venue": "Journal",
       "year": "None",
       "published_at": "None",
-      "abstract": "",
+      "abstract": "\n \n The rise of internet celebrity cities has become one of the most striking phenomena in China since 2021. How do local governments respond and harness this trend to advance their development goals? This study focuses on local experimentation in creating such cities, drawing on the case of the Village Football Super League (\n Cun chao\n 村超) in Guizhou. We identify policy entrepreneurship as a key driver of local experimentation and highlight three core strategies for creating internet celebrity cities: crafting local symbols, co-producing viral content and mitigating public opinion risk. Further analysis shows that this experimentation, by attracting massive public attention, simultaneously promotes economic growth, strengthens social cohesion, reinforces state narratives and projects China’s national image onto the global stage. Overall, the findings suggest an emerging model in which public attention becomes a core resource for local development and governance in China’s digital era.\n",
       "url": "https://doi.org/10.1017/s0305741026102148",
       "doi": "https://doi.org/10.1017/s0305741026102148",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "The China Quarterly"
+      "interest_name": "The China Quarterly",
+      "source_title": "China Quarterly"
     },
     {
       "title": "Solving Agency Problems in Chinese Universities: Academics in the Shadow of the Party’s Declared Leadership",
@@ -259,12 +250,13 @@
       "venue": "Journal",
       "year": "None",
       "published_at": "None",
-      "abstract": "",
+      "abstract": "\n How does the party-state exercise leadership over universities and manage the individuals embedded in the university system without restraining their capacity for excellence and innovation? I argue that the presidential responsibility system has resolved a fundamental agency problem in Chinese universities. The system is supported by a set of mechanisms designed to enforce loyalty to the leadership of the Chinese Communist Party. It can easily adapt to political changes and thus maintain authoritarian rule without compromising the overarching agenda of research excellence.",
       "url": "https://doi.org/10.1017/s0305741026102112",
       "doi": "https://doi.org/10.1017/s0305741026102112",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "The China Quarterly"
+      "interest_name": "The China Quarterly",
+      "source_title": "China Quarterly"
     },
     {
       "title": "Collusion with Optimal Information Disclosure",
@@ -272,12 +264,13 @@
       "venue": "Journal",
       "year": "None",
       "published_at": "None",
-      "abstract": "",
+      "abstract": "\n Motivated by recent concerns surrounding the use of third-party pricing algorithms by competing firms, we study repeated Bertrand competition where market demand or the cost of serving the market is observed by an intermediary (or “algorithm”) that selectively discloses demand or cost information to maximize firms’ collusive profit. We show that an upper censorship disclosure policy is optimal, which leads to price rigidity and supra-monopoly prices in some states. Improving the algorithm’s accuracy reduces expected consumer surplus whenever it does so under monopoly pricing. When the state is positively correlated over time, the algorithm discloses more information when recent demand was lower or costs were higher. The analysis extends to a generalized model that accommodates product differentiation and capacity constraints. We relate our findings to recent antitrust cases.",
       "url": "https://doi.org/10.1093/qje/qjag020",
       "doi": "https://doi.org/10.1093/qje/qjag020",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "The Quarterly Journal of Economics"
+      "interest_name": "The Quarterly Journal of Economics",
+      "source_title": "Quarterly Journal of Economics"
     },
     {
       "title": "Credit Conditions when Lenders are Commonly Owned",
@@ -285,12 +278,13 @@
       "venue": "Journal",
       "year": "None",
       "published_at": "None",
-      "abstract": "",
+      "abstract": "\n We investigate how common ownership between lenders affects the terms of syndicated loans. We provide a novel view on the role of common ownership in mitigating information asymmetries on the quality of borrowers and the contractual distortions of lending conditions. Empirically, we show that higher levels of common ownership lower loan spreads, decrease the share of loans retained by the lead bank, and relax liquidity constraints at issuance. We use a novel exclusion restriction based on deposit multimarket contact to identify the effect of common ownership on loan pricing after accounting for its impact on lenders’ participation in the syndicate.",
       "url": "https://doi.org/10.1093/jeea/jvag020",
       "doi": "https://doi.org/10.1093/jeea/jvag020",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "Journal of the European Economic Association"
+      "interest_name": "Journal of the European Economic Association",
+      "source_title": "Journal of the European Economic Association"
     },
     {
       "title": "Emotions, Beliefs, and Policy Views",
@@ -303,7 +297,8 @@
       "doi": "https://doi.org/10.1093/jeea/jvag016",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "Journal of the European Economic Association"
+      "interest_name": "Journal of the European Economic Association",
+      "source_title": "Journal of the European Economic Association"
     },
     {
       "title": "Unrest, Layoffs, and Productivity at a Bangladeshi Sweater Factory,",
@@ -311,12 +306,13 @@
       "venue": "Journal",
       "year": "None",
       "published_at": "None",
-      "abstract": "",
+      "abstract": "\n Conflicts between management and workers are common in newly industrializing countries. Combining ethnographic, survey and administrative records from a Bangladeshi sweater factory, we study how workers responded when management laid off a quarter of the workers following a period of labor unrest. After the unrest, the factory experienced a substantial drop in productivity. Among surviving workers, those who likely had strong social connections - friends - among fired co-workers suffered relatively larger declines in productivity. Additional evidence on potential mechanism indicates a deliberate shading of effort to punish the factory’s management.",
       "url": "https://doi.org/10.1093/jeea/jvag017",
       "doi": "https://doi.org/10.1093/jeea/jvag017",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "Journal of the European Economic Association"
+      "interest_name": "Journal of the European Economic Association",
+      "source_title": "Journal of the European Economic Association"
     },
     {
       "title": "“Immigration, Search and Redistribution: A Quantitative Assessment of Native Welfare” A Reply",
@@ -324,12 +320,13 @@
       "venue": "Journal",
       "year": "None",
       "published_at": "None",
-      "abstract": "",
+      "abstract": "\n Stark and Byra (2025) identify a mistake in how capital income is calculated in the supplementary files of Battisti et al. (2018) and point out that our wage bargaining equation does not correspond to the Nash bargaining solution in the presence of wage taxation. We acknowledge both points and thank the authors for pointing out these issues. The bargaining solution we use in Battisti et al. (2018) is the Kalai (1977) proportional bargaining solution with fixed surplus shares, not Nash bargaining. In our reply, we show that if we calibrate the model to wage tax rates, correcting the coding mistake has only a minor effect on our original results if maintaining the original Kalai bargaining. If we also switch to the Nash bargaining solution, the estimated gains from immigration become smaller. Welfare effects depend on the precise nature of bargaining and tend to be larger with Kalai proportional bargaining. Average total welfare gains from immigration are then 0.37% for both low-skilled and high-skilled natives, instead of 1.25% for high-skilled and 1.00% for low-skilled natives in Battisti et al. (2018).",
       "url": "https://doi.org/10.1093/jeea/jvag018",
       "doi": "https://doi.org/10.1093/jeea/jvag018",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "Journal of the European Economic Association"
+      "interest_name": "Journal of the European Economic Association",
+      "source_title": "Journal of the European Economic Association"
     },
     {
       "title": "Wealth Heterogeneity and the Marginal Propensity to Consume out of Wealth,",
@@ -337,12 +334,13 @@
       "venue": "Journal",
       "year": "None",
       "published_at": "None",
-      "abstract": "",
+      "abstract": "\n We provide detailed estimates of how the marginal propensity to consume out of wealth (MPC) varies along the distribution of household wealth and by asset composition, and analyse the sources of MPC heterogeneity across euro area countries. To do this, we i) build a household-level panel dataset combining wealth and consumption surveys for five European countries, and ii) use instrumented household-level panel regressions. First, we find heterogeneity across the wealth distribution with lower MPCs for high-wealth households. Second, we account for asset composition and show the significant role of housing wealth in all countries. We show that our results are indicative of a collateral channel. Third, cross-country differences in MPCs are mostly explained by country-specific institutional and socio-economic characteristics in Germany (compared to Spain) and by differences in consumption behaviours for Belgium, Cyprus and Italy. We show that MPC heterogeneity is related to homeownership rates, mortgage markets, demographics, and wealth inequality. Finally, we investigate to what extent heterogeneous MPC and wealth inequality affect consumption inequality.",
       "url": "https://doi.org/10.1093/jeea/jvag019",
       "doi": "https://doi.org/10.1093/jeea/jvag019",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "Journal of the European Economic Association"
+      "interest_name": "Journal of the European Economic Association",
+      "source_title": "Journal of the European Economic Association"
     },
     {
       "title": "Europe falling behind: Structural transformation and labor productivity growth differences between Europe and the U.S.",
@@ -355,7 +353,8 @@
       "doi": "https://doi.org/10.1016/j.jinteco.2026.104262",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "Journal of International Economics"
+      "interest_name": "Journal of International Economics",
+      "source_title": "Journal of International Economics"
     },
     {
       "title": "Education on the cheap and early child development: Evidence from the free compulsory education reform in rural China",
@@ -368,7 +367,8 @@
       "doi": "https://doi.org/10.1016/j.worlddev.2026.107414",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "World Development"
+      "interest_name": "World Development",
+      "source_title": "World Development"
     },
     {
       "title": "The Indigenous land titling trap: adaptive practices and the limits of climate governance",
@@ -381,7 +381,8 @@
       "doi": "https://doi.org/10.1016/j.worlddev.2026.107429",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "World Development"
+      "interest_name": "World Development",
+      "source_title": "World Development"
     },
     {
       "title": "Shocks and reconfiguration in global value chains: A complex network perspective on the global south",
@@ -394,7 +395,8 @@
       "doi": "https://doi.org/10.1016/j.worlddev.2026.107413",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "World Development"
+      "interest_name": "World Development",
+      "source_title": "World Development"
     },
     {
       "title": "Electoral cycles in female sterilization",
@@ -407,20 +409,8 @@
       "doi": "https://doi.org/10.1016/j.worlddev.2026.107407",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "World Development"
-    },
-    {
-      "title": "Editorial Board",
-      "authors": [],
-      "venue": "Journal",
-      "year": "None",
-      "published_at": "None",
-      "abstract": "",
-      "url": "https://doi.org/10.1016/s0305-750x(26)00115-4",
-      "doi": "https://doi.org/10.1016/s0305-750x(26)00115-4",
-      "cited_by_count": 0,
-      "relevance": 0.0,
-      "interest_name": "World Development"
+      "interest_name": "World Development",
+      "source_title": "World Development"
     },
     {
       "title": "Who should be served first? Multidimensional prioritization in a Bolivian cash transfer program",
@@ -433,7 +423,8 @@
       "doi": "https://doi.org/10.1016/j.worlddev.2026.107434",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "World Development"
+      "interest_name": "World Development",
+      "source_title": "World Development"
     },
     {
       "title": "Teetering on the brink of debt and hunger: Empirical examination of the linkages between external debt and food security in Africa",
@@ -446,7 +437,8 @@
       "doi": "https://doi.org/10.1016/j.worlddev.2026.107417",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "World Development"
+      "interest_name": "World Development",
+      "source_title": "World Development"
     },
     {
       "title": "Open for business: mapping private sector investment incentives in Sub-Saharan Africa",
@@ -459,7 +451,8 @@
       "doi": "https://doi.org/10.1016/j.worlddev.2026.107405",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "World Development"
+      "interest_name": "World Development",
+      "source_title": "World Development"
     },
     {
       "title": "Toward a clean drinking water act for India: A review of drinking water quality standards",
@@ -472,7 +465,8 @@
       "doi": "https://doi.org/10.1016/j.worlddev.2026.107433",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "World Development"
+      "interest_name": "World Development",
+      "source_title": "World Development"
     },
     {
       "title": "Past stateness, present strength: How (the lack of) state experience shapes today’s fragile states",
@@ -485,7 +479,8 @@
       "doi": "https://doi.org/10.1016/j.worlddev.2026.107408",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "World Development"
+      "interest_name": "World Development",
+      "source_title": "World Development"
     },
     {
       "title": "Development and interdisciplinarity: additional insights on the ‘economics silo’",
@@ -498,7 +493,8 @@
       "doi": "https://doi.org/10.1016/j.worlddev.2026.107435",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "World Development"
+      "interest_name": "World Development",
+      "source_title": "World Development"
     },
     {
       "title": "Does crisis lending help China win friends and influence people?",
@@ -511,7 +507,8 @@
       "doi": "https://doi.org/10.1016/j.worlddev.2026.107421",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "World Development"
+      "interest_name": "World Development",
+      "source_title": "World Development"
     },
     {
       "title": "Beyond the tap: the limited value of democracy for delivering universal safe water access in low- and middle-income countries",
@@ -524,7 +521,8 @@
       "doi": "https://doi.org/10.1016/j.worlddev.2026.107436",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "World Development"
+      "interest_name": "World Development",
+      "source_title": "World Development"
     },
     {
       "title": "Catalysts for third-country market entry: The role of preferential trade agreements",
@@ -537,7 +535,8 @@
       "doi": "https://doi.org/10.1016/j.worlddev.2026.107437",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "World Development"
+      "interest_name": "World Development",
+      "source_title": "World Development"
     },
     {
       "title": "Gun violence and the political economy of forced labor investigations in Brazil",
@@ -550,7 +549,8 @@
       "doi": "https://doi.org/10.1016/j.worlddev.2026.107416",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "World Development"
+      "interest_name": "World Development",
+      "source_title": "World Development"
     },
     {
       "title": "Inequality and social unrest in India",
@@ -563,7 +563,8 @@
       "doi": "https://doi.org/10.1016/j.worlddev.2026.107418",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "World Development"
+      "interest_name": "World Development",
+      "source_title": "World Development"
     },
     {
       "title": "Institutional capacities for GVC-oriented policies",
@@ -576,7 +577,8 @@
       "doi": "https://doi.org/10.1016/j.worlddev.2026.107410",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "World Development"
+      "interest_name": "World Development",
+      "source_title": "World Development"
     },
     {
       "title": "Manipulation of information in times of crisis: evidence from Covid excess mortality",
@@ -589,7 +591,8 @@
       "doi": "https://doi.org/10.1007/s10887-026-09266-w",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "Journal of Economic Growth"
+      "interest_name": "Journal of Economic Growth",
+      "source_title": "Journal of economic growth (Boston)"
     },
     {
       "title": "Armed conflict exposure and trust: evidence from a natural experiment*",
@@ -602,7 +605,8 @@
       "doi": "https://doi.org/10.1007/s10887-026-09267-9",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "Journal of Economic Growth"
+      "interest_name": "Journal of Economic Growth",
+      "source_title": "Journal of economic growth (Boston)"
     },
     {
       "title": "Testing Mechanisms",
@@ -610,12 +614,13 @@
       "venue": "Journal",
       "year": "None",
       "published_at": "None",
-      "abstract": "",
+      "abstract": "\n Economists are often interested in the mechanisms by which a treatment affects an outcome. We develop tests for the “sharp null of full mediation” that a treatment D affects an outcome Y only through a particular mechanism (or set of mechanisms) M. Our approach exploits connections between mediation analysis and the econometric literature on testing instrument validity. We also provide tools for quantifying the magnitude of alternative mechanisms when the sharp null is rejected: we derive sharp lower bounds on the fraction of individuals whose outcome is affected by the treatment despite having the same value of M under both treatments (“always-takers”), as well as sharp bounds on the average effect of the treatment for such always-takers. An advantage of our approach relative to existing tools for mediation analysis is that it does not require stringent assumptions about how M is assigned. We illustrate our methodology in two empirical applications.",
       "url": "https://doi.org/10.1093/restud/rdag028",
       "doi": "https://doi.org/10.1093/restud/rdag028",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "The Review of Economic Studies"
+      "interest_name": "The Review of Economic Studies",
+      "source_title": "The Review of Economic Studies"
     },
     {
       "title": "Political Pressure on the Fed",
@@ -636,12 +641,13 @@
       "venue": "Journal",
       "year": "None",
       "published_at": "None",
-      "abstract": "",
+      "abstract": "\n This article examines the trend in fathers' uptake of parental leave following the 2004 parental leave reform in Estonia and analyses the factors that determine whether fathers take leave. The reform introduced generous earnings‐related parental leave benefits paid over a long period but did not implement a fathers' quota. The study population includes children born between 2004 and 2018. We use a register‐based dataset and logistic regression to analyse variation in the probability that fathers take parental leave. The main explanatory variables are fathers' earnings and educational attainment. Following the reform, fathers' uptake of parental leave more than tripled over the study period. We find a strong positive association between fathers' earnings and their use of parental leave, likely due to the full replacement of previous earnings and the high ceiling on parental leave benefits. Incorporating an interaction between parents' income levels into the regression analysis suggests that economic optimisation plays an important role in fathers' decisions to take leave, while relative resources with the couple also matter. This study expands the geographical scope of research into the determinants of fathers' parental leave use. We find both similarities as well as differences in fathers' leave uptake compared to Nordic countries.",
       "url": "https://doi.org/10.1111/spol.70066",
       "doi": "https://doi.org/10.1111/spol.70066",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "Social Policy & Administration"
+      "interest_name": "Social Policy & Administration",
+      "source_title": "Social Policy &amp; Administration"
     },
     {
       "title": "Untitled",
@@ -662,12 +668,13 @@
       "venue": "Journal",
       "year": "None",
       "published_at": "None",
-      "abstract": "",
+      "abstract": "\n Heteronormative public administration assumes that LGBTQIA+ communities will reflect their heterosexual counterparts. The resulting deficient outreach to vulnerable communities has worsened health disparities, as seen in the 2022 Mpox epidemic, in which gay and bisexual men experienced the highest infection rates. This research applied queer theory to examine social media efforts to eliminate Mpox spread. This study critically assessed 591 social media messages from influencers, non‐profits, and government for queer‐focused and heteronormative discourse. Findings revealed that most governmental and non‐profit accounts failed to augment content for the at‐risk audience. Gay and bisexual men had to navigate heteronormative content to locate resources critical to their well‐being. Conversely, influencers acted as a public health system through repeated messaging and by supplementing governmental guidance with steps tailored for a queer audience. Influencers' value came from leveraging their lived experiences to challenge discriminatory societal norms, highlighting the crucial role of culturally relevant communication.",
       "url": "https://doi.org/10.1111/spol.70064",
       "doi": "https://doi.org/10.1111/spol.70064",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "Social Policy & Administration"
+      "interest_name": "Social Policy & Administration",
+      "source_title": "Social Policy &amp; Administration"
     },
     {
       "title": "Access to Safety Net Programs in the U.S. During the <scp>COVID</scp> ‐19 Pandemic: Barriers and Lessons From a Scoping Review",
@@ -675,12 +682,13 @@
       "venue": "Journal",
       "year": "None",
       "published_at": "None",
-      "abstract": "",
+      "abstract": "\n The COVID‐19 pandemic triggered historic expansions of the U.S. social safety net to mitigate unprecedented economic hardship. However, increased government spending and program expansions on paper do not automatically translate into equitable access in practice. Following the PRISMA‐ScR guidelines, this scoping review synthesizes 33 peer‐reviewed studies published between 2020 and 2025 examining access to federal social safety net programs, including food assistance, Medicaid, unemployment insurance, Temporary Assistance for Needy Families, and housing and energy assistance. The review identified six categories of barriers to access: racial and ethnic disparities, administrative barriers, policy design barriers, instrumental barriers, geographic and demographic disparities, and COVID‐19 specific factors. At the same time, four opportunities were identified that improved access: program expansions, staff and community efforts, convenience of remote services, and Pandemic Electronic Benefit Transfer (P‐EBT). Findings highlight the dual reality of entrenched exclusions and innovative adaptations, underscoring the need for reforms that institutionalize equity and resilience in the social safety net.",
       "url": "https://doi.org/10.1111/spol.70065",
       "doi": "https://doi.org/10.1111/spol.70065",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "Social Policy & Administration"
+      "interest_name": "Social Policy & Administration",
+      "source_title": "Social Policy &amp; Administration"
     },
     {
       "title": "Everyday Harm Experienced by People With Disability From Culturally Diverse Backgrounds Using Community Services in High‐Income Countries: A Scoping Review",
@@ -688,12 +696,13 @@
       "venue": "Journal",
       "year": "None",
       "published_at": "None",
-      "abstract": "",
+      "abstract": "\n People with disability from culturally diverse backgrounds face challenges accessing community services. These negative experiences contribute to everyday harm, a common but less noticeable form of harm that negatively impacts a person's wellbeing and social connections. Despite its impact, the concept of everyday harm is underexplored for this community in service settings. A scoping review was conducted through a systematic search across four databases of Eric/ProQuest, CINAHL, Scopus and Taylor & Francis. Eighteen articles were identified and thematically analysed. Findings revealed that everyday harm is often experienced by people from culturally diverse communities and overlooked by service providers. Three major themes were identified: (1) experiences of everyday harm, (2) responses to it and (3) practices of services to prevent or address everyday harm. Everyday harm experiences are shaped by historic systemic inequality, neglect of cultural responsiveness in services and capacity and awareness of service providers. People experience everyday harm to the combination of the intersecting parts of their identities. The findings imply the need for culturally responsive policy change, rights‐based service reform and inclusive empirical research to better understand the steps to prevent or address everyday harm in service settings.",
       "url": "https://doi.org/10.1111/spol.70067",
       "doi": "https://doi.org/10.1111/spol.70067",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "Social Policy & Administration"
+      "interest_name": "Social Policy & Administration",
+      "source_title": "Social Policy &amp; Administration"
     },
     {
       "title": "Digital Work Instructions for Work Integration Social Enterprises: Results From a Mixed Methods Study in Flanders",
@@ -701,25 +710,13 @@
       "venue": "Journal",
       "year": "None",
       "published_at": "None",
-      "abstract": "",
+      "abstract": "\n Digital work instructions (DWIs) are increasingly used in mainstream manufacturing and assembly settings to support task execution, training and process adaptability. However, their implementation in work integration social enterprises (WISEs) has received limited scholarly attention. Drawing on a mixed‐methods research project in Flanders, Belgium, this article examines the factors influencing DWI adoption in WISEs and the effects organisations report in relation to their use. The analysis considers barriers, motives, government support, organisational characteristics and perceived economic, social, environmental and negative effects. The study combines a targeted literature review, semi‐structured interviews, participatory evaluation and a survey of 41 WISEs. The findings suggest that DWIs are associated with perceived improvements in operational efficiency, training processes and worker autonomy, while implementation challenges include upfront costs, integration issues and the effort required to design and maintain effective instructions. Adopters and non‐adopters also differed in how they perceived the benefits, barriers and risks associated with DWIs. The article contributes to research on digital transformation in inclusive work settings by examining DWI adoption in a context that remains underexplored in the literature, and it offers practical insights for managers and policymakers involved in WISE digitalisation.",
       "url": "https://doi.org/10.1111/spol.70069",
       "doi": "https://doi.org/10.1111/spol.70069",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "Social Policy & Administration"
-    },
-    {
-      "title": "Issue Information",
-      "authors": [],
-      "venue": "Journal",
-      "year": "None",
-      "published_at": "None",
-      "abstract": "",
-      "url": "https://doi.org/10.1111/spol.70063",
-      "doi": "https://doi.org/10.1111/spol.70063",
-      "cited_by_count": 0,
-      "relevance": 0.0,
-      "interest_name": "Social Policy & Administration"
+      "interest_name": "Social Policy & Administration",
+      "source_title": "Social Policy &amp; Administration"
     },
     {
       "title": "Heterogeneous Treatment Effects and Causal Mechanisms",
@@ -727,12 +724,13 @@
       "venue": "Journal",
       "year": "None",
       "published_at": "None",
-      "abstract": "",
+      "abstract": "The credibility revolution advances the use of research designs that permit the identification and estimation of causal effects. However, understanding which mechanisms produce measured causal effects remains a challenge. The dominant current approach to the quantitative evaluation of mechanisms relies on the detection of heterogeneous treatment effects (HTEs) with respect to pretreatment covariates. This article develops a framework to understand when the existence of such HTEs can support inferences about the activation of a mechanism. We show first that this design cannot provide evidence of mechanism activation without additional, generally implicit, exclusion assumptions. Further, even when these assumptions are satisfied, the presence of HTEs supports the inference that the mechanism is active but the absence of HTEs is generally uninformative about mechanism activation. We provide novel guidance for interpretation and research design in light of these findings.",
       "url": "https://doi.org/10.1017/s0003055426101580",
       "doi": "https://doi.org/10.1017/s0003055426101580",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "American Political Science Review"
+      "interest_name": "American Political Science Review",
+      "source_title": "American Political Science Review"
     },
     {
       "title": "Legislative Effectiveness, Progressive Ambition, and Electoral Success",
@@ -740,12 +738,13 @@
       "venue": "Journal",
       "year": "None",
       "published_at": "None",
-      "abstract": "",
+      "abstract": "Are effective state lawmakers more likely than ineffective ones to be elected to Congress? We draw on a new dataset of state legislative effectiveness scores from 1993 to 2018 to examine the relationship between lawmaker effectiveness and the decision to run for, and ultimately be elected to, the U.S. House of Representatives. We find that more effective state lawmakers are more likely to enter Congress than ineffective lawmakers. This pattern is due more to the progressive ambition of candidates than to voter decisions. Specifically, within citizen state legislatures, more effective lawmakers are much more likely to run for U.S. House seats than are their less effective counterparts. In highly professional state legislatures, however, more effective lawmakers are more likely to run for Congress only when presented with the opportunity of an open seat. Our analysis finds no relationship between a state legislator’s lawmaking effectiveness and their likelihood of winning primary or general House elections.",
       "url": "https://doi.org/10.1017/s0003055426101683",
       "doi": "https://doi.org/10.1017/s0003055426101683",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "American Political Science Review"
+      "interest_name": "American Political Science Review",
+      "source_title": "American Political Science Review"
     },
     {
       "title": "Bureaucratic Resistance and Policy Inefficiency",
@@ -753,12 +752,13 @@
       "venue": "Journal",
       "year": "None",
       "published_at": "None",
-      "abstract": "",
+      "abstract": "Poor public service provision creates an electoral vulnerability for incumbent politicians. Under what conditions can bureaucrats exploit this to avoid reforms they dislike? We develop a model of electoral politics in which a politician must decide whether to enact a reform of uncertain value, and a voter evaluates the incumbent’s reform based on post-reform government service quality, which anti-reform bureaucrats can undermine. Bureaucratic resistance for political leverage is most likely to occur when voters are torn between the reform and the status quo. Resistance lowers the informational value of government service for voters and can lead to policy distortions and accountability loss. When reform is moderately popular, resistance leads to policy inefficiency by preventing beneficial reforms due to electoral risks and inducing ineffective reforms by offering bureaucrats as scapegoats. Our model identifies a distinct mechanism of bureaucratic power and its implications for policy and accountability.",
       "url": "https://doi.org/10.1017/s0003055426101609",
       "doi": "https://doi.org/10.1017/s0003055426101609",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "American Political Science Review"
+      "interest_name": "American Political Science Review",
+      "source_title": "American Political Science Review"
     },
     {
       "title": "New Evidence and Design Considerations for Repeated Measure Experiments in Survey Research",
@@ -766,25 +766,13 @@
       "venue": "Journal",
       "year": "None",
       "published_at": "None",
-      "abstract": "",
+      "abstract": "\n We re-examine recent influential claims that repeated measure experimental designs offer large precision gains without biasing treatment effect estimates in survey research. We test these claims by experimentally varying the design of six classic political science experiments across three distinct large samples of U.S. adults (total\n \n \n \n $ N=\\mathrm{13,163} $\n \n \n ). In contrast to prior evidence, we observe consistent attenuation of treatment effects in repeated measure designs. However, we show in simulations that this average design effect is small enough, and the precision gains large enough, that we recommend repeated measure designs for broad application—though (large-N) post-only designs may be preferable when research priorities include estimating the precise magnitude of a treatment effect. We additionally explore how several design considerations affect the bias-precision trade-off, such as within-subject versus between-groups designs, the relative separation of repeated measures within single surveys, and differences in respondent characteristics across sample types.\n",
       "url": "https://doi.org/10.1017/s0003055426101671",
       "doi": "https://doi.org/10.1017/s0003055426101671",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "American Political Science Review"
-    },
-    {
-      "title": "PSR volume 120 issue 2 Cover and Front matter",
-      "authors": [],
-      "venue": "Journal",
-      "year": "None",
-      "published_at": "None",
-      "abstract": "",
-      "url": "https://doi.org/10.1017/s0003055425101093",
-      "doi": "https://doi.org/10.1017/s0003055425101093",
-      "cited_by_count": 0,
-      "relevance": 0.0,
-      "interest_name": "American Political Science Review"
+      "interest_name": "American Political Science Review",
+      "source_title": "American Political Science Review"
     },
     {
       "title": "Coethnics Covote in Africa: Studying Electoral Cleavages with a Covoting Regression Model",
@@ -792,12 +780,13 @@
       "venue": "Journal",
       "year": "None",
       "published_at": "None",
-      "abstract": "",
+      "abstract": "\n Ethnicity is an important cleavage in Africa, yet its influence on voting is contested. Selection biases from restricted choice sets complicate micro-level analyses, while ecological inferences and unobserved confounders hamper meso and macro-level approaches. Our new\n Covoting Regression\n (CVR) tackles several of these challenges. It estimates the effect of coethnicity on the probability that pairs of voters covote for the same party while conditioning on other shared characteristics. Thereby, CVR mirrors the micro-foundations of aggregate indicators such as the Herfindahl-Hirschman concentration index. We analyze Afrobarometer surveys from 28 countries and estimate that coethnicity increases covoting intentions between respondents by 17 percentage points. Politically relevant groups and covoting for ethnic parties drive this estimate, which is consistent across institutionally diverse countries and at least four times larger than that of other cleavages. The CVR addresses key issues in studying electoral consequences of socio-economic cleavages and bridges gaps between levels of analysis.\n",
       "url": "https://doi.org/10.1017/s0003055426101579",
       "doi": "https://doi.org/10.1017/s0003055426101579",
       "cited_by_count": 0,
       "relevance": 0.0,
-      "interest_name": "American Political Science Review"
+      "interest_name": "American Political Science Review",
+      "source_title": "American Political Science Review"
     }
   ]
 }
