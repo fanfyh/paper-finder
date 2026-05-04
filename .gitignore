@@ -14,7 +14,6 @@ reports/
 
 # Track viewer static site and data
 !reports/viewer/
-reports/viewer/papers_data.json
 
 # Temp files
 temp/private/
