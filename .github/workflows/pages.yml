@@ -5,6 +5,7 @@ on:
     branches:
       - main
     paths:
+      - "viewer/**"
       - "reports/viewer/**"
       - ".github/workflows/pages.yml"
   workflow_dispatch:
