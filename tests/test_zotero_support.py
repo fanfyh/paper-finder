@@ -6,7 +6,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from codex_research_assist.arxiv_profile_pipeline.profile_contract import normalize_profile_payload
+from codex_research_assist.profile_contract import normalize_profile_payload
 from codex_research_assist.profile_refresh_output import parse_profile_refresh_output
 from codex_research_assist.zotero_mcp.chroma_client import ChromaClient
 from codex_research_assist.zotero_mcp.feedback import (

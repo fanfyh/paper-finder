@@ -92,18 +92,30 @@ def score_map_match(candidate: dict[str, Any], profile: dict[str, Any]) -> float
             continue
         interest_id = str(interest.get("interest_id") or "").strip()
         if matched_interest_ids and interest_id and interest_id not in matched_interest_ids:
-            continue
+            interest_score = 0.0
+        else:
+            # 读取 profile 中的 global_method_priority 配置，RD > IV > DID 降权
+            # 仅当 phrase_score > 0 时才触发 bonus，避免无端降权
+            raw_method_score = _phrase_score(paper_tokens, list(interest.get("method_keywords") or []))
+            method_bonus = 1.0
+            if raw_method_score > 0:
+                global_priority = profile.get("global_method_priority") or []
+                for entry in global_priority:
+                    tokens = set(e.lower() for e in (entry.get("tokens") or []))
+                    if tokens and paper_tokens & tokens:
+                        method_bonus = float(entry.get("bonus", 1.0))
+                        break
+            method_score = raw_method_score * method_bonus
 
-        method_score = _phrase_score(paper_tokens, list(interest.get("method_keywords") or []))
-        alias_score = _phrase_score(paper_tokens, list(interest.get("query_aliases") or []))
-        interest_categories = {
-            str(category).strip().lower()
-            for category in (interest.get("categories") or [])
-            if str(category).strip()
-        }
-        category_score = 1.0 if paper_categories.intersection(interest_categories) else 0.0
+            alias_score = _phrase_score(paper_tokens, list(interest.get("query_aliases") or []))
+            interest_categories = {
+                str(category).strip().lower()
+                for category in (interest.get("categories") or [])
+                if str(category).strip()
+            }
+            category_score = 1.0 if paper_categories.intersection(interest_categories) else 0.0
 
-        interest_score = (0.65 * method_score) + (0.20 * alias_score) + (0.15 * category_score)
+            interest_score = (0.65 * method_score) + (0.20 * alias_score) + (0.15 * category_score)
         best = max(best, interest_score)
 
     return round(min(best, 1.0), 4)
@@ -131,7 +143,7 @@ def _normalize_semantic_scores(raw_scores: dict[str, float]) -> dict[str, float]
     min_value = min(values)
     max_value = max(values)
     if math.isclose(min_value, max_value, rel_tol=1e-9, abs_tol=1e-9):
-        return {candidate_id: round(values[0], 4) for candidate_id in raw_scores}
+        return {candidate_id: 0.5 for candidate_id in raw_scores}
     normalized: dict[str, float] = {}
     span = max_value - min_value
     for candidate_id, raw_value in raw_scores.items():

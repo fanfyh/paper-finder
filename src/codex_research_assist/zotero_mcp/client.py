@@ -117,6 +117,11 @@ class ZoteroClient:
             if lowered in requested and key:
                 matched[name] = key
                 seed_keys.add(key)
+                continue
+            if any(req in lowered for req in requested) and key:
+                # substring match: user asked for "NBER", collection is "nber working papers"
+                matched[name] = key
+                seed_keys.add(key)
         if include_children and seed_keys:
             expanded = self._collection_descendants(seed_keys)
             by_key = {
@@ -409,13 +414,24 @@ class ZoteroClient:
                 author_text = _as_text(author)
                 if not author_text:
                     continue
-                parts = author_text.split()
-                if len(parts) >= 2:
+                if "," in author_text:
+                    parts = author_text.split(",", 1)
+                    last_name = parts[0].strip()
+                    first_name = parts[1].strip() if len(parts) > 1 else ""
+                else:
+                    parts = author_text.strip().split()
+                    if len(parts) >= 2:
+                        first_name = " ".join(parts[:-1])
+                        last_name = parts[-1]
+                    else:
+                        first_name = ""
+                        last_name = author_text.strip()
+                if last_name:
                     creators.append(
                         {
                             "creatorType": "author",
-                            "firstName": " ".join(parts[:-1]),
-                            "lastName": parts[-1],
+                            "firstName": first_name,
+                            "lastName": last_name,
                         }
                     )
                 else:
@@ -618,7 +634,9 @@ class ZoteroClient:
         }
 
     def apply_feedback(self, payload: dict[str, Any], *, dry_run: bool = True, restrict_to_collection_keys: set[str] | None = None) -> dict[str, Any]:
-        decisions = payload["decisions"]
+        decisions = payload.get("decisions")
+        if decisions is None:
+            raise ValueError('Missing required field "decisions" in payload')
         planned: list[dict[str, Any]] = []
         applied: list[dict[str, Any]] = []
 

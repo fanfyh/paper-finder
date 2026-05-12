@@ -18,12 +18,9 @@ import tempfile
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from .arxiv_profile_pipeline.client import fetch_arxiv_feed
-from .arxiv_profile_pipeline.parser import parse_feed
-from .arxiv_profile_pipeline.pipeline import run_pipeline
-from .arxiv_profile_pipeline.query import build_search_query
+from .pipeline import run_openalex_pipeline
+from .client import decode_abstract, resolve_source, search_works, _load_journal_aliases
 from .controller.profile_refresh_policy import evaluate_profile_refresh_policy
-from .nber_pipeline.pipeline import run_nber_pipeline
 from .digest_summary import write_digest_run_summary
 from .email_sender import send_email
 from .ranker import rank_candidates
@@ -31,6 +28,7 @@ from .review_digest import enrich_candidates_with_system_review
 from .html_fmt import format_digest_html, format_search_html
 from .telegram_fmt import format_digest_telegram, format_search_telegram
 from .telegram_sender import send_digest
+from .llm_scorer import add_llm_scores_to_candidates
 from .zotero_mcp.semantic_search import create_semantic_search
 from .zotero_mcp.chroma_client import ChromaClient
 
@@ -910,16 +908,54 @@ def action_digest(config: dict, fmt: str = "markdown", *, config_path: Path | No
             LOG.warning("Profile refresh required: %s", reason)
             LOG.warning("Proceeding with retrieval using existing profile (if available)")
 
-        LOG.info("Running arXiv retrieval pipeline...")
-        result = run_pipeline(config_path=temp_toml_path, profile_path=profile_path, write_candidate_markdown_override=False)
+        journal_sources = config.get("retrieval", {}).get("journal_sources")
+        retrieval_cfg = config.get("retrieval", {})
+        since_days = retrieval_cfg.get("since_days", 7)
+        max_candidates = retrieval_cfg.get("max_results_per_interest", 50)
+        # Wide retrieval: pull papers without keyword filter, let LLM determine relevance
+        LOG.info("Running OpenAlex retrieval pipeline in WIDE mode (journals=%s, since_days=%d)",
+                 len(journal_sources) if journal_sources else "all", since_days)
+        result = run_openalex_pipeline(
+            profile_path=profile_path,
+            output_root=output_root,
+            journal_sources=journal_sources,
+            skip_keyword_filter=True,
+            since_days=since_days,
+            max_per_interest=max_candidates,
+        )
         digest_json_path = Path(result["digest_json_path"])
         candidate_count = result["candidate_count"]
         LOG.info("Retrieved %d candidates", candidate_count)
 
         candidates = _load_candidates_from_digest(digest_json_path)
 
-        # Rank candidates using the profile
-        if candidates and profile_path.exists():
+        # Load profile for LLM scoring and ranking
+        profile = None
+        if profile_path.exists():
+            try:
+                profile = json.loads(profile_path.read_text(encoding="utf-8"))
+            except Exception:
+                pass
+
+        # LLM relevance scoring (MiniMax) -- semantic filtering instead of keyword matching
+        if candidates and profile:
+            interests = profile.get("interests", [])
+            if interests:
+                LOG.info("Running LLM relevance scoring on %d candidates...", len(candidates))
+                candidates = add_llm_scores_to_candidates(candidates, interests)
+                LOG.info("LLM scoring complete")
+
+                # Sort by LLM relevance score (descending)
+                candidates.sort(key=lambda c: c.get("_scores", {}).get("llm_relevance", 0.0), reverse=True)
+                LOG.info("Sorted %d candidates by LLM relevance", len(candidates))
+
+        # In WIDE mode, skip map_match ranking (no keyword-matched interest labels exist)
+        # LLM scoring + Zotero semantic is sufficient for ordering
+        skip_ranking = True
+
+        if skip_ranking:
+            LOG.info("Skipping map_match ranking in WIDE mode (LLM relevance is primary signal)")
+        elif candidates and profile:
             profile = json.loads(profile_path.read_text(encoding="utf-8"))
             # Load seen IDs from the same state path the pipeline uses
             profile_defaults = profile.get("retrieval_defaults", {})
@@ -953,6 +989,19 @@ def action_digest(config: dict, fmt: str = "markdown", *, config_path: Path | No
                 semantic_search_fn=semantic_search_fn,
             )
             LOG.info("Ranked %d candidates", len(candidates))
+
+        # After ranking, re-sort by LLM relevance score if LLM scoring was applied
+        # (LLM scoring provides semantic relevance beyond keyword-based map_match)
+        if candidates:
+            has_llm = any(c.get("_scores", {}).get("llm_relevance", None) is not None for c in candidates)
+            if has_llm:
+                # Ensure 'total' score is set so rendering works
+                for c in candidates:
+                    scores = c.get("_scores", {})
+                    if "total" not in scores:
+                        scores["total"] = scores.get("llm_relevance", 0.0)
+                candidates.sort(key=lambda c: c.get("_scores", {}).get("llm_relevance", 0.0), reverse=True)
+                LOG.info("Re-sorted candidates by LLM relevance after ranking")
 
         selected_limit = _selected_candidate_limit(config)
         if selected_limit is not None and len(candidates) > selected_limit:
@@ -1091,7 +1140,7 @@ def action_digest_nber(config: dict, fmt: str = "markdown", *, config_path: Path
     output_date_str = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
     # Import markdown generator
-    from .nber_pipeline.pipeline import _generate_candidate_markdown
+    from .pipeline import _generate_candidate_markdown
 
     for candidate in candidates:
         nber_id = candidate.get("paper", {}).get("identifiers", {}).get("nber_id", "")
@@ -1192,11 +1241,22 @@ def generate_llm_insights(papers: list[dict], profile: dict) -> dict[int, str]:
 
     interests_context = "\n".join(interest_lines)
 
-    # Build papers context (title + abstract for each)
+    # Decode abstracts (may be inverted-index dicts from OpenAlex)
+    from .client import decode_abstract
+
+    # Build papers context (title + decoded abstract for each)
     papers_context = []
     for i, paper in enumerate(papers, 1):
         title = paper.get("title", "")
-        abstract = paper.get("abstract", "")[:800]
+        raw_abstract = paper.get("abstract", "")
+        # Decode inverted-index abstracts (OpenAlex format) to plain text
+        if isinstance(raw_abstract, dict):
+            abstract = decode_abstract(raw_abstract)
+        elif isinstance(raw_abstract, str):
+            abstract = raw_abstract
+        else:
+            abstract = str(raw_abstract) if raw_abstract else ""
+        abstract = abstract[:800]
         papers_context.append(f"{i}. {title}\n   摘要: {abstract}")
 
     papers_text = "\n\n".join(papers_context)
@@ -1205,8 +1265,12 @@ def generate_llm_insights(papers: list[dict], profile: dict) -> dict[int, str]:
     api_key = os.getenv("DASHSCOPE_API_KEY") or "sk-b060ce4b157c403eb727c99a780ab19c"
     base_url = "https://dashscope.aliyuncs.com/compatible-mode/v1"
 
-    system_prompt = """你是一位经济学研究助手，帮助用户理解论文与其研究兴趣的相关性。
-用户的研究兴趣包括：公共财政、住房政策、地方财政、城市经济学、中国经济。
+    # Build interest context for system prompt
+    interest_names = [f"{i.get('label', '')}" for i in profile.get("interests", []) if i.get("enabled", True)]
+    interest_names_str = "、".join(interest_names) if interest_names else "公共经济学、城市经济学、住房政策"
+
+    system_prompt = f"""你是一位经济学研究助手，帮助用户理解论文与其研究兴趣的相关性。
+用户的研究兴趣包括：{interest_names_str}。
 请用中文输出，对每篇论文用2-3句话说明为什么这篇论文可能引起用户兴趣。
 格式要求：输出N段文字，每段对应一篇论文，直接开始正文，不要加编号或标题。"""
 
@@ -1254,12 +1318,12 @@ def generate_llm_insights(papers: list[dict], profile: dict) -> dict[int, str]:
 
 
 def action_digest_all(config: dict, fmt: str = "markdown", *, config_path: Path | None = None) -> str:
-    """Generate digest from all sources: NBER + 17 journals.
+    """Generate digest from configured sources (default: NBER + 14 journals).
 
     Uses the interest profile to score and rank papers by relevance.
     Saves result to vault and prints to stdout.
     """
-    from .openalex_pipeline.client import resolve_source, search_works
+    from .client import resolve_source, search_works
     from .ranker import score_map_match
 
     profile_path = get_profile_path(config)
@@ -1268,16 +1332,13 @@ def action_digest_all(config: dict, fmt: str = "markdown", *, config_path: Path 
 
     if not interests:
         return "No interests found in profile. Please run profile-refresh first."
-
-    # Compute from_date based on since_days (default 7)
-    since_days = (profile.get("retrieval_defaults") or {}).get("since_days", 7)
+    # Compute from_date based on since_days (default 30, from config retrieval)
+    retrieval_cfg = config.get("retrieval", {})
+    since_days = retrieval_cfg.get("since_days", 30)
     from_date = (datetime.now() - timedelta(days=since_days)).strftime("%Y-%m-%d")
     LOG.info("Filtering papers published from %s (since_days=%d)", from_date, since_days)
 
-    LOG.info("Running digest-all for %d interests across NBER + %d journals", len(interests), len(JOURNAL_ALIAS))
-
     all_candidates = []
-    per_source_limit = 10
 
     # Build combined search keywords from all interests (for journal/NBER search)
     search_keywords = []
@@ -1286,41 +1347,55 @@ def action_digest_all(config: dict, fmt: str = "markdown", *, config_path: Path 
         search_keywords.extend(keywords[:2])  # Take top 2 keywords per interest
     search_keywords = list(set(search_keywords))[:5]  # Unique, max 5
 
-    # OpenAlex source filters don't work correctly with from_date (date field coverage gap),
-    # so we do a single global search with date filter and tag sources per-paper.
-    LOG.info("Searching global (with date filter: from %s)...", from_date)
-    try:
-        global_papers = search_works(
-            keywords=search_keywords,
-            per_page=per_source_limit * 10,  # Get more candidates globally
-            from_date=from_date,
-            sort="cited_by_count:desc",
-        )
-        for paper in global_papers:
-            src = paper.get("primary_location", {}) or {}
-            source_name = src.get("source", {}).get("display_name", "Unknown") if src else "Unknown"
-            paper["_source"] = source_name
-        all_candidates.extend(global_papers)
-        LOG.info("Found %d global papers", len(global_papers))
-    except Exception as e:
-        LOG.warning("Failed global search: %s", e)
-
-    # Also search NBER without date (NBER has complete date coverage)
-    LOG.info("Searching NBER (no date filter)...")
-    try:
-        nber_papers = search_works(
-            keywords=search_keywords,
-            source="NBER",
-            per_page=per_source_limit,
-            sort="publication_date:desc",
-        )
-        for paper in nber_papers:
-            paper["_source"] = "NBER"
-            paper["_source_id"] = NBER_REPO_ID
-        all_candidates.extend(nber_papers)
-        LOG.info("Found %d NBER papers", len(nber_papers))
-    except Exception as e:
-        LOG.warning("Failed to search NBER: %s", e)
+    # Sources to search: use journal_sources from config, else fall back to default list.
+    journal_sources = retrieval_cfg.get("journal_sources", [])
+    sources = []  # always defined for output template
+    if journal_sources:
+        # Resolve each journal to its OpenAlex source ID
+        source_ids = [j["openalex_id"] for j in journal_sources if j.get("openalex_id")]
+        sources = [j.get("title", sid) for j, sid in zip(journal_sources, source_ids)]
+        LOG.info("Searching %d journal sources (from config): %s", len(source_ids), from_date)
+        per_source_limit = 10
+        # Use source_ids parameter (no search string) to avoid keyword+source filter conflicts
+        for source_id in source_ids:
+            try:
+                papers = search_works(
+                    keywords=[],
+                    source_ids=[source_id],
+                    from_date=from_date,
+                    per_page=per_source_limit,
+                    sort="cited_by_count:desc",
+                )
+                for paper in papers:
+                    paper["_source"] = source_id
+                all_candidates.extend(papers)
+                LOG.info("Found %d papers from %s", len(papers), source_id)
+            except Exception as e:
+                LOG.warning("Failed to search %s: %s", source_id, e)
+    else:
+        default_sources = [
+            "NBER", "AER", "JPE", "QJE", "ReStud",
+            "JUE", "JHO", "RSUE", "JPECO", "JLE",
+            "JDCE", "WD", "JEG", "ReStat",
+        ]
+        sources = profile.get("sources") or default_sources
+        LOG.info("Searching %d sources (from %s): %s", len(sources), from_date, sources)
+        per_source_limit = 10
+        for source in sources:
+            try:
+                papers = search_works(
+                    keywords=[],
+                    source=source,
+                    from_date=from_date,
+                    per_page=per_source_limit,
+                    sort="cited_by_count:desc",
+                )
+                for paper in papers:
+                    paper["_source"] = source
+                all_candidates.extend(papers)
+                LOG.info("Found %d papers from %s", len(papers), source)
+            except Exception as e:
+                LOG.warning("Failed to search %s: %s", source, e)
 
     # Score by relevance to interests
     LOG.info("Scoring papers by relevance...")
@@ -1334,9 +1409,9 @@ def action_digest_all(config: dict, fmt: str = "markdown", *, config_path: Path 
     all_candidates.sort(key=lambda x: (x.get("_relevance", 0), x.get("cited_by_count", 0)), reverse=True)
     top_candidates = all_candidates[:50]  # Top 50 by relevance
 
-    # LLM analysis for high-relevance papers (> 0.8)
-    LOG.info("Running LLM analysis for high-relevance papers...")
-    high_relevance_papers = [p for p in top_candidates if p.get("_relevance", 0) > 0.8]
+    # LLM analysis for medium-relevance papers (> 0.3)
+    LOG.info("Running LLM analysis for medium-relevance papers...")
+    high_relevance_papers = [p for p in top_candidates if p.get("_relevance", 0) > 0.3]
     llm_insights = {}
     if high_relevance_papers:
         try:
@@ -1367,7 +1442,7 @@ def action_digest_all(config: dict, fmt: str = "markdown", *, config_path: Path 
         "",
         f"# Literature Digest (All Sources) - {date_str}",
         "",
-        f"> Sources: NBER + {len(JOURNAL_ALIAS)} journals",
+        f"> Sources: {', '.join(sources)}",
         f"> Interests: {', '.join(i.get('label', '') for i in interests)}",
         f"> Total found: {len(all_candidates)} papers",
         f"> Sorted by: Relevance score",
@@ -1399,7 +1474,14 @@ def action_digest_all(config: dict, fmt: str = "markdown", *, config_path: Path 
         cited = paper.get("cited_by_count", 0)
         url = paper.get("url", "")
         relevance = paper.get("_relevance", 0)
-        abstract = paper.get("abstract", "")
+        # Decode abstract (may be inverted-index dict or plain str)
+        raw_abstract = paper.get("abstract", "")
+        if isinstance(raw_abstract, dict):
+            abstract = decode_abstract(raw_abstract)
+        elif isinstance(raw_abstract, str):
+            abstract = raw_abstract
+        else:
+            abstract = str(raw_abstract) if raw_abstract else ""
 
         lines.append(f"## {i}. {title}")
         if authors:
@@ -1419,9 +1501,9 @@ def action_digest_all(config: dict, fmt: str = "markdown", *, config_path: Path 
         # Add full abstract
         if abstract:
             lines.append(f"\n> {abstract}")
-        # Add LLM insight for high-relevance papers
+        # Add LLM insight for medium-relevance papers
         paper_id = id(paper)
-        if relevance > 0.8 and paper_id in high_paper_ids:
+        if relevance > 0.3 and paper_id in high_paper_ids:
             insight_idx = high_paper_ids[paper_id]
             if insight_idx in llm_insights:
                 lines.append(f"\n**LLM 分析：** {llm_insights[insight_idx]}")
@@ -1519,6 +1601,17 @@ def _write_viewer_json(candidates: list[dict], date_str: str, output_root: Path)
     VIEWER_JSON = VIEWER_DIR / "papers_data.json"
     VIEWER_DIR.mkdir(parents=True, exist_ok=True)
 
+    # Load journal ID→title mapping for translating source IDs to display names
+    source_id_to_title: dict[str, str] = {}
+    journal_list_path = output_root / ".." / "assets" / "journal_list.json"
+    if journal_list_path.exists():
+        try:
+            for j in _json.loads(journal_list_path.read_text(encoding="utf-8")):
+                if j.get("openalex_id") and j.get("title"):
+                    source_id_to_title[j["openalex_id"]] = j["title"]
+        except Exception:
+            pass
+
     # Load existing data to accumulate papers across digests
     existing: dict[str, dict] = {}
     if VIEWER_JSON.exists():
@@ -1551,7 +1644,7 @@ def _write_viewer_json(candidates: list[dict], date_str: str, output_root: Path)
         # Always try to decode dict-format abstracts; convert non-string to string
         if isinstance(raw_abstract, dict):
             try:
-                from .openalex_pipeline.client import decode_abstract
+                from .client import decode_abstract
                 abstract = decode_abstract(raw_abstract)
             except Exception as e:
                 import logging
@@ -1592,7 +1685,8 @@ def _write_viewer_json(candidates: list[dict], date_str: str, output_root: Path)
             "abstract": abstract,
             "summary_cn": paper.get("summary_cn", ""),
             "cited_by_count": paper.get("cited_by_count", 0),
-            "source_title": paper.get("_source", "") or paper.get("source_title", ""),
+            "_source_raw": paper.get("_source", ""),
+            "source_title": source_id_to_title.get(paper.get("_source", "")) or paper.get("_source", "") or paper.get("source_title", ""),
             "url": (
                 paper.get("url")
                 or paper.get("doi", "")
@@ -1633,17 +1727,12 @@ def _write_viewer_json(candidates: list[dict], date_str: str, output_root: Path)
 
 
 # Source alias map — loaded lazily from journal_list.json via the unified client
-from .openalex_pipeline.client import _load_journal_aliases, resolve_source
+from .client import _load_journal_aliases, resolve_source
 
 JOURNAL_ALIAS = _load_journal_aliases()
 JOURNAL_NAME = {v: k for k, v in JOURNAL_ALIAS.items()}
 
-# Hard-coded NBER repo ID — kept here for action_digest_all compatibility
-# (NBER is also in journal_list.json; this is the canonical OpenAlex source ID)
-NBER_REPO_ID = "S2809516038"
 
-# All sources for journal-digest
-ALL_SOURCES = [NBER_REPO_ID] + list(set(JOURNAL_ALIAS.values()))
 
 
 def _normalize_openalex_for_html(paper: dict) -> dict:
@@ -1671,7 +1760,7 @@ def _normalize_openalex_for_html(paper: dict) -> dict:
 
     abstract = paper.get("abstract", "") or ""
     if isinstance(abstract, dict):
-        from .openalex_pipeline.client import decode_abstract
+        from .client import decode_abstract
         abstract = decode_abstract(abstract)
 
     url = (
@@ -1716,9 +1805,9 @@ def action_search(
         top: Number of results
         source: Optional - "nber" or journal short name (JPE, AER, etc.) to restrict search
         from_date: Filter by publication date
-        fmt: Output format — "markdown" (default) or "html"
+        fmt: Output format -- "markdown" (default) or "html"
     """
-    from .openalex_pipeline.client import resolve_source, search_works
+    from .client import resolve_source, search_works
 
     keywords = [kw.strip() for kw in query.replace(",", " ").split() if kw.strip()]
 
@@ -1778,7 +1867,7 @@ def action_search(
         cited = p.get("cited_by_count", 0)
         abstract = p.get("abstract", "") or ""
         if isinstance(abstract, dict):
-            from .openalex_pipeline.client import decode_abstract
+            from .client import decode_abstract
             abstract = decode_abstract(abstract)
         abstract_preview = abstract[:300] + "..." if len(abstract) > 300 else abstract
         url = p.get("url", "") or p.get("doi_url", "")

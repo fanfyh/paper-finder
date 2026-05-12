@@ -9,11 +9,11 @@ from typing import Any
 
 from fastmcp import FastMCP
 
-from ..arxiv_profile_pipeline.profile_contract import normalize_profile_payload
+from ..profile_contract import normalize_profile_payload
 from .client import ZoteroClient
 from .config import load_zotero_config
 from .feedback import normalize_feedback_payload
-from .profile_evidence import build_profile_evidence_summary
+from .profile_evidence import build_profile_evidence_summary, build_suggested_sources
 from .semantic_search import create_semantic_search
 
 
@@ -182,8 +182,43 @@ def zotero_write_profile(
     target_path: str | None = None,
     config_path: str | None = None,
 ) -> dict[str, Any]:
-    """Normalize and write the live research-interest profile JSON."""
+    """Normalize and write the live research-interest profile JSON.
+
+    If the payload does not contain a ``sources`` field, this function
+    automatically queries Zotero for the user's most-used publication venues
+    and derives a recommended source list (including NBER if present) from
+    them.  The derived list is embedded in the written profile under
+    ``profile.sources`` so that ``digest-all`` searches the right journals
+    and working-paper series without any extra configuration.
+    """
     cfg = load_zotero_config(config_path)
+
+    # Auto-derive sources from Zotero when not explicitly provided
+    if "sources" not in profile_payload or not profile_payload["sources"]:
+        try:
+            z_client, _ = _client(config_path)
+            effective_collections = list(cfg.profile_collections)
+            effective_tags = list(cfg.profile_tags)
+            items, collection_map = z_client.get_profile_items(
+                collection_names=effective_collections,
+                tags=effective_tags,
+                limit=100,
+                include_children=True,
+            )
+            from collections import Counter
+            venue_counter: Counter[str] = Counter()
+            for item in items:
+                venue = str(item.get("publication_title") or "").strip()
+                if venue:
+                    venue_counter[venue] += 1
+            auto_sources = build_suggested_sources(venue_counter, top_n=10)
+            if auto_sources:
+                profile_payload = dict(profile_payload)
+                profile_payload["sources"] = auto_sources
+                LOG.info("Auto-derived profile.sources from Zotero: %s", auto_sources)
+        except Exception as exc:
+            LOG.warning("Could not auto-derive sources from Zotero: %s", exc)
+
     normalized = normalize_profile_payload(profile_payload)
     resolved_path = Path(target_path).expanduser().resolve() if target_path else cfg.profile_path
     resolved_path.parent.mkdir(parents=True, exist_ok=True)
@@ -196,6 +231,7 @@ def zotero_write_profile(
         "interest_count": len(normalized["interests"]),
         "profile_id": normalized["profile_id"],
         "profile_name": normalized["profile_name"],
+        "sources": normalized.get("sources", []),
     }
 
 

@@ -122,7 +122,13 @@ class ResearchAssistSemanticSearch:
                     return True
                 return datetime.now() - datetime.fromisoformat(last_update) >= timedelta(days=days)
             except Exception:
-                return False
+                import logging
+                logging.getLogger(__name__).warning(
+                    "Could not parse update_frequency %r — defaulting to update. "
+                    "Parsed frequency string %r has no valid number of days.",
+                    frequency, frequency,
+                )
+                return True   # safe default: allow update rather than silently disabling it
         return False
 
     def _create_document_text(self, item: dict[str, Any]) -> str:

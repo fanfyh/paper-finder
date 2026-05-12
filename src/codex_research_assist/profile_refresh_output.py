@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from .arxiv_profile_pipeline.profile_contract import normalize_profile_payload
+from .profile_contract import normalize_profile_payload
 
 
 def parse_profile_refresh_output(raw_text: str) -> dict[str, Any]:

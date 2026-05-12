@@ -87,7 +87,7 @@ paper-finder --action profile-refresh
 ## Component Locations
 
 - CLI runner: `src/codex_research_assist/openclaw_runner.py`
-- OpenAlex client: `src/codex_research_assist/openalex_pipeline/`
-- NBER pipeline: `src/codex_research_assist/nber_pipeline/`
+- OpenAlex client: `src/codex_research_assist/client.py`
+- Retrieval pipeline: `src/codex_research_assist/pipeline.py` (`run_openalex_pipeline`)
 - Zotero MCP: `src/codex_research_assist/zotero_mcp/`
 - Ranker: `src/codex_research_assist/ranker.py`

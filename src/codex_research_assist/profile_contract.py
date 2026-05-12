@@ -1,3 +1,8 @@
+"""Profile validation and normalization — extracted from arxiv_profile_pipeline.
+
+Used by zotero_mcp/server.py and profile_refresh_output.py to validate
+the research-interest profile JSON schema.
+"""
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -97,12 +102,22 @@ def normalize_profile_payload(raw: Any) -> dict[str, Any]:
     if logic not in {"AND", "OR"}:
         raise ValueError("retrieval_defaults.logic must be AND or OR")
 
+    # sources: optional list of recommended journal/working-paper aliases for digest-all
+    raw_sources = raw.get("sources")
+    if raw_sources is None:
+        sources: list[str] = []
+    elif isinstance(raw_sources, list):
+        sources = _as_string_list(raw_sources, "sources")
+    else:
+        raise ValueError("sources must be a list of strings")
+
     normalized = {
         "schema_version": str(raw.get("schema_version") or "1.1.0").strip() or "1.1.0",
         "profile_id": _as_string(raw.get("profile_id"), "profile_id"),
         "profile_name": _as_string(raw.get("profile_name"), "profile_name"),
         "updated_at": updated_at,
         "maintainer": str(raw.get("maintainer") or "paper-finder").strip() or "paper-finder",
+        "sources": sources,
         "zotero_basis": {
             "collections": _as_string_list(zotero_basis_raw.get("collections"), "zotero_basis.collections"),
             "tags": _as_string_list(zotero_basis_raw.get("tags"), "zotero_basis.tags"),

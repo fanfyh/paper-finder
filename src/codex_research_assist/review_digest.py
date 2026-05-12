@@ -113,12 +113,15 @@ def build_system_review(candidate: dict[str, Any], profile: dict[str, Any] | Non
         quick_takeaways.append(f"Ranking score: {total:.2f}")
 
     caveats: list[str] = []
+    caveats.append("Recommendation is generated from profile labels and ranking signals, not full-text review.")
     if not paper.get("abstract"):
         caveats.append("Abstract is missing, so the note is title-led.")
     if not matched_labels:
         caveats.append("No strong matched-interest label was attached to this candidate.")
-    caveats.append("Zotero comparison has not been run in digest mode yet.")
-    caveats.append("Recommendation is generated from profile labels and ranking signals, not full-text review.")
+    zotero_comparison = review.get("zotero_comparison")
+    zotero_status = str(zotero_comparison.get("status") if isinstance(zotero_comparison, dict) else "").strip()
+    if zotero_status in ("not_run", "") or scores.get("zotero_semantic", 0) <= 0:
+        caveats.append("Zotero comparison has not been run in digest mode yet.")
 
     review.update(
         {

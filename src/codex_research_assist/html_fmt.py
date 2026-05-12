@@ -972,6 +972,31 @@ def format_digest_html(candidates: list[dict], date_str: str) -> str:
         lede = html.escape(why_text or reviewer_summary_text or abstract_text)
         feature_class = " featured" if idx == 1 else ""
         paper_kicker = "Featured route" if idx == 1 else f"Paper {idx}"
+        _focus_panel = (
+            f'<p class="focus-label">Paper summary</p>'
+            f'<p class="focus-copy">{reviewer_summary}</p>'
+            if reviewer_summary
+            else (
+                f'<p class="focus-label">Paper summary</p>'
+                f'<p class="focus-copy">{html.escape(abstract_text)}</p>'
+            )
+        )
+
+        _neighbor_section = (
+            f'<p class="section-label">Nearest Zotero</p>{neighbor_html or neighbor_summary}'
+            if (neighbor_html or neighbor_summary)
+            else ''
+        )
+        _takeaways_section = (
+            f'<p class="section-label">Quick takeaways</p>{quick_takeaways_html}'
+            if quick_takeaways_html
+            else ''
+        )
+        _caveats_section = (
+            f'<p class="section-label">Caveats</p>{caveats_html}'
+            if caveats_html
+            else ''
+        )
 
         card = f"""
         <div class="paper-card{feature_class}">
@@ -994,7 +1019,7 @@ def format_digest_html(candidates: list[dict], date_str: str) -> str:
                     <p class="lede">{lede}</p>
                     <div class="content-grid">
                         <div class="focus-panel">
-                            {"<p class=\"focus-label\">Paper summary</p><p class=\"focus-copy\">" + reviewer_summary + "</p>" if reviewer_summary else "<p class=\"focus-label\">Paper summary</p><p class=\"focus-copy\">" + html.escape(abstract_text) + "</p>"}
+                            {_focus_panel}
                         </div>
                         <div class="side-panel">
                             <div class="score-grid">
@@ -1012,9 +1037,9 @@ def format_digest_html(candidates: list[dict], date_str: str) -> str:
                                 </div>
                             </div>
                             <p class="score-note">Total score balances map alignment and Zotero semantic resonance.</p>
-                            {"<p class=\"section-label\">Nearest Zotero</p>" + (neighbor_html or neighbor_summary) if (neighbor_html or neighbor_summary) else ""}
-                            {"<p class=\"section-label\">Quick takeaways</p>" + quick_takeaways_html if quick_takeaways_html else ""}
-                            {"<p class=\"section-label\">Caveats</p>" + caveats_html if caveats_html else ""}
+                            {_neighbor_section}
+                            {_takeaways_section}
+                            {_caveats_section}
                         </div>
                     </div>
                     <details>
@@ -1087,14 +1112,47 @@ def format_search_html(papers: list[dict], query: str) -> str:
     cards_html = []
     for idx, paper in enumerate(papers, 1):
         title = html.escape(paper.get("title", "Untitled"))
+
+        # Handle both arXiv (list of strings) and OpenAlex (list of dicts) author formats
         authors = paper.get("authors", [])
-        author_line = html.escape(authors[0] + " et al." if len(authors) > 2 else ", ".join(authors[:2]))
-        summary_text = paper.get("summary", "")
+        if isinstance(authors, list) and len(authors) > 0:
+            if isinstance(authors[0], dict):
+                author_names = [a.get("name", "") for a in authors]
+            else:
+                author_names = [str(a) for a in authors]
+        else:
+            author_names = []
+        if len(author_names) > 2:
+            author_line = html.escape(author_names[0] + " et al.")
+        else:
+            author_line = html.escape(", ".join(author_names))
+
+        summary_text = paper.get("summary", "") or ""
         summary = html.escape(summary_text)
         summary_preview = html.escape(_truncate(summary_text, 170))
         url = html.escape(paper.get("html_url", ""))
         arxiv_id = html.escape(paper.get("arxiv_id", ""))
+        source_title = html.escape(paper.get("source_title", ""))
+        cited_by = paper.get("cited_by_count", 0)
+        year = paper.get("year", "")
+
+        # Build meta line: authors + year + cited_by
+        meta_parts = []
+        if author_line:
+            meta_parts.append(author_line)
+        if year:
+            meta_parts.append(str(year))
+        if cited_by:
+            meta_parts.append(f"Cited by {cited_by}")
+        meta_line = " · ".join(meta_parts)
+
         feature_class = " featured" if idx == 1 else ""
+
+        # Determine ID label: arXiv ID takes precedence, else source (journal)
+        if arxiv_id:
+            id_label = f"arXiv: {arxiv_id}"
+        else:
+            id_label = source_title
 
         card = f"""
         <div class="paper-card{feature_class}">
@@ -1109,12 +1167,11 @@ def format_search_html(papers: list[dict], query: str) -> str:
                     <p class="paper-kicker">Search result</p>
                     <h2><a href="{url}" target="_blank">{title}</a></h2>
                     <div class="paper-meta">
-                        <span class="meta-item">{author_line}</span>
-                        <span class="meta-item"><span class="meta-dot"></span>arXiv: {arxiv_id}</span>
+                        <span class="meta-item">{meta_line}</span>
                     </div>
                     <p class="lede">{summary_preview}</p>
                     <details>
-                        <summary>Original arXiv abstract</summary>
+                        <summary>Abstract</summary>
                         <p class="abstract">{summary}</p>
                     </details>
                 </div>

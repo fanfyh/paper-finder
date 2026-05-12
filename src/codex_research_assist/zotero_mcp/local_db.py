@@ -352,7 +352,8 @@ class LocalZoteroReader:
                 # No matching collections found — return empty
                 return []
         if limit:
-            query += f" LIMIT {int(limit)}"
+            query += " LIMIT ?"
+            params.append(int(limit))
 
         items: list[IndexedZoteroItem] = []
         for row in conn.execute(query, params):

@@ -1,6 +1,5 @@
 {
   "ssrn_source_id": "S4210172589",
-
   "institutions": {
     "NBER": "I1321305853",
     "CEPR": "I4210140326",
@@ -30,7 +29,6 @@
     "Fed_Minneapolis": "I1341575764",
     "Fed_KansasCity": "I84318336"
   },
-
   "fields": {
     "Economics": "fields/20",
     "Business_Accounting": "fields/14",
@@ -42,7 +40,6 @@
     "Environmental_Science": "fields/23",
     "Psychology": "fields/32"
   },
-
   "subfields": {
     "Economics_Econometrics": "subfields/2002",
     "Finance": "subfields/2003",
@@ -64,9 +61,7 @@
     "CS_Applications": "subfields/1706",
     "Env_Policy_Law": "subfields/2308"
   },
-
   "economics_field_id": "fields/20",
-
   "default_filters": {
     "institution_mode": "authorships.institutions.id:I1321305853|I4210140326",
     "field_mode": "primary_topic.field.id:fields/20",

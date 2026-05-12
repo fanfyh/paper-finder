@@ -59,12 +59,12 @@ class OpenAIEmbeddingFunction(EmbeddingFunction):
         return all_embeddings
 
     # chromadb may call `EmbeddingFunction.name()` as an unbound method when
-    # serializing legacy configs. Accept being called with no `self`.
-    def name(self=None) -> str:  # type: ignore[override]
-        if self is None:
-            return "openai"
-        base = self.base_url or "default"
-        return f"openai:{self.model_name}:{base}"
+    # serializing legacy configs. Accept both bound and unbound call styles.
+    def name(self) -> str:
+        # type: ignore[override]
+        base = getattr(self, "base_url", None) or "default"
+        model = getattr(self, "model_name", None) or "unknown"
+        return f"openai:{model}:{base}"
 
     def get_config(self) -> dict[str, Any]:
         return {"model_name": self.model_name, "base_url": self.base_url}
@@ -161,10 +161,13 @@ class OllamaEmbeddingFunction(EmbeddingFunction):
                     f"  /api/embed: {native_err}"
                 ) from native_err
 
-    def name(self=None) -> str:  # type: ignore[override]
-        if self is None:
-            return "ollama"
-        return f"ollama:{self.model_name}:{self.base_url}"
+    # chromadb may call `EmbeddingFunction.name()` as an unbound method when
+    # serializing legacy configs. Accept both bound and unbound call styles.
+    def name(self) -> str:
+        # type: ignore[override]
+        model = getattr(self, "model_name", None) or "unknown"
+        base = getattr(self, "base_url", None) or "default"
+        return f"ollama:{model}:{base}"
 
     def get_config(self) -> dict[str, Any]:
         return {"model_name": self.model_name, "base_url": self.base_url}
@@ -213,11 +216,13 @@ class GeminiEmbeddingFunction(EmbeddingFunction):
             embeddings.append(response.embeddings[0].values)
         return embeddings
 
-    def name(self=None) -> str:  # type: ignore[override]
-        if self is None:
-            return "gemini"
-        base = self.base_url or "default"
-        return f"gemini:{self.model_name}:{base}"
+    # chromadb may call `EmbeddingFunction.name()` as an unbound method when
+    # serializing legacy configs. Accept both bound and unbound call styles.
+    def name(self) -> str:
+        # type: ignore[override]
+        model = getattr(self, "model_name", None) or "unknown"
+        base = getattr(self, "base_url", None) or "default"
+        return f"gemini:{model}:{base}"
 
     def get_config(self) -> dict[str, Any]:
         return {"model_name": self.model_name, "base_url": self.base_url}
@@ -249,10 +254,12 @@ class HuggingFaceEmbeddingFunction(EmbeddingFunction):
         embeddings = self.model.encode(list(input), convert_to_numpy=True)
         return embeddings.tolist()
 
-    def name(self=None) -> str:  # type: ignore[override]
-        if self is None:
-            return "sentence-transformers"
-        return f"sentence-transformers:{self.model_name}"
+    # chromadb may call `EmbeddingFunction.name()` as an unbound method when
+    # serializing legacy configs. Accept both bound and unbound call styles.
+    def name(self) -> str:
+        # type: ignore[override]
+        model = getattr(self, "model_name", None) or "unknown"
+        return f"sentence-transformers:{model}"
 
     def get_config(self) -> dict[str, Any]:
         return {"model_name": self.model_name}
@@ -280,10 +287,12 @@ class FastEmbedEmbeddingFunction(EmbeddingFunction):
     def __call__(self, input: Documents) -> Embeddings:
         return [embedding.tolist() for embedding in self.model.embed(list(input))]
 
-    def name(self=None) -> str:  # type: ignore[override]
-        if self is None:
-            return "fastembed"
-        return f"fastembed:{self.model_name}"
+    # chromadb may call `EmbeddingFunction.name()` as an unbound method when
+    # serializing legacy configs. Accept both bound and unbound call styles.
+    def name(self) -> str:
+        # type: ignore[override]
+        model = getattr(self, "model_name", None) or "unknown"
+        return f"fastembed:{model}"
 
     def get_config(self) -> dict[str, Any]:
         return {"model_name": self.model_name}
