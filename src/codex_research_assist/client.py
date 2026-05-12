@@ -311,11 +311,10 @@ def decode_abstract(inverted: dict | None) -> str:
 def search_and_parse(keywords: list[str], per_page: int = 25, **kwargs) -> list[dict]:
     """Search and parse OpenAlex papers.
 
-    Forwards ``source_ids`` (list of OpenAlex source IDs) to ``search_works``
-    for multi-journal OR filtering.
+    ``search_works`` already calls ``parse_paper`` internally, so this is
+    just a passthrough (the double-parse was a bug).
     """
-    papers = search_works(keywords, per_page=per_page, **kwargs)
-    return [parse_paper(p) for p in papers]
+    return search_works(keywords, per_page=per_page, **kwargs)
 
 
 def search_works(
