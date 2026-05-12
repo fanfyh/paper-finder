@@ -56,6 +56,7 @@ const JOURNAL_ABBR = {
   "Nature": "Nature",
   "PNAS": "PNAS",
   "Social Science & Medicine": "SSM",
+  "Journal of Regional Science": "JORS",
   "Regional Science and Urban Economics": "RSUE",
   "Urban Studies": "Urban Stud.",
   "Housing Policy Debate": "Hous. Policy Debate",
